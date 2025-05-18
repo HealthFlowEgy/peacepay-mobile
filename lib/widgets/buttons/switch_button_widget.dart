@@ -1,15 +1,19 @@
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../controller/dashboard/profiles/update_profile_controller.dart';
 import '../../language/language_controller.dart';
 import '../../utils/basic_widget_imports.dart';
+import '../../utils/theme.dart';
 
 class SwitchButtonWidget extends StatefulWidget {
-  const SwitchButtonWidget({super.key,
+  const SwitchButtonWidget({
+    super.key,
     this.onTap,
-    this.isScaffold = false
+    this.isScaffold = false,
   });
-  final Function? onTap;
+
+  final Function(String)? onTap; // returns 'buyer', 'seller' or 'delivery'
   final bool isScaffold;
 
   @override
@@ -17,55 +21,67 @@ class SwitchButtonWidget extends StatefulWidget {
 }
 
 class _SwitchButtonWidgetState extends State<SwitchButtonWidget> {
-  // bool switchValue = true;
+  // Track selected theme, default to 'buyer' or read from controller if needed
+  String selectedTheme = Get.find<UpdateProfileController>().typeIsBuyer.value ? 'buyer' : 'seller';
+
+  // You can add delivery default if needed
 
   @override
   Widget build(BuildContext context) {
-    return Obx(()=> Get.find<UpdateProfileController>().isLoading
-        ? const CustomLoadingWidget()
-        : Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _btn(context, Strings.buyer, () {
-          setState(() {
-            Get.find<UpdateProfileController>().typeIsBuyer.value = !Get.find<UpdateProfileController>().typeIsBuyer.value ;
-            widget.onTap!(true);
-          });
-        }, true, Get.find<UpdateProfileController>().typeIsBuyer.value),
-        _btn(context, Strings.seller, () {
-          setState(() {
-            Get.find<UpdateProfileController>().typeIsBuyer.value = !Get.find<UpdateProfileController>().typeIsBuyer.value ;
-            widget.onTap!(false);
-          });
-        }, false, !Get.find<UpdateProfileController>().typeIsBuyer.value),
+        _btn(context, 'Buyer', 'buyer'),
+        _btn(context, 'Seller', 'seller'),
+        _btn(context, 'Delivery', 'delivery'),
       ],
-    ));
+    );
   }
 
-  _btn(BuildContext context, String text, VoidCallback onTap, bool isLeft,
-      bool checked) {
+  Widget _btn(BuildContext context, String label, String themeKey) {
+    final bool isSelected = selectedTheme == themeKey;
     return InkWell(
       borderRadius: BorderRadius.circular(Dimensions.radius),
-      onTap: onTap,
+      onTap: () {
+        setState(() {
+          selectedTheme = themeKey;
+
+          // Update your controller if needed:
+          if (themeKey == 'buyer') {
+            Get.find<UpdateProfileController>().typeIsBuyer.value = true;
+          } else if (themeKey == 'seller') {
+            Get.find<UpdateProfileController>().typeIsBuyer.value = false;
+          }
+          // You can add delivery related controller updates here if you want
+
+          // Switch theme globally
+          Themes().changeUserTheme(themeKey);
+
+          // Call optional callback with selected theme key
+          widget.onTap?.call(themeKey);
+        });
+      },
       child: Container(
         alignment: Alignment.center,
-        height: Dimensions.buttonHeight * .9,
-        width: Dimensions.widthSize * 8.5,
+        height: Dimensions.buttonHeight * 0.9,
+        width: Dimensions.widthSize * 6,
+        margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-            color: checked
-                ? Theme.of(context).primaryColor
-                : widget.isScaffold ? Theme.of(context).scaffoldBackgroundColor: CustomColor.whiteColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Radius.circular(isLeft ? 0 : Dimensions.radius): Radius.circular(isLeft ? Dimensions.radius : 0),
-              topRight: Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Radius.circular(isLeft ? Dimensions.radius : 0): Radius.circular(isLeft ? 0 : Dimensions.radius),
-              bottomLeft: Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Radius.circular(isLeft ? 0 : Dimensions.radius): Radius.circular(isLeft ? Dimensions.radius : 0),
-              bottomRight: Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Radius.circular(isLeft ? Dimensions.radius : 0): Radius.circular(isLeft ? 0 : Dimensions.radius),
-            )),
+          color: isSelected
+              ? Theme.of(context).primaryColor
+              : widget.isScaffold
+              ? Theme.of(context).scaffoldBackgroundColor
+              : CustomColor.whiteColor,
+          borderRadius: BorderRadius.circular(Dimensions.radius),
+          border: Border.all(
+            color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade300,
+          ),
+        ),
         child: TitleHeading3Widget(
-          text: text,
-          fontSize: Dimensions.headingTextSize3 * .85,
-          color: checked ? CustomColor.whiteColor : null,
-          opacity: checked ? 1 : .4,
+          text: label,
+          fontSize: Dimensions.headingTextSize3 * 0.85,
+          color: isSelected ? CustomColor.whiteColor : null,
+          opacity: isSelected ? 1 : 0.6,
         ),
       ),
     );

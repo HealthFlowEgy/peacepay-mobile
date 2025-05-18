@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import 'backend/backend_utils/network_check/dependency_injection.dart';
 import 'backend/utils/maintenance/maintenance_dialog.dart';
@@ -14,7 +15,6 @@ void main() async {
   // Locking Device Orientation
   WidgetsFlutterBinding.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
-
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -22,23 +22,36 @@ void main() async {
 
   InternetCheckDependencyInjection.init();
   // main app
-  runApp(const MyApp());
+
+  await GetStorage.init();
+  final savedTheme = Themes().savedUserTheme;
+  runApp(MyApp(savedTheme: savedTheme));
 }
 
 // This widget is the root of your application.
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String savedTheme;
+  const MyApp({super.key, required this.savedTheme});
+
 
   @override
   Widget build(BuildContext context) {
+    ThemeData initialTheme;
+    if (savedTheme == 'buyer') {
+      initialTheme = Themes.buyer;
+    } else if (savedTheme == 'seller') {
+      initialTheme = Themes.seller;
+    } else {
+      initialTheme = Themes.delivery;
+    }
     return ScreenUtilInit(
       designSize: const Size(414, 896),
       builder: (_, child) => GetMaterialApp(
         title: Strings.appName,
         debugShowCheckedModeBanner: false,
-        theme: Themes.light,
-        darkTheme: Themes.dark,
-        themeMode: Themes().theme,
+        theme: initialTheme,
+        // darkTheme: Themes.dark,
+        // themeMode:  themes.themeMode,
         navigatorKey: Get.key,
         initialRoute: Routes.splashScreen,
         getPages: Routes.list,

@@ -60,11 +60,19 @@ class ProfileScreen extends GetView<ProfileController> {
                       begin: const Offset(-16, 0), curve: Curves.easeOutQuad),
                   verticalSpace(Dimensions.marginSizeVertical * .5),
                   SwitchButtonWidget(
-                    onTap: (bool value) async{
-                      debugPrint(value.toString());
-                        await Get.find<UpdateProfileController>().profileSwitch();
+                    onTap: (selectedThemeKey,)async {
+                      print('Selected theme: $selectedThemeKey');
+                      // debugPrint(value.toString());
+                      await Get.find<UpdateProfileController>().profileSwitch();
+                      // Additional logic if needed
                     },
                   ),
+                  // SwitchButtonWidget(
+                  //   onTap: (bool value) async{
+                  //     debugPrint(value.toString());
+                  //       await Get.find<UpdateProfileController>().profileSwitch();
+                  //   },
+                  // ),
                   verticalSpace(Dimensions.marginSizeVertical * .8),
                 ],
               ))
