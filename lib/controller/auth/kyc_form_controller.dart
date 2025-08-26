@@ -29,6 +29,7 @@ class KYCFormController extends GetxController with KycApiService{
                     onOkayTap: (){
                       LocalStorage.isLoginSuccess(isLoggedIn: true);
                       Get.offAllNamed(Routes.dashboardScreen);
+
                     }
                   ))));
       }

@@ -39,6 +39,7 @@ class EscrowDatum {
   final String totalCharge;
   final String chargePayer;
   final dynamic remarks;
+  final dynamic pin_code;
   final List<Attachment>? attachments;
   final int status;
   final DateTime createdAt;
@@ -55,6 +56,7 @@ class EscrowDatum {
     required this.totalCharge,
     required this.chargePayer,
     required this.remarks,
+    required this.pin_code,
     required this.attachments,
     required this.status,
     required this.createdAt,
@@ -72,6 +74,7 @@ class EscrowDatum {
     totalCharge: json["total_charge"],
     chargePayer: json["charge_payer"],
     remarks: json["remarks"] ?? "",
+    pin_code: json["pin_code"],
     attachments: List<Attachment>.from(json["attachments"].map((x) => Attachment.fromJson(x)) ?? []),
     status: json["status"],
     createdAt: DateTime.parse(json["created_at"]),

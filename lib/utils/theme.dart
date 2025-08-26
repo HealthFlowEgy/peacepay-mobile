@@ -40,9 +40,9 @@ class Themes {
   static final seller = ThemeData(
     useMaterial3: true,
     primaryColor: CustomColor.primaryDarkColor,
-    scaffoldBackgroundColor: CustomColor.primaryDarkScaffoldBackgroundColor,
-    brightness: Brightness.dark,
-    textTheme: ThemeData.dark().textTheme.apply(
+    scaffoldBackgroundColor: CustomColor.primaryLightScaffoldBackgroundColor,
+    brightness: Brightness.light,
+    textTheme: ThemeData.light().textTheme.apply(
       fontFamily: GoogleFonts.inter().fontFamily,
     ),
     // add more styling if needed

@@ -3,9 +3,10 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../utils/basic_widget_imports.dart';
 
 class PinCodeWidget extends StatelessWidget {
-  const PinCodeWidget({super.key, required this.textController});
+  const PinCodeWidget({super.key, required this.textController, this.mobileController});
 
   final TextEditingController textController;
+  final String? mobileController;
 
   @override
   Widget build(BuildContext context) {

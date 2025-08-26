@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../controller/dashboard/dashboard_controller.dart';
+import '../../controller/dashboard/profiles/update_profile_controller.dart';
 import '../../language/language_drop_down.dart';
 import '../../utils/svg_assets.dart';
 import '../../widgets/appbar/dashboard_appbar.dart';
@@ -97,17 +98,22 @@ class DashboardScreen extends GetView<DashboardController> {
                       ),
                     ),
                     Visibility(
-                      visible: controller.selectedIndex.value == 1,
+                      visible: controller.selectedIndex.value == 0 && Get.find<UpdateProfileController>().selectedUserType.value=='seller',
                       child: IconButton(
                         onPressed: controller.addNewEscrowRoute,
                         icon: Animate(
                           effects: const [FadeEffect(), ScaleEffect()],
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Theme.of(context).primaryColor),
-                              child: const Icon(Icons.add,
-                                  color: CustomColor.whiteColor)),
+                          child: Column(
+                            children: [
+                              Container(
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Theme.of(context).primaryColor),
+                                  child: const Icon(Icons.add,
+                                      color: CustomColor.whiteColor)),
+                              // Text(Strings.addNewEscrow),
+                            ],
+                          ),
                         ),
                       ),
                     ),

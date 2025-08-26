@@ -5,7 +5,9 @@ import 'package:adescrow_app/utils/responsive_layout.dart';
 import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
 
 import '../../../../backend/models/escrow/escrow_create_model.dart';
+import '../../../../backend/models/escrow/userPolicyModel.dart';
 import '../../../../controller/dashboard/my_escrows/add_new_escrow_controller.dart';
+import '../../../../controller/dashboard/profiles/update_profile_controller.dart';
 import '../../../../language/language_controller.dart';
 import '../../../../widgets/custom_dropdown_widget/custom_dropdown_widget.dart';
 import '../../../../widgets/others/custom_upload_file_widget.dart';
@@ -19,18 +21,19 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
     return SafeArea(
       child: ResponsiveLayout(
         mobileScaffold: Scaffold(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            appBar: const PrimaryAppBar(
-              title: Strings.addNewEscrow,
-            ),
-            body: Obx(() => controller.isLoading
-                ? const CustomLoadingWidget()
-                : _bodyWidget(context))),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: const PrimaryAppBar(
+            title: Strings.addNewEscrow,
+          ),
+          body: Obx(() => controller.isLoading
+              ? const CustomLoadingWidget()
+              : _bodyWidget(context)),
+        ),
       ),
     );
   }
 
-  _bodyWidget(BuildContext context) {
+  Widget _bodyWidget(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(
@@ -39,11 +42,12 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
         right: Dimensions.paddingSizeHorizontal * .8,
       ),
       decoration: BoxDecoration(
-          color: CustomColor.whiteColor,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(Dimensions.radius * 3),
-            topRight: Radius.circular(Dimensions.radius * 3),
-          )),
+        color: CustomColor.whiteColor,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(Dimensions.radius * 3),
+          topRight: Radius.circular(Dimensions.radius * 3),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -53,35 +57,38 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
             fontSize: Dimensions.headingTextSize2 * .85,
           ),
           verticalSpace(Dimensions.marginSizeVertical * .5),
-          Expanded(child: ListView(
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            children: [
-              _inputWidget(context),
-              verticalSpace(Dimensions.marginBetweenInputBox * 1),
-              Obx(() => controller.isSubmitLoading
-                  ? const CustomLoadingWidget()
-                  : PrimaryButton(
-                      title: Strings.addNewEscrow,
-                      onPressed: controller.onAddNewEscrowProcess,
-                    )),
-              verticalSpace(Dimensions.paddingSizeVertical * 1.5),
-            ],
-          )),
+          Expanded(
+            child: ListView(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              children: [
+                _inputWidget(context),
+                verticalSpace(Dimensions.marginBetweenInputBox * 1),
+                Obx(() => controller.isSubmitLoading
+                    ? const CustomLoadingWidget()
+                    : PrimaryButton(
+                  title: Strings.addNewEscrow,
+                  onPressed: controller.onAddNewEscrowProcess,
+                )),
+                verticalSpace(Dimensions.paddingSizeVertical * 1.5),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  _inputWidget(BuildContext context) {
+  Widget _inputWidget(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: Dimensions.paddingSizeHorizontal * .7,
         vertical: Dimensions.paddingSizeVertical * .7,
       ),
       decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(Dimensions.radius * 1.5)),
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(Dimensions.radius * 1.5),
+      ),
       child: Form(
         key: controller.formKey,
         child: Column(
@@ -92,13 +99,27 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
               labelText: Strings.title,
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
-            _categoryDropDown(context),
-            _myRoleDropDown(context),
-            _payByDropDown(context),
+
+            // ✅ FIXED widget return here
+            _userPolicyDropDown(context),
+            verticalSpace(Dimensions.paddingSizeVertical * 0.8),
+            Obx(() {
+              final policy = controller.selectedPolicy.value;
+              if (policy != null &&
+                  policy.fields?.hasAdvancedPayment == "1") {
+                return PrimaryTextInputWidget(
+                  controller: controller.policyController,
+                  labelText: "Advanced Payment amount",
+                  hint: "0.00",
+                );
+              }
+              return const SizedBox.shrink();
+            }),
+            verticalSpace(Dimensions.paddingSizeVertical * 0.8),
             PrimaryTextInputWidget(
               controller: controller.emailController,
-              labelText: Strings.userNameOrEmail,
-              onChanged: (value) async{
+              labelText: Strings.phoneNumber,
+              onChanged: (value) async {
                 await controller.escrowUserCheck(value);
               },
               suffixIcon: Obx(() => Visibility(
@@ -111,22 +132,20 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
                       height: Dimensions.inputBoxHeight * .77,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                          color: controller.isValidUser.value
-                              ? Theme.of(context).primaryColor.withOpacity(.3)
-                              : Colors.red.withOpacity(.3),
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? 0: Dimensions.radius * .5),
-                            topLeft: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Dimensions.radius * .5: 0),
-                            bottomRight: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? 0: Dimensions.radius * .5),
-                            bottomLeft: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Dimensions.radius * .5: 0),
-                          )),
+                        color: controller.isValidUser.value
+                            ? Theme.of(context)
+                            .primaryColor
+                            .withOpacity(.3)
+                            : Colors.red.withOpacity(.3),
+                        borderRadius: BorderRadius.circular(Dimensions.radius * .5),
+                      ),
                       child: TitleHeading5Widget(
                         text: controller.isValidUser.value
                             ? Strings.validUser
                             : Strings.invalidUser,
                         padding: EdgeInsets.symmetric(
-                          horizontal: Dimensions.paddingSizeHorizontal * .35
-                        ),
+                            horizontal:
+                            Dimensions.paddingSizeHorizontal * .35),
                         color: controller.isValidUser.value
                             ? Theme.of(context).primaryColor
                             : Colors.red,
@@ -137,6 +156,7 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
               )),
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
+
             PrimaryTextInputWidget(
               controller: controller.amountController,
               labelText: Strings.amount.tr,
@@ -146,16 +166,30 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
                 margin: EdgeInsets.zero,
                 width: Dimensions.widthSize * 9.5,
                 decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? 0: Dimensions.radius * .5),
-                      topLeft: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Dimensions.radius * .5: 0),
-                      bottomRight: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? 0: Dimensions.radius * .5),
-                      bottomLeft: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Dimensions.radius * .5: 0),
-                    )),
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(Dimensions.radius * .5),
+                ),
                 child: _currencyDropDown(context),
               ),
             ),
+
+            verticalSpace(Dimensions.marginBetweenInputBox * .8),
+            PrimaryTextInputWidget(
+              controller: controller.fieldDeliveryFeeAmount,
+              labelText: 'DeliveryFeeAmount',
+              hint: "0.00",
+              suffixIcon: Container(
+                padding: EdgeInsets.zero,
+                margin: EdgeInsets.zero,
+                width: Dimensions.widthSize * 9.5,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(Dimensions.radius * .5),
+                ),
+                child: _currencyDropDown(context),
+              ),
+            ),
+
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
             PrimaryTextInputWidget(
               controller: controller.remarksController,
@@ -163,8 +197,8 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
               hint: Strings.writeHere.tr,
               optional: Strings.optional,
               maxLine: 4,
-
             ),
+
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
             CustomUploadFileWidget(
               labelText: Strings.attachments,
@@ -183,164 +217,103 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
     );
   }
 
-  _categoryDropDown(BuildContext context) {
-    return Column(
-      children: [
-        Obx(() => CustomDropDown<EscrowCategory>(
-              items: controller.escrowIndexModel.data.escrowCategories,
-              title: Strings.category,
-              hint: controller.selectedCategory.value.isEmpty
-                  ? Strings.selectIDType
-                  : controller.selectedCategory.value,
-              onChanged: (value) {
-                controller.selectedCategory.value = value!.title;
-                controller.selectedCategoryId.value = value.id;
-              },
-              padding: EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeHorizontal * 0.25,
-              ),
-              titleTextColor: controller.selectedCategory.value.isEmpty
-                  ? CustomColor.primaryLightTextColor.withOpacity(.2)
-                  : Theme.of(context).primaryColor,
-              dropDownColor: Theme.of(context).scaffoldBackgroundColor,
-              borderEnable: true,
-              dropDownFieldColor: Colors.transparent,
-              dropDownIconColor: controller.selectedCategory.value.isEmpty
-                  ? CustomColor.primaryLightTextColor.withOpacity(.2)
-                  : Theme.of(context).primaryColor,
-              border: Border.all(
-                color: Theme.of(context).primaryColor.withOpacity(.2),
-                width: 1.5,
-              ),
-            )),
-        verticalSpace(Dimensions.marginBetweenInputBox * .8),
-      ],
-    );
+  /// ✅ FIXED: always returns a Widget now
+  Widget _userPolicyDropDown(BuildContext context) {
+    final policies = controller.userPolicy;
+
+    final hasAdvancedPolicy = policies.any((policy) =>
+    policy.fields?.hasAdvancedPayment == "1");
+
+    if (policies.isEmpty || !hasAdvancedPolicy) {
+      return const SizedBox(); // Always return a widget
+    }
+
+    return Obx(() => CustomDropDown<PolicyData>(
+      items: policies,
+      title: 'Policy',
+      hint:
+      controller.selectedPolicy.value?.name ?? Strings.selectIDType,
+      onChanged: (PolicyData? value) {
+        controller.selectedPolicy.value = value;
+        controller.selectedPolicyId.value = value?.mId ?? 0;
+      },
+      // itemAsString: (PolicyData p) => p.name ?? '',
+      padding: EdgeInsets.symmetric(
+        horizontal: Dimensions.paddingSizeHorizontal * 0.25,
+      ),
+      titleTextColor: controller.selectedPolicy.value == null
+          ? CustomColor.primaryLightTextColor.withOpacity(.2)
+          : Theme.of(context).primaryColor,
+      dropDownColor: Theme.of(context).scaffoldBackgroundColor,
+      borderEnable: true,
+      dropDownFieldColor: Colors.transparent,
+      dropDownIconColor: controller.selectedPolicy.value == null
+          ? CustomColor.primaryLightTextColor.withOpacity(.2)
+          : Theme.of(context).primaryColor,
+      border: Border.all(
+        color: Theme.of(context).primaryColor.withOpacity(.2),
+        width: 1.5,
+      ),
+    ));
   }
 
-  _myRoleDropDown(BuildContext context) {
-    return Column(
-      children: [
-        Obx(() => CustomDropDown<EscrowStaticModel>(
-              items: controller.myRoleList,
-              title: Strings.myRole,
-              hint: controller.selectedMyRole.value.isEmpty
-                  ? Strings.selectMyRole
-                  : controller.selectedMyRole.value,
-              onChanged: (value) {
-                controller.selectedMyRole.value = value!.title;
-                controller.selectedOppositeRole.value = value.title == "Buyer" ? "Seller" : "Buyer";
-              },
-              padding: EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeHorizontal * 0.25,
-              ),
-              titleTextColor: Theme.of(context).primaryColor,
-              dropDownColor: Theme.of(context).scaffoldBackgroundColor,
-              borderEnable: true,
-              dropDownFieldColor: Colors.transparent,
-              dropDownIconColor: Theme.of(context).primaryColor,
-              border: Border.all(
-                color: Theme.of(context).primaryColor.withOpacity(.2),
-                width: 1.5,
-              ),
-            )),
-        verticalSpace(Dimensions.marginBetweenInputBox * .8),
-      ],
-    );
-  }
+  Widget _payWithDropDown(BuildContext context) {
 
-  _payByDropDown(BuildContext context) {
-    return Column(
-      children: [
-        Obx(() => CustomDropDown<EscrowStaticModel>(
-              items: controller.payByList,
-              title: Strings.whoWillPayTheFees,
-              customTitle: controller.selectedOppositeRole.value,
-              hint: controller.selectedPayBy.value.isEmpty
-                  ? controller.selectedOppositeRole.value
-                  : controller.selectedPayBy.value,
-              onChanged: (value) {
-                controller.selectedPayBy.value = value!.title;
-              },
-              padding: EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeHorizontal * 0.25,
-              ),
-              titleTextColor: Theme.of(context).primaryColor,
-              dropDownColor: Theme.of(context).scaffoldBackgroundColor,
-              borderEnable: true,
-              dropDownFieldColor: Colors.transparent,
-              dropDownIconColor: Theme.of(context).primaryColor,
-              border: Border.all(
-                color: Theme.of(context).primaryColor.withOpacity(.2),
-                width: 1.5,
-              ),
-            )),
-        verticalSpace(Dimensions.marginBetweenInputBox * .8),
-      ],
-    );
-  }
-
-  _payWithDropDown(BuildContext context) {
     return Obx(() => Visibility(
-          visible: controller.selectedMyRole.value == "Buyer",
-          child: CustomDropDown<GatewayCurrency>(
-            margin: const EdgeInsets.symmetric(
-              horizontal: 0
-            ),
-            items: controller.selectedPaymentList,
-            title: Strings.payWith,
-            customTitle:
-                "My Wallet: ${controller.selectedCurrencyBalance} ${controller.selectedCurrency}",
-            hint: controller.selectedPaymentMethod.value.isEmpty
-                ? "My Wallet: ${controller.selectedCurrencyBalance} ${controller.selectedCurrency}"
-                : controller.selectedPaymentMethod.value,
-            onChanged: (value) {
-              controller.selectedPaymentMethod.value = value!.title;
-              controller.selectedPaymentMethodAlias.value = value.alias;
-              controller.selectedPaymentMethodId.value = value.id;
-              controller.selectedPaymentMethodTypeId.value = value.mcode;
-              controller.selectedPaymentMethodType.value = value.type;
-            },
-            padding: EdgeInsets.symmetric(
-              horizontal: Dimensions.paddingSizeHorizontal * 0,
-            ),
-            titleTextColor: Theme.of(context).primaryColor,
-            dropDownColor: Theme.of(context).scaffoldBackgroundColor,
-            borderEnable: true,
-            dropDownFieldColor: Colors.transparent,
-            dropDownIconColor: Theme.of(context).primaryColor,
-            border: Border.all(
-              color: Theme.of(context).primaryColor.withOpacity(.2),
-              width: 1.5,
-            ),
-          ),
-        ));
+      // visible: controller.selectedMyRole.value == "Buyer",
+      visible: Get.find<UpdateProfileController>().selectedUserType.value == "Buyer",
+      child: CustomDropDown<GatewayCurrency>(
+        margin: const EdgeInsets.symmetric(horizontal: 0),
+        items: controller.selectedPaymentList,
+        title: Strings.payWith,
+        customTitle:
+        "My Wallet: ${controller.selectedCurrencyBalance} ${controller.selectedCurrency}",
+        hint: controller.selectedPaymentMethod.value.isEmpty
+            ? "My Wallet: ${controller.selectedCurrencyBalance} ${controller.selectedCurrency}"
+            : controller.selectedPaymentMethod.value,
+        onChanged: (value) {
+          controller.selectedPaymentMethod.value = value!.title;
+          controller.selectedPaymentMethodAlias.value = value.alias;
+          controller.selectedPaymentMethodId.value = value.id;
+          controller.selectedPaymentMethodTypeId.value = value.mcode;
+          controller.selectedPaymentMethodType.value = value.type;
+        },
+        padding: const EdgeInsets.symmetric(horizontal: 0),
+        titleTextColor: Theme.of(context).primaryColor,
+        dropDownColor: Theme.of(context).scaffoldBackgroundColor,
+        borderEnable: true,
+        dropDownFieldColor: Colors.transparent,
+        dropDownIconColor: Theme.of(context).primaryColor,
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withOpacity(.2),
+          width: 1.5,
+        ),
+      ),
+    ));
   }
 
-  _currencyDropDown(BuildContext context) {
+  Widget _currencyDropDown(BuildContext context) {
     return Obx(() => CustomDropDown<UserWallet>(
-          items: controller.escrowIndexModel.data.userWallet,
-          hint: controller.selectedCurrency.value,
-          onChanged: (value) {
-            controller.selectedCurrency.value = value!.title;
-            controller.selectedCurrencyType.value = value.type;
-            controller.selectedCurrencyBalance.value =
-                value.max.toStringAsFixed(value.type == "FIAT" ? 2 : 6);
-          },
+      items: controller.escrowIndexModel.data.userWallet,
+      hint: controller.selectedCurrency.value,
+      onChanged: (value) {
+        controller.selectedCurrency.value = value!.title;
+        controller.selectedCurrencyType.value = value.type;
+        controller.selectedCurrencyBalance.value =
+            value.max.toStringAsFixed(
+                value.type == "FIAT" ? 2 : 6);
+      },
       margin: EdgeInsets.zero,
-          padding: EdgeInsets.symmetric(
-            horizontal: Dimensions.paddingSizeHorizontal * 0,
-            vertical: 0
-          ),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       isCurrencyDropDown: true,
-          titleTextColor: CustomColor.whiteColor,
-          dropDownColor: Theme.of(context).primaryColor,
-          borderEnable: true,
-          dropDownFieldColor: Theme.of(context).primaryColor,
-          dropDownIconColor: CustomColor.whiteColor,
-          border: Border.all(
-            color: Theme.of(context).primaryColor,
-          ),
-        ));
+      titleTextColor: CustomColor.whiteColor,
+      dropDownColor: Theme.of(context).primaryColor,
+      borderEnable: true,
+      dropDownFieldColor: Theme.of(context).primaryColor,
+      dropDownIconColor: CustomColor.whiteColor,
+      border: Border.all(
+        color: Theme.of(context).primaryColor,
+      ),
+    ));
   }
 }

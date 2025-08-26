@@ -5,7 +5,6 @@ import '../../controller/dashboard/profiles/update_profile_controller.dart';
 import '../../language/language_controller.dart';
 import '../../utils/basic_widget_imports.dart';
 import '../../utils/theme.dart';
-
 class SwitchButtonWidget extends StatefulWidget {
   const SwitchButtonWidget({
     super.key,
@@ -13,7 +12,7 @@ class SwitchButtonWidget extends StatefulWidget {
     this.isScaffold = false,
   });
 
-  final Function(String)? onTap; // returns 'buyer', 'seller' or 'delivery'
+  final Function(String)? onTap; // returns 'buyer', 'seller', or 'delivery'
   final bool isScaffold;
 
   @override
@@ -21,10 +20,13 @@ class SwitchButtonWidget extends StatefulWidget {
 }
 
 class _SwitchButtonWidgetState extends State<SwitchButtonWidget> {
-  // Track selected theme, default to 'buyer' or read from controller if needed
-  String selectedTheme = Get.find<UpdateProfileController>().typeIsBuyer.value ? 'buyer' : 'seller';
+  late String selectedTheme;
 
-  // You can add delivery default if needed
+  @override
+  void initState() {
+    super.initState();
+    selectedTheme = Get.find<UpdateProfileController>().selectedUserType.value;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,19 +48,16 @@ class _SwitchButtonWidgetState extends State<SwitchButtonWidget> {
         setState(() {
           selectedTheme = themeKey;
 
-          // Update your controller if needed:
-          if (themeKey == 'buyer') {
-            Get.find<UpdateProfileController>().typeIsBuyer.value = true;
-          } else if (themeKey == 'seller') {
-            Get.find<UpdateProfileController>().typeIsBuyer.value = false;
-          }
-          // You can add delivery related controller updates here if you want
+          // Update controller state
+          Get.find<UpdateProfileController>().selectedUserType.value = themeKey;
 
           // Switch theme globally
           Themes().changeUserTheme(themeKey);
 
-          // Call optional callback with selected theme key
+          // Optional callback
           widget.onTap?.call(themeKey);
+          Get.find<UpdateProfileController>().setUserType(themeKey);
+
         });
       },
       child: Container(
@@ -74,7 +73,9 @@ class _SwitchButtonWidgetState extends State<SwitchButtonWidget> {
               : CustomColor.whiteColor,
           borderRadius: BorderRadius.circular(Dimensions.radius),
           border: Border.all(
-            color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade300,
+            color: isSelected
+                ? Theme.of(context).primaryColor
+                : Colors.grey.shade300,
           ),
         ),
         child: TitleHeading3Widget(

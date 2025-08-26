@@ -20,6 +20,7 @@ class Routes {
   static const String kycFormScreen = '/kycFormScreen';
 
   static const String dashboardScreen = '/dashboardScreen';
+  static const String createPINScreen = '/createPINScreen';
   static const String notificationScreen = '/notificationScreen';
 
   static const String conversationScreen = '/conversationScreen';
@@ -33,6 +34,7 @@ class Routes {
 
   
   static const String currentBalanceScreen = '/currentBalanceScreen';
+  static const String homeScreen = '/homeScreen';
 
   static const String addMoneyScreen = '/addMoneyScreen';
   static const String addMoneyManualScreen = '/addMoneyManualScreen';

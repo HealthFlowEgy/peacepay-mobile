@@ -51,13 +51,13 @@ class LoginScreen extends GetView<LoginController> {
           physics: const BouncingScrollPhysics(),
           children: [
             // title subtitle
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: const TitleSubTitleWidget(
-                title: Strings.loginTitle,
-                subTitle: Strings.loginSubTitle,
-              ),
-            ),
+            // SizedBox(
+            //   width: MediaQuery.of(context).size.width,
+            //   child: const TitleSubTitleWidget(
+            //     title: Strings.loginTitle,
+            //     subTitle: Strings.loginSubTitle,
+            //   ),
+            // ),
             // inputs widgets
             _inputWidget(context),
 
@@ -74,19 +74,19 @@ class LoginScreen extends GetView<LoginController> {
             verticalSpace(Dimensions.paddingSizeVertical * 1.2),
 
             //register button
-            SecondaryButton(
-              text: Strings.register,
-              onTap: controller.goToRegisterScreen,
-            ),
+            // SecondaryButton(
+            //   text: Strings.register,
+            //   onTap: controller.goToRegisterScreen,
+            // ),
 
             verticalSpace(Dimensions.paddingSizeVertical * .3),
 
-            const TitleHeading5Widget(
-              text: Strings.dontHaveAnAccount,
-              fontWeight: FontWeight.w500,
-              textAlign: TextAlign.center,
-              opacity: .4,
-            ),
+            // const TitleHeading5Widget(
+            //   text: Strings.dontHaveAnAccount,
+            //   fontWeight: FontWeight.w500,
+            //   textAlign: TextAlign.center,
+            //   opacity: .4,
+            // ),
 
             verticalSpace(Dimensions.paddingSizeVertical * 1),
           ],
@@ -112,27 +112,31 @@ class LoginScreen extends GetView<LoginController> {
         key: controller.formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
+
           children: [
+            verticalSpace(Dimensions.marginBetweenInputBox * .9),
             PrimaryTextInputWidget(
               controller: controller.emailController,
-              labelText: Strings.emailAddress,
+              labelText: Strings.phoneNumber,
+              maxLength: 11,
+              keyboardType: TextInputType.phone,
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
-            PasswordInputWidget(
-              controller: controller.passwordController,
-              hintText: Strings.password,
-            ),
+            // PasswordInputWidget(
+            //   controller: controller.passwordController,
+            //   hintText: Strings.password,
+            // ),
             verticalSpace(Dimensions.marginBetweenInputBox * .3),
-            InkWell(
-              onTap: () {
-                _showDialog(context);
-              },
-              child: TitleHeading5Widget(
-                text: Strings.forgotPassword,
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).primaryColor,
-              ),
-            )
+            // InkWell(
+            //   onTap: () {
+            //     _showDialog(context);
+            //   },
+            //   child: TitleHeading5Widget(
+            //     text: Strings.forgotPassword,
+            //     fontWeight: FontWeight.w500,
+            //     color: Theme.of(context).primaryColor,
+            //   ),
+            // )
           ],
         ),
       ),
@@ -176,7 +180,9 @@ class LoginScreen extends GetView<LoginController> {
                       verticalSpace(Dimensions.marginSizeVertical * .5),
                       PrimaryTextInputWidget(
                         controller: controller.forgotEmailController,
-                        labelText: Strings.emailAddress,
+                        labelText: Strings.phoneNumber,
+                        maxLength: 11,
+                        keyboardType: TextInputType.phone,
                       ),
                       verticalSpace(Dimensions.marginSizeVertical * .5),
                       Obx(() => controller.isForgotLoading ? const CustomLoadingWidget(): PrimaryButton(

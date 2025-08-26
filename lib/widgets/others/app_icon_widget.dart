@@ -23,7 +23,7 @@ class AppIconWidget extends StatelessWidget {
           Obx(() => Get.find<BasicSettingsController>().isLoading ? const CustomLoadingWidget(): CustomCachedNetworkImage(
             imageUrl: Get.find<BasicSettingsController>().appIconLink,
             height: height ?? 80,
-            width: width,
+            width: width ?? 100.w,
               radius: 0,
               isCircle: false
           )),

@@ -34,15 +34,20 @@ mixin ProfileApiService {
   }
 
   //! profile switch
-  Future<CommonSuccessModel?> profileSwitchApi() async {
+  Future<CommonSuccessModel?> profileSwitchApi(String userType) async {
     Map<String, dynamic>? mapResponse;
     try {
+      final url = "${ApiEndpoint.profileTypeUpdateURL}"
+          "?lang=${languageSettingsController.selectedLanguage.value}"
+          "&user_type=$userType"; // <--- add user_type here
+
       mapResponse = await ApiMethod(isBasic: false).get(
-        "${ApiEndpoint.profileTypeUpdateURL}?lang=${languageSettingsController.selectedLanguage.value}",
+        url,
         code: 200,
         duration: 15,
         showResult: true,
       );
+
       if (mapResponse != null) {
         CommonSuccessModel model = CommonSuccessModel.fromJson(mapResponse);
         CustomSnackBar.success(model.message!.success!.first.toString());
@@ -55,6 +60,7 @@ mixin ProfileApiService {
     }
     return null;
   }
+
 
 // !  profile update Api method no image
   Future<CommonSuccessModel?> updateProfileWithoutImageApi(

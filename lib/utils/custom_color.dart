@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomColor {
-  static const Color primaryDarkColor = Color(0xFF8358FF);
+  static const Color primaryDarkColor = Color(0xFF072D8E);
   static const Color secondaryDarkColor = Color(0xFF0D102F);
   static const Color primaryBGDarkColor = Color(0xFF0D102F);
   static const Color primaryDarkScaffoldBackgroundColor = Color(0xFF0D102F);
@@ -9,7 +9,7 @@ class CustomColor {
   static const Color secondaryDarkTextColor = Color(0xFF1E9FF2);
 
   /// only set light app
-  static const Color primaryLightColor = Color(0xFF44A08D);  // **
+  static const Color primaryLightColor = Color(0xFF0DA9EC);  // **
   static const Color secondaryLightColor = Color(0xFFFFFFFF);  // **
   static const Color primaryBGLightColor = Color(0xFF2B2A29);  //  **
   static const Color drawerBGLightColor = Color(0xFFF4F6FC);  //  **

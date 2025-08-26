@@ -3,13 +3,15 @@ import 'package:adescrow_app/utils/responsive_layout.dart';
 import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
 
 import '../../../controller/auth/register_otp_controller.dart';
+import '../../../routes/routes.dart';
 import '../../../widgets/buttons/secondary_button.dart';
 import '../../../widgets/inputs/pin_code_widget2.dart';
 import '../../../widgets/others/app_icon_widget.dart';
 import '../../../widgets/text_labels/title_sub_title_widget.dart';
 
 class RegisterOTPScreen extends GetView<RegisterOTPController> {
-  const RegisterOTPScreen({super.key});
+  final dynamic mobileNumber ;
+  const RegisterOTPScreen({super.key, this.mobileNumber});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +90,10 @@ class RegisterOTPScreen extends GetView<RegisterOTPController> {
                   ? const CustomLoadingWidget()
                   : PrimaryButton(
                       title: Strings.submit,
-                      onPressed: controller.onOTPSubmitProcess,
+                      onPressed:(){
+                        controller.onOTPSubmitProcess(mobileNum: mobileNumber);
+
+                      },
                     )),
             ),
 
@@ -116,7 +121,9 @@ class RegisterOTPScreen extends GetView<RegisterOTPController> {
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(Dimensions.radius * 1.5)),
       child: PinCodeWidget(
+        mobileController: mobileNumber.toString(),
         textController: controller.pinController,
+
       ),
     );
   }

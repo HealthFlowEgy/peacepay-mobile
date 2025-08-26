@@ -53,7 +53,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         .profileModel
                         .data
                         .user
-                        .email,
+                        .mobile,
                     fontSize: Dimensions.headingTextSize3 * .9,
                     color: Theme.of(context).primaryColor,
                   ).animate().fadeIn(duration: 900.ms, delay: 300.ms).move(
@@ -61,9 +61,10 @@ class ProfileScreen extends GetView<ProfileController> {
                   verticalSpace(Dimensions.marginSizeVertical * .5),
                   SwitchButtonWidget(
                     onTap: (selectedThemeKey,)async {
-                      print('Selected theme: $selectedThemeKey');
                       // debugPrint(value.toString());
-                      await Get.find<UpdateProfileController>().profileSwitch();
+                      await Get.find<UpdateProfileController>().profileSwitch(
+                        selectedThemeKey
+                      );
                       // Additional logic if needed
                     },
                   ),

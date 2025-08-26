@@ -1,4 +1,5 @@
 import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../../backend/backend_utils/logger.dart';
 import '../../../backend/models/common/common_success_model.dart';
@@ -21,6 +22,8 @@ class UpdateProfileController extends GetxController with ProfileApiService{
   final addressController = TextEditingController();
 
   final typeIsBuyer = true.obs;
+  var selectedUserType = 'buyer'.obs;
+  final _storage = GetStorage();
 
   final code = "".obs;
   final country = "".obs;
@@ -36,9 +39,13 @@ class UpdateProfileController extends GetxController with ProfileApiService{
   @override
   void onInit() {
     profileDataFetch();
+    selectedUserType.value = _storage.read('selectedUserType') ?? 'buyer';
     super.onInit();
   }
-
+  void setUserType(String type) {
+    selectedUserType.value = type;
+    _storage.write('selectedUserType', type);
+  }
   final _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
 
@@ -81,19 +88,22 @@ class UpdateProfileController extends GetxController with ProfileApiService{
   }
 
 
- profileSwitch() async{
+  profileSwitch(String userType) async {
     _isLoading.value = true;
     update();
 
-    await profileSwitchApi().then((value) {
-
-      update();
-    }).catchError((onError) {
+    try {
+      await profileSwitchApi(userType).then((value) {
+        // Handle value if needed
+      });
+    } catch (onError) {
       log.e(onError);
-    });
+    }
+
     _isLoading.value = false;
     update();
   }
+
 
 
   late CommonSuccessModel _successModel;

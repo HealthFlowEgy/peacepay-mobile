@@ -138,6 +138,76 @@ class ApiMethod {
       return null;
     }
   }
+// PUT Method
+  Future<Map<String, dynamic>?> put(
+      String url,
+      Map<String, dynamic> body, {
+        int code = 200,
+        int duration = 30,
+        bool showResult = false,
+      }) async {
+    try {
+      log.i('|📍📍📍|-----------------[[ PUT ]] method details start -----------------|📍📍📍|');
+      log.i(url);
+      log.i(body);
+      log.i('|📍📍📍|-----------------[[ PUT ]] method details end -------------------|📍📍📍|');
+
+      final response = await http
+          .put(
+        Uri.parse(url),
+        body: jsonEncode(body),
+        headers: isBasic ? basicHeaderInfo() : await bearerHeaderInfo(),
+      )
+          .timeout(Duration(seconds: duration));
+
+      log.i('|📒📒📒|-----------------[[ PUT ]] method response start ------------------|📒📒📒|');
+      if (showResult) log.i(response.body);
+      log.i(response.statusCode);
+      log.i('|📒📒📒|-----------------[[ PUT ]] method response end --------------------|📒📒📒|');
+
+      bool isMaintenance = response.statusCode == 503;
+      _maintenanceCheck(isMaintenance, response.body);
+
+      if (response.statusCode == 401) {
+        LocalStorage.logout();
+      }
+
+      if (response.statusCode == 500) {
+        CustomSnackBar.error('Server error');
+      }
+
+      if (response.statusCode == code) {
+        return jsonDecode(response.body);
+      } else {
+        log.e('🐞🐞🐞 Error Alert On Status Code 🐞🐞🐞');
+        log.e('unknown error hitted in status code ${jsonDecode(response.body)}');
+        ErrorResponse res = ErrorResponse.fromJson(jsonDecode(response.body));
+
+        if (!isMaintenance) CustomSnackBar.error(res.message?.error?.join('') ?? 'Unknown error');
+
+        return null;
+      }
+    } on SocketException {
+      log.e('🐞🐞🐞 Error Alert on Socket Exception 🐞🐞🐞');
+      CustomSnackBar.error('Check your Internet Connection and try again!');
+      return null;
+    } on TimeoutException {
+      log.e('🐞🐞🐞 Error Alert Timeout Exception🐞🐞🐞');
+      log.e('Time out exception $url');
+      CustomSnackBar.error('Something Went Wrong! Try again');
+      return null;
+    } on http.ClientException catch (err, stacktrace) {
+      log.e('🐞🐞🐞 Error Alert Client Exception🐞🐞🐞');
+      log.e(err.toString());
+      log.e(stacktrace.toString());
+      return null;
+    } catch (e) {
+      log.e('🐞🐞🐞 Other Error Alert 🐞🐞🐞');
+      log.e('❌❌❌ unlisted error received');
+      log.e('❌❌❌ $e');
+      return null;
+    }
+  }
 
   // Post Method
   Future<Map<String, dynamic>?> post(String url, Map<String, dynamic> body,

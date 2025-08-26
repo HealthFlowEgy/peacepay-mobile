@@ -25,13 +25,12 @@ class OnboardScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: basicSettings.data.onboardScreen.isEmpty ? Container() : Stack(
           children: [
-
             Obx(() => CustomCachedNetworkImage(
               imageUrl: "${ApiEndpoint.mainDomain}/${basicSettings.data.imagePath}/${basicSettings.data.onboardScreen[basicController.selectedIndex.value].image}",
             )),
 
             Obx(() => Positioned(
-              bottom: 230,
+              bottom: 150.sp,
               width: MediaQuery.of(context).size.width,
               child: TitleSubTitleWidget(
                 title: basicSettings.data.onboardScreen[basicController.selectedIndex.value].title,
@@ -40,7 +39,7 @@ class OnboardScreen extends StatelessWidget {
             )),
 
             Positioned(
-              bottom: 150,
+              bottom: 100.sp,
               right: 0,
               left: 0,
               child: InkWell(
@@ -53,7 +52,8 @@ class OnboardScreen extends StatelessWidget {
                     }
                   },
                   child: Animate(
-                      effects: const [FadeEffect(), ScaleEffect()],child: SvgPicture.string(SVGAssets.circleButton))
+                      effects: const [FadeEffect(), ScaleEffect()],
+                      child: SvgPicture.string(SVGAssets.circleButton,color: Colors.blue,))
               ),
             )
           ],

@@ -1,3 +1,4 @@
+import 'package:adescrow_app/controller/dashboard/delivery/delivery_controller.dart';
 import 'package:get/get.dart';
 
 import '../controller/before_auth/basic_settings_controller.dart';
@@ -6,6 +7,7 @@ import '../controller/dashboard/btm_navs_controller/my_escrow_controller.dart';
 import '../controller/dashboard/btm_navs_controller/my_wallet_controller.dart';
 import '../controller/dashboard/btm_navs_controller/profile_controller.dart';
 import '../controller/dashboard/dashboard_controller.dart';
+import '../controller/dashboard/my_wallets/add_money_controller.dart';
 import '../controller/dashboard/notification_controller.dart';
 import '../controller/dashboard/profiles/change_password_controller.dart';
 import '../controller/dashboard/profiles/fa_security_controller.dart';
@@ -17,6 +19,7 @@ class DashboardBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(DashboardController());
+    Get.put(DeliveryController());
     Get.put(HomeController());
     Get.put(MyEscrowController());
     Get.put(MyWalletController());

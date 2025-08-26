@@ -18,6 +18,7 @@ class Data {
   final String baseUr;
   final User user;
   final List<Country> countries;
+  final Wallet wallet;
 
 
   Data({
@@ -26,6 +27,7 @@ class Data {
     required this.baseUr,
     required this.user,
     required this.countries,
+    required this.wallet,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -34,6 +36,22 @@ class Data {
     baseUr: json["base_ur"],
     user: User.fromJson(json["user"]),
     countries: List<Country>.from(json["countries"].map((x) => Country.fromJson(x))),
+    wallet: Wallet.fromJson(json["wallet"]),
+
+  );
+}
+class Wallet {
+  final double balance;
+  final String currencyCode;
+
+  Wallet({
+    required this.balance,
+    required this.currencyCode,
+  });
+
+  factory Wallet.fromJson(Map<String, dynamic> json) => Wallet(
+    balance: (json["balance"] as num).toDouble(),
+    currencyCode: json["currency_code"],
   );
 }
 

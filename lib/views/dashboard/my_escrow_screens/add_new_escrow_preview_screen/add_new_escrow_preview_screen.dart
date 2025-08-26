@@ -68,7 +68,7 @@ class AddNewEscrowPreviewScreen extends GetView<AddNewEscrowController> {
                         : Strings.confirm,
                     suffix: controller.selectedMyRole.value == "Buyer"
                         ? controller
-                            .escrowSubmitModel.data.escrowInformation.totalAmount
+                            .escrowSubmitModel.data.escrowInformation.totalAmount.toString()
                         : "",
                     onPressed: () => controller.onConfirmProcess(context),
                   )),
@@ -115,7 +115,7 @@ class AddNewEscrowPreviewScreen extends GetView<AddNewEscrowController> {
           _divider(),
           TextValueFormWidget(
             text: Strings.totalAmount,
-            currency: data.totalAmount,
+            currency: data.totalAmount.toString(),
           ),
           _divider(),
           TextValueFormWidget(
@@ -184,7 +184,7 @@ class AddNewEscrowPreviewScreen extends GetView<AddNewEscrowController> {
             child: TextValueFormWidget(
               text:
                   "${controller.selectedMyRole.value == "Buyer" ? "" : "${Strings.buyer} "}${Strings.willPay}",
-              currency: data.buyerAmount,
+              currency: data.buyerAmount.toString(),
             ),
           ),
         ],

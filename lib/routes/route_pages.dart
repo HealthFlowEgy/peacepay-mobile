@@ -1,5 +1,7 @@
 import 'package:adescrow_app/routes/routes.dart';
+import 'package:adescrow_app/views/auth/PIN/create-ConfirmPinScreen.dart';
 import 'package:adescrow_app/views/auth/fa_verify_screen/fa_verify_screen.dart';
+import 'package:adescrow_app/views/dashboard/btm_screens/home_screen.dart';
 import 'package:get/get.dart';
 
 import '../backend/backend_utils/network_check/no_internet_screen.dart';
@@ -119,6 +121,11 @@ class RoutePageList {
       binding: DashboardBinding(),
     ),
     GetPage(
+      name: Routes.createPINScreen,
+      page: () =>  CreateAndConfirmPinScreen(),
+      // binding: DashboardBinding(),
+    ),
+    GetPage(
       name: Routes.notificationScreen,
       page: () => const NotificationScreen(),
     ),
@@ -136,6 +143,7 @@ class RoutePageList {
     GetPage(
       name: Routes.addNewEscrowPreviewScreen,
       page: () => const AddNewEscrowPreviewScreen(),
+
     ),
     GetPage(
       name: Routes.escrowManualScreen,
@@ -165,7 +173,11 @@ class RoutePageList {
       page: () => CurrentBalanceScreen(),
       binding: CurrentBalanceBinding(),
     ),
-
+    GetPage(
+      name: Routes.homeScreen,
+      page: () => HomeScreen(),
+      binding: CurrentBalanceBinding(),
+    ),
     GetPage(
       name: Routes.addMoneyScreen,
       page: () => const AddMoneyScreen(),

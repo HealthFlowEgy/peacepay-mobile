@@ -48,18 +48,18 @@ class RegisterScreen extends GetView<RegisterController> {
           physics: const BouncingScrollPhysics(),
           children: [
             // title subtitle
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: const TitleSubTitleWidget(
-                title: Strings.registerTitle,
-                subTitle: Strings.registerSubTitle,
-              ),
-            ),
+            // SizedBox(
+            //   width: MediaQuery.of(context).size.width,
+            //   child: const TitleSubTitleWidget(
+            //     title: Strings.registerTitle,
+            //     subTitle: Strings.registerSubTitle,
+            //   ),
+            // ),
 
-            SwitchButtonBasicWidget(
-              isScaffold: true,
-              onTap: controller.switchValue,
-            ),
+            // SwitchButtonBasicWidget(
+            //   isScaffold: true,
+            //   onTap: controller.switchValue,
+            // ),
             // inputs widgets
             _inputWidget(context),
 
@@ -137,7 +137,9 @@ class RegisterScreen extends GetView<RegisterController> {
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
             PrimaryTextInputWidget(
               controller: controller.emailController,
-              labelText: Strings.emailAddress,
+              labelText: Strings.phoneNumber,
+              maxLength: 11,
+              keyboardType: TextInputType.phone,
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
             PasswordInputWidget(

@@ -1,5 +1,6 @@
 
 import 'package:adescrow_app/backend/local_storage/local_storage.dart';
+import 'package:adescrow_app/controller/auth/register_otp_controller.dart';
 
 import '../../backend/backend_utils/logger.dart';
 import '../../backend/models/auth/forgot_send_otp_model.dart';
@@ -7,6 +8,7 @@ import '../../backend/models/auth/login_model.dart';
 import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
 import '../../utils/basic_widget_imports.dart';
+import '../../views/auth/register_otp_screen/register_otp_screen.dart';
 import '../before_auth/basic_settings_controller.dart';
 
 
@@ -51,8 +53,8 @@ class LoginController extends GetxController{
     update();
 
     Map<String, dynamic> inputBody = {
-      'email': emailController.text,
-      'password': passwordController.text,
+      'mobile': emailController.text,
+      // 'password': passwordController.text,
     };
 
     await ApiServices.signInApi(body: inputBody).then((value) {
@@ -61,16 +63,19 @@ class LoginController extends GetxController{
       int kycVerified = _signInModel.data.user.kycVerified;
       int twoFaStatus = _signInModel.data.user.twoFactorStatus;
       int twoFaVerified = _signInModel.data.user.twoFactorVerified;
-
       LocalStorage.saveToken(token: _signInModel.data.token);
-
-      if (_signInModel.data.user.emailVerified == 0) {
-        Get.toNamed(Routes.registerOTPScreen);
+      if (_signInModel.data.user.smsVerified == 0) {
+        Get.put(RegisterOTPController());
+        Get.to(() => RegisterOTPScreen(
+          mobileNumber:emailController.text
+        ));
+      }else if(_signInModel.data.user.hasCode == false){
+        Get.toNamed(Routes.createPINScreen);
       }
       else {
-        debugPrint("Email Verified => Login Process :: ${twoFaStatus.toString()} :: ${twoFaVerified.toString()}");
-        debugPrint("Email Verified => Login Process :: ${twoFaStatus.toString()} :: ${twoFaVerified.toString()}");
-        debugPrint("Email Verified => Login Process :: ${twoFaStatus.toString()} :: ${twoFaVerified.toString()}");
+        debugPrint("Phone Verified => Login Process :: ${twoFaStatus.toString()} :: ${twoFaVerified.toString()}");
+        debugPrint("Phone Verified => Login Process :: ${twoFaStatus.toString()} :: ${twoFaVerified.toString()}");
+        debugPrint("Phone Verified => Login Process :: ${twoFaStatus.toString()} :: ${twoFaVerified.toString()}");
 
         if(kycVerified == 0 && Get.find<BasicSettingsController>().basicSettingModel.data.kycStatus == 1){
           Get.toNamed(Routes.kycFormScreen);

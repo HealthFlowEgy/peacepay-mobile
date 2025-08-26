@@ -5,6 +5,7 @@ class PrimaryTextInputWidget extends StatelessWidget {
   final TextEditingController controller;
   final String labelText, optional, hint;
   final TextInputType? keyboardType;
+  final int? maxLength;
   final bool? readOnly;
   final Color? color;
   final int maxLine;
@@ -19,6 +20,7 @@ class PrimaryTextInputWidget extends StatelessWidget {
     required this.controller,
     required this.labelText,
     this.keyboardType,
+    this.maxLength,
     this.readOnly = false,
     this.focusedBorderWidth = 1.2,
     this.enabledBorderWidth = 1,
@@ -64,6 +66,7 @@ class PrimaryTextInputWidget extends StatelessWidget {
           readOnly: readOnly!,
           // style: CustomStyle.textStyle,
           controller: controller,
+          maxLength: maxLength,
           keyboardType: keyboardType,
           validator: (String? value) {
             if (value!.isEmpty && maxLine == 1) {

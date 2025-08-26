@@ -1,0 +1,2 @@
+/Users/masrpay/peacepay-mobile/android/app/.cxx/RelWithDebInfo/615q411e/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/masrpay/peacepay-mobile/android/app/.cxx/RelWithDebInfo/615q411e/armeabi-v7a/CMakeFiles/rebuild_cache.dir

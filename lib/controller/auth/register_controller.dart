@@ -1,5 +1,7 @@
 
 
+import 'package:adescrow_app/controller/auth/register_otp_controller.dart';
+
 import '../../backend/backend_utils/logger.dart';
 import '../../backend/local_storage/local_storage.dart';
 import '../../backend/models/auth/registration_model.dart';
@@ -7,6 +9,7 @@ import '../../backend/services/api_endpoint.dart';
 import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
 import '../../utils/basic_widget_imports.dart';
+import '../../views/auth/register_otp_screen/register_otp_screen.dart';
 import '../../views/web_view/web_view_screen.dart';
 import '../before_auth/basic_settings_controller.dart';
 
@@ -20,6 +23,7 @@ class RegisterController extends GetxController{
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
+
   final passwordController = TextEditingController();
 
   @override
@@ -58,14 +62,14 @@ class RegisterController extends GetxController{
 
   final _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
-
+ dynamic phoneNumber;
   Future<RegistrationModel> signUpProcess() async {
     _isLoading.value = true;
     update();
 
     Map<String, dynamic> inputBody = {
       'type': type,
-      'email': emailController.text,
+      'mobile': emailController.text,
       'first_name': firstNameController.text,
       'last_name': lastNameController.text,
       'password': passwordController.text,
@@ -75,11 +79,22 @@ class RegisterController extends GetxController{
     await ApiServices.signUpApi(body: inputBody).then((value) {
       _registrationModel = value!;
       LocalStorage.saveToken(token: _registrationModel.data.token);
-      if(_registrationModel.data.user.emailVerified == 0){
-        Get.toNamed(Routes.registerOTPScreen);
+      if(_registrationModel.data.user.smsVerified == 0){
+        // Get.toNamed(
+        //   Routes.registerOTPScreen,
+        // );
+        phoneNumber = _registrationModel.data.user.mobile;
+        if (_registrationModel.data.user.smsVerified == 0) {
+          Get.put(RegisterOTPController()); //  Register the controller manually
+          Get.to(() => RegisterOTPScreen(
+            mobileNumber: _registrationModel.data.user.mobile,
+          ));
+        }
+
       }
-      else if(_registrationModel.data.user.kycVerified == 0  && Get.find<BasicSettingsController>().basicSettingModel.data.kycStatus == 1){
-        Get.toNamed(Routes.kycFormScreen);
+      else if(_registrationModel.data.user.kycVerified == 0
+          && Get.find<BasicSettingsController>().basicSettingModel.data.kycStatus == 1){
+         Get.toNamed(Routes.kycFormScreen);
       }else{
         Get.offAllNamed(Routes.dashboardScreen);
       }
@@ -108,7 +123,7 @@ class RegisterController extends GetxController{
               beforeAuth: true,
               appTitle: Strings.privacyPolicy,
               link:
-              "${ApiEndpoint.mainDomain}/page/privacy-policy",
+              "https://peacepay.me/terms-and-conditions",
             )));
   }
 }

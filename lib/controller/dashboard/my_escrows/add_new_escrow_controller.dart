@@ -4,6 +4,7 @@ import 'package:adescrow_app/backend/models/common/common_success_model.dart';
 import 'package:adescrow_app/utils/basic_screen_imports.dart';
 
 import '../../../backend/backend_utils/logger.dart';
+import '../../../backend/models/escrow/userPolicyModel.dart';
 import '../../../backend/models/tatum/tatum_model.dart' as tatum;
 import '../../../backend/models/escrow/escrow_automatic_payment_model.dart';
 import '../../../backend/models/escrow/escrow_create_model.dart';
@@ -29,6 +30,8 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
   final emailController = TextEditingController();
   final amountController = TextEditingController();
   final remarksController = TextEditingController();
+  final policyController = TextEditingController();
+  final  fieldDeliveryFeeAmount  = TextEditingController();
 
   final selectedCategory = "".obs;
   final selectedCategoryId = "".obs;
@@ -54,6 +57,7 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
   final selectedPaymentMethod = "".obs;
   final selectedPaymentMethodAlias = "".obs;
   final selectedPaymentMethodId = "".obs;
+
   final selectedPaymentMethodTypeId = "".obs;
   final selectedPaymentMethodType = "".obs;
   List<GatewayCurrency> selectedPaymentList = [];
@@ -64,6 +68,7 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
     emailController.dispose();
     amountController.dispose();
     remarksController.dispose();
+    policyController.dispose();
 
     super.dispose();
   }
@@ -166,6 +171,25 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
 
     return _userCheckModel;
   }
+  //get policy
+  List<PolicyData> get userPolicy => userPolicyData;
+
+  final Rxn<PolicyData> selectedPolicy = Rxn<PolicyData>();
+  RxInt selectedPolicyId = 0.obs;
+  List<PolicyData> userPolicyData = [];
+
+  Future<void> fetchUserPolicy() async {
+    final result = await userPolicyApi();
+    if (result != null && result.data?.data != null) {
+      userPolicyData = result.data!.data!;
+    } else {
+      userPolicyData = [];
+    }
+    update(); // if using GetX
+  }
+
+
+
 
   RxString selectedFilePath = "".obs;
   late EscrowSubmitModel _escrowSubmitModel;
@@ -184,8 +208,7 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
   Future<EscrowSubmitModel> escrowWithoutFileSubmit() async {
     _isSubmitLoading.value = true;
     update();
-
-    Map<String, String> inputBody = {
+    Map<String, dynamic> inputBody = {
       "title": titleController.text,
       "buyer_seller_identify": emailController.text,
       "amount": amountController.text,
@@ -195,17 +218,24 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
       "who_will_pay_options": selectedPayBy.value.isEmpty
           ? (selectedOppositeRole.value == "Buyer" ? "buyer" : "seller")
           : selectedPayBy.value == "50% - 50%"
-              ? "half"
-              : "me",
+          ? "half"
+          : "me",
       "escrow_currency": selectedCurrency.value,
+      "policy_id": selectedPolicyId.value.toString(),
       "payment_gateway": selectedPaymentMethod.value.isEmpty
           ? "myWallet"
           : selectedPaymentMethodId.value,
+
+      // ✅ NESTED field object
+      "field": {
+        "delivery_fee_amount": fieldDeliveryFeeAmount.text,
+        "advanced_payment_amount": policyController.text,
+      }
     };
 
     await escrowSubmitWithoutFileApi(body: inputBody).then((value) {
       _escrowSubmitModel = value!;
-      isValidUser.value = _userCheckModel.data.userCheck;
+      // isValidUser.value = _userCheckModel.data.userCheck;
       Get.toNamed(Routes.addNewEscrowPreviewScreen);
       update();
     }).catchError((onError) {

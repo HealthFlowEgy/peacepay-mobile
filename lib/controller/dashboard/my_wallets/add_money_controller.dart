@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:adescrow_app/backend/services/api_endpoint.dart';
 import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:adescrow_app/views/auth/PIN/pINCheckScreen.dart';
 
 import '../../../backend/models/tatum/tatum_model.dart' as tatum;
 import '../../../backend/models/dashboard/home_model.dart' as home;
@@ -27,7 +28,7 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
   final amountController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
-  late RxString selectedCurrency;
+  RxString selectedCurrency = ''.obs;
   late RxDouble selectedCurrencyRate;
   late RxString selectedCurrencyType;
   late RxString selectedCurrencyImage;
@@ -123,68 +124,69 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     if (selectedMethodType.value == "AUTOMATIC") {
       if (selectedMethodAlias.value.contains("tatum")) {
         debugPrint("Tatum -> ");
+
         Get.toNamed(Routes.addMoneyTatumScreen, arguments: data);
       } else if (selectedMethodID.value == "1") {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => WebViewScreen(
-                      appTitle: addMoneyPaypalModel.data.gatewayCurrencyName,
-                      link: webUrl,
-                      onFinished: (url) {
-                        debugPrint("---------------------------------");
-                        debugPrint("URL    --------------------------");
-                        debugPrint(url.toString());
-                        if (url.toString().contains('success/response')) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ConfirmScreen(
-                                        message:
-                                            Strings.addMoneyConfirmationMSG,
-                                        // onApproval: true,
-                                        onOkayTap: () => Get.offAllNamed(
-                                            Routes.dashboardScreen),
-                                      )));
-                        }
-                      },
-                    )));
+                  appTitle: addMoneyPaypalModel.data.gatewayCurrencyName,
+                  link: webUrl,
+                  onFinished: (url) {
+                    debugPrint("---------------------------------");
+                    debugPrint("URL    --------------------------");
+                    debugPrint(url.toString());
+                    if (url.toString().contains('success/response')) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ConfirmScreen(
+                                message:
+                                Strings.addMoneyConfirmationMSG,
+                                // onApproval: true,
+                                onOkayTap: () => Get.offAllNamed(
+                                    Routes.dashboardScreen),
+                              )));
+                    }
+                  },
+                )));
       } else {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => WebViewScreen(
-                      appTitle: addMoneyAutomaticModel.data.gatewayCurrencyName,
-                      link: webUrl,
-                      onFinished: (url) {
-                        debugPrint("---------------------------------");
-                        debugPrint("URL    --------------------------");
-                        debugPrint(url.toString());
-                        if (url.toString().contains('success/response') ||
-                            url.toString().contains('sslcommerz/success') ||
-                            url.toString().contains('payment/callback') ||
-                            url.toString().contains('razor-pay/callback') ||
-                            url.toString().contains('api-razor/callback') ||
-                            url.toString().contains('razor-pay-api/callback') ||
-                            url.toString().contains(
-                                'escrow-payment-api/callback?razorpay_order_id') ||
-                            url.toString().contains('payment/confirmed') ||
-                            url.toString().contains('payment/success')) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ConfirmScreen(
-                                        message:
-                                            Strings.addMoneyConfirmationMSG,
-                                        // onApproval: true,
-                                        onOkayTap: () => Get.offAllNamed(
-                                            Routes.dashboardScreen),
-                                      )));
-                        }
+                  appTitle: addMoneyAutomaticModel.data.gatewayCurrencyName,
+                  link: webUrl,
+                  onFinished: (url) {
+                    debugPrint("---------------------------------");
+                    debugPrint("URL    --------------------------");
+                    debugPrint(url.toString());
+                    if (url.toString().contains('success/response') ||
+                        url.toString().contains('sslcommerz/success') ||
+                        url.toString().contains('payment/callback') ||
+                        url.toString().contains('razor-pay/callback') ||
+                        url.toString().contains('api-razor/callback') ||
+                        url.toString().contains('razor-pay-api/callback') ||
+                        url.toString().contains(
+                            'escrow-payment-api/callback?razorpay_order_id') ||
+                        url.toString().contains('payment/confirmed') ||
+                        url.toString().contains('payment/success')) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ConfirmScreen(
+                                message:
+                                Strings.addMoneyConfirmationMSG,
+                                // onApproval: true,
+                                onOkayTap: () => Get.offAllNamed(
+                                    Routes.dashboardScreen),
+                              )));
+                    }
 
-                        debugPrint("Confirmed");
-                      },
-                    )));
+                    debugPrint("Confirmed");
+                  },
+                )));
       }
     } else if (selectedMethodType.value == "MANUAL") {
       Get.toNamed(Routes.addMoneyManualScreen, arguments: data);
@@ -197,10 +199,10 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
           Get.context!,
           MaterialPageRoute(
               builder: (context) => ConfirmScreen(
-                    message: Strings.addMoneyConfirmationMSG,
-                    onApproval: true,
-                    onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
-                  )));
+                message: Strings.addMoneyConfirmationMSG,
+                onApproval: true,
+                onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
+              )));
     });
   }
 
@@ -210,10 +212,10 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
           Get.context!,
           MaterialPageRoute(
               builder: (context) => ConfirmScreen(
-                    message: Strings.addMoneyConfirmationMSG,
-                    onApproval: true,
-                    onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
-                  )));
+                message: Strings.addMoneyConfirmationMSG,
+                onApproval: true,
+                onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
+              )));
     });
   }
 
@@ -226,6 +228,7 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
         if (selectedMethodAlias.value.contains("tatum")) {
           await onTatumProcess().then((value) {
             information = value.data.paymentInformations;
+
             Get.toNamed(Routes.addMoneyScreenPreview);
           });
         } else if (selectedMethodID.value == "1") {
@@ -344,8 +347,8 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     }
 
     await addMoneyTatumConfirmApi(
-            body: inputBody,
-            url: _addMoneyTatumModel.data.addressInfo.submitUrl)
+        body: inputBody,
+        url: _addMoneyTatumModel.data.addressInfo.submitUrl)
         .then((value) {
       _commonSuccessModel = value!;
 
@@ -472,11 +475,11 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
                     horizontal: Dimensions.paddingSizeHorizontal * 0.25,
                   ),
                   titleTextColor:
-                      CustomColor.primaryLightTextColor.withOpacity(.2),
+                  CustomColor.primaryLightTextColor.withOpacity(.2),
                   borderEnable: true,
                   dropDownFieldColor: Colors.transparent,
                   dropDownIconColor:
-                      CustomColor.primaryLightTextColor.withOpacity(.2))),
+                  CustomColor.primaryLightTextColor.withOpacity(.2))),
               verticalSpace(Dimensions.marginBetweenInputBox * .8),
             ],
           ),
@@ -550,7 +553,7 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     }
 
     await addMoneyManualConfirmApi(
-            body: inputBody, fieldList: listFieldName, pathList: listImagePath)
+        body: inputBody, fieldList: listFieldName, pathList: listImagePath)
         .then((value) {
       _commonSuccessModel = value!;
       // onConfirmProcess(

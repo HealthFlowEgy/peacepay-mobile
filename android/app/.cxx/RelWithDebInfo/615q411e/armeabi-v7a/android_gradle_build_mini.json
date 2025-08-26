@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/masrpay/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/masrpay/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/masrpay/peacepay-mobile/android/app/.cxx/RelWithDebInfo/615q411e/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/masrpay/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/masrpay/peacepay-mobile/android/app/.cxx/RelWithDebInfo/615q411e/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

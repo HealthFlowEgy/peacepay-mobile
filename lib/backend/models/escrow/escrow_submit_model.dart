@@ -12,8 +12,8 @@ class EscrowSubmitModel {
 
 class Data {
   final EscrowInformation escrowInformation;
-  final String returnUrl;
-  final String method;
+  final dynamic returnUrl;
+  final dynamic method;
 
   Data({
     required this.escrowInformation,
@@ -29,17 +29,17 @@ class Data {
 }
 
 class EscrowInformation {
-  final String trx;
-  final String title;
-  final String category;
-  final String myRole;
-  final String totalAmount;
-  final String chargePayer;
-  final String fee;
-  final String sellerAmount;
-  final String payWith;
-  final String exchangeRate;
-  final String buyerAmount;
+    final dynamic trx;
+  final dynamic title;
+  final dynamic category;
+  final dynamic myRole;
+  final dynamic totalAmount;
+  final dynamic chargePayer;
+  final dynamic fee;
+  final dynamic sellerAmount;
+  final dynamic payWith;
+  final dynamic exchangeRate;
+  final dynamic buyerAmount;
 
   EscrowInformation({
     required this.trx,

@@ -1,3 +1,4 @@
+import 'package:adescrow_app/backend/models/auth/createPinModel.dart';
 import 'package:adescrow_app/backend/models/common/common_success_model.dart';
 
 import '../../language/language_controller.dart';
@@ -164,7 +165,30 @@ class ApiServices {
     }
     return null;
   }
-
+//Crete PIN Code Api method
+  static Future<CreatePinModel?> createPINApi(
+      {required Map<String, dynamic> body}) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).put(
+        "${ApiEndpoint.createPinURL}?lang=${languageSettingsController.selectedLanguage.value}",
+        body,
+        code: 200,
+        duration: 15,
+        showResult: true,
+      );
+      if (mapResponse != null) {
+        CreatePinModel pinModel = CreatePinModel.fromJson(mapResponse);
+        CustomSnackBar.success(pinModel.message.toString());
+        return pinModel;
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from Create PIN api service ==> $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong! in CreatePINModel');
+      return null;
+    }
+    return null;
+  }
 //! lout out api
   static Future<CommonSuccessModel?> logOutApi(
       [bool showMessage = true]) async {
@@ -215,7 +239,7 @@ class ApiServices {
     Map<String, dynamic>? mapResponse;
     try {
       mapResponse = await ApiMethod(isBasic: false).post(
-        "${ApiEndpoint.emailVerificationURL}?lang=${languageSettingsController.selectedLanguage.value}",
+        "${ApiEndpoint.mobileVerificationURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
         duration: 15,
@@ -224,6 +248,7 @@ class ApiServices {
       if (mapResponse != null) {
         CommonSuccessModel commonSuccessModel =
             CommonSuccessModel.fromJson(mapResponse);
+        print("Gggggggg");
         // if(kDebugMode){
         //   CustomSnackBar.success(
         //       commonSuccessModel.message.success.first.toString());
@@ -307,6 +332,34 @@ class ApiServices {
       }
     } catch (e) {
       log.e('🐞🐞🐞 err from change password api service ==> $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong!');
+      return null;
+    }
+    return null;
+  }
+
+  static Future<CommonSuccessModel?> releasePaymentApi(
+      {required Map<String, dynamic> body}) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).post(
+        "${ApiEndpoint.releasePaymentURL}?lang=${languageSettingsController
+            .selectedLanguage.value}",
+        body,
+        code: 200,
+        duration: 15,
+        showResult: true,
+      );
+      if (mapResponse != null) {
+        CommonSuccessModel commonSuccessModel =
+        CommonSuccessModel.fromJson(mapResponse);
+
+        // CustomSnackBar.success(
+        //     commonSuccessModel.message!.success!.first.toString());
+        return commonSuccessModel;
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from dispute api service ==> $e 🐞🐞🐞');
       CustomSnackBar.error('Something went Wrong!');
       return null;
     }

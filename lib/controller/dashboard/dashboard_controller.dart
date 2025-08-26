@@ -9,6 +9,8 @@ import '../../views/dashboard/btm_screens/home_screen.dart';
 import '../../views/dashboard/btm_screens/my_escrow_screen.dart';
 import '../../views/dashboard/btm_screens/my_wallet_screen.dart';
 import '../../views/dashboard/btm_screens/profile_screen.dart';
+import 'btm_navs_controller/my_wallet_controller.dart';
+import 'my_wallets/add_money_controller.dart';
 
 final log = logger(DashboardController);
 
@@ -28,7 +30,7 @@ class DashboardController extends GetxController with DownloadFile{
   final selectedIndex = 0.obs;
 
   List body = [
-    const HomeScreen(),
+     HomeScreen(),
     const MyEscrowScreen(),
     const MyWalletScreen(),
     const ProfileScreen()

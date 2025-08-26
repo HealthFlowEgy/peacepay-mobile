@@ -1,3 +1,5 @@
+import 'package:adescrow_app/backend/models/escrow/userPolicyModel.dart';
+
 import '../../language/language_controller.dart';
 import '../../utils/basic_screen_imports.dart';
 import '../backend_utils/api_method.dart';
@@ -136,6 +138,25 @@ mixin EscrowApiService {
     }
     return null;
   }
+  //User Policy
+  Future<UserPolicy?> userPolicyApi() async {
+    try {
+      final mapResponse = await ApiMethod(isBasic: false).get(
+        "${ApiEndpoint.userPolicy}?lang=${languageSettingsController.selectedLanguage.value}",
+        code: 200,
+        showResult: false,
+      );
+
+      if (mapResponse != null) {
+        return UserPolicy.fromJson(mapResponse);
+      }
+    } catch (e) {
+      log.e('🐞 Error in userPolicyApi: $e');
+      CustomSnackBar.error('Something went wrong!');
+    }
+    return null;
+  }
+
 
   // escrow confirm for seller and from wallet
   Future<CommonSuccessModel?> escrowConfirmApi(

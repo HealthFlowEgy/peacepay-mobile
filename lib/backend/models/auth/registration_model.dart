@@ -34,16 +34,22 @@ class Data {
 
 class User {
   final int emailVerified;
+  final int smsVerified;
   final int kycVerified;
+  final dynamic mobile;
 
   User({
     required this.emailVerified,
     required this.kycVerified,
+    required this.smsVerified,
+    required this.mobile
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     emailVerified: json["email_verified"],
     kycVerified: json["kyc_verified"],
+    smsVerified: json["sms_verified"],
+    mobile: json["mobile"],
   );
 }
 

@@ -1,7 +1,7 @@
 import 'package:adescrow_app/extensions/custom_extensions.dart';
 
 class ApiEndpoint {
-  static const String mainDomain = "https://escroc.appdevs.net";
+  static const String mainDomain = "http://stg.peacepay.me";
 
   static const String baseUrl = "$mainDomain/api/v1";
 
@@ -15,7 +15,9 @@ class ApiEndpoint {
 
   /*signup section*/
   static String registrationURL = '/user/register'.addBaseURl();
-  static String emailVerificationURL = '/user/email/otp/verify'.addBaseURl();
+  static String createPinURL = '/user/profile/pin'.addBaseURl();
+  // static String emailVerificationURL = '/user/email/otp/verify'.addBaseURl();
+  static String mobileVerificationURL = '/mobile/verify'.addBaseURl();
   static String signUpResendOtpURL = '/user/email/resend/code'.addBaseURl();
   static String kycFieldsURL = '/user/kyc/input-fields'.addBaseURl();
   static String kycSubmitURL = '/user/kyc/submit'.addBaseURl();
@@ -56,6 +58,8 @@ class ApiEndpoint {
   static String escrowCreateURL = '/user/my-escrow/create'.addBaseURl();
   static String escrowUserCheckURL = '/user/my-escrow/user-check?userCheck='.addBaseURl();
   static String escrowSubmitURL = '/user/my-escrow/submit'.addBaseURl();
+// User Policy
+  static String userPolicy = '/user/policies'.addBaseURl();
   static String escrowConfirmURL = '/user/my-escrow/confirm-escrow'.addBaseURl();
   static String escrowManualSubmitURL = '/user/my-escrow/manual/payment/confirmed'.addBaseURl();
 
@@ -64,12 +68,12 @@ class ApiEndpoint {
   static String buyerPaymentManualConfirmURL = '/user/api-escrow-action/approval-pending/manual/confirm'.addBaseURl();
 
 
+
   static String conversationURL = '/user/api-escrow-action/conversation'.addBaseURl();
   static String messageSendURL = '/user/api-escrow-action/message/send'.addBaseURl();
   static String disputeURL = '/user/api-escrow-action/dispute-payment'.addBaseURl();
   static String releasePaymentURL = '/user/api-escrow-action/release-payment'.addBaseURl();
-  static String requestPaymentURL = '/user/api-escrow-action/release-request'.addBaseURl();
-
+  static String requestPaymentURL = '/user/api-escrow-action/release-payment'.addBaseURl();
 
   static String allTransactionsURL = '/user/all-transactions'.addBaseURl();
 }

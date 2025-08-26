@@ -1,6 +1,7 @@
 
 import '../controller/dashboard/btm_navs_controller/home_controller.dart';
 import '../controller/dashboard/btm_navs_controller/my_escrow_controller.dart';
+import '../controller/dashboard/my_escrows/add_new_escrow_controller.dart';
 import '../controller/dashboard/notification_controller.dart';
 import '../controller/dashboard/profiles/fa_security_controller.dart';
 import '../controller/dashboard/profiles/update_profile_controller.dart';
@@ -12,4 +13,5 @@ Future<void> onRefresh() async{
   await Get.find<UpdateProfileController>().profileDataFetch();
   await Get.find<FASecurityController>().twoFAFetch();
   await Get.find<NotificationController>().notificationsFetch();
+  await Get.find<AddNewEscrowController>().fetchUserPolicy();
 }

@@ -171,6 +171,13 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                   ),
                   _divider(),
                   TextValueFormWidget(
+                    text: "OTP",
+                    // value: "3.00",
+                    currency: widget.data.pin_code,
+                  ),
+                  _divider(),
+
+                  TextValueFormWidget(
                     text: Strings.title,
                     value: widget.data.title,
                   ),
