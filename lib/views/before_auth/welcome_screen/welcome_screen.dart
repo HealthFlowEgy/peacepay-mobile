@@ -1,7 +1,7 @@
 
-import 'package:adescrow_app/backend/local_storage/local_storage.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/backend/local_storage/local_storage.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../backend/local_auth/local_auth_controller.dart';

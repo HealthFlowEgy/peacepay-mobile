@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:adescrow_app/backend/models/common/common_success_model.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/backend/models/common/common_success_model.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 
 import '../../../backend/backend_utils/logger.dart';
 import '../../../backend/models/escrow/userPolicyModel.dart';

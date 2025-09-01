@@ -1,10 +1,11 @@
-import 'package:adescrow_app/backend/models/auth/createPinModel.dart';
-import 'package:adescrow_app/backend/models/common/common_success_model.dart';
+import 'package:peacepay/backend/models/auth/createPinModel.dart';
+import 'package:peacepay/backend/models/common/common_success_model.dart';
 
 import '../../language/language_controller.dart';
 import '../backend_utils/api_method.dart';
 import '../backend_utils/custom_snackbar.dart';
 import '../backend_utils/logger.dart';
+import '../models/auth/checkPinModel.dart';
 import '../models/auth/forgot_send_otp_model.dart';
 import '../models/auth/login_model.dart';
 import '../models/auth/registration_model.dart';
@@ -179,7 +180,6 @@ class ApiServices {
       );
       if (mapResponse != null) {
         CreatePinModel pinModel = CreatePinModel.fromJson(mapResponse);
-        CustomSnackBar.success(pinModel.message.toString());
         return pinModel;
       }
     } catch (e) {
@@ -189,6 +189,36 @@ class ApiServices {
     }
     return null;
   }
+  static Future<CheckPinModel?> checkPINApi({
+    required Map<String, dynamic> body,
+  }) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).post(
+        "${ApiEndpoint.checkPinURL}?lang=${languageSettingsController.selectedLanguage.value}",
+        body,
+        code: 200,
+        duration: 15,
+        showResult: true,
+      );
+
+      if (mapResponse != null) {
+        CheckPinModel checkPinModel = CheckPinModel.fromJson(mapResponse);
+
+        // API returns: { "message": { "success": ["PIN success!"] }, "data": null }
+        final msg = checkPinModel.firstSuccessMessage ?? "PIN verified successfully";
+        CustomSnackBar.success(msg);
+
+        return checkPinModel;
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from Check PIN api service ==> $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong! in CheckPINModel');
+      return null;
+    }
+    return null;
+  }
+
 //! lout out api
   static Future<CommonSuccessModel?> logOutApi(
       [bool showMessage = true]) async {

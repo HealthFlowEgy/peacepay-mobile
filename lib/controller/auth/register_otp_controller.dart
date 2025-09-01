@@ -1,14 +1,16 @@
 import 'dart:async';
 
-import 'package:adescrow_app/backend/backend_utils/custom_snackbar.dart';
-import 'package:adescrow_app/backend/models/auth/registration_model.dart';
-import 'package:adescrow_app/controller/auth/register_controller.dart';
+import 'package:peacepay/backend/backend_utils/custom_snackbar.dart';
+import 'package:peacepay/backend/models/auth/registration_model.dart';
+import 'package:peacepay/controller/auth/login_controller.dart';
+import 'package:peacepay/controller/auth/register_controller.dart';
 
 import '../../backend/backend_utils/logger.dart';
 import '../../backend/local_storage/local_storage.dart';
 import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
 import '../../utils/basic_screen_imports.dart';
+import '../../views/auth/PIN/pINCheckScreen.dart';
 
 final log = logger(RegisterOTPController);
 
@@ -60,9 +62,11 @@ class RegisterOTPController extends GetxController {
       "mobile":mobileNum};
     await ApiServices.emailVerificationApi(body: inputBody).then((value) {
       if (value != null) {
-        if(Get.find<RegisterController>().registrationModel.data.user.kycVerified == 0) {
-          Get.toNamed(Routes.kycFormScreen);
-        }else{
+         if(Get.find<LoginController>().signInModel.data.user.hasCode==false){
+          Get.offAllNamed(Routes.createPINScreen);
+        }else if (LocalStorage.hasPin()){
+           Get.offAll(() => CheckPinScreen(index: 3));
+         }else{
           Get.offAllNamed(Routes.dashboardScreen);
         }
       }
@@ -97,11 +101,8 @@ class RegisterOTPController extends GetxController {
   void onOTPSubmitProcess({required mobileNum}) async {
     if (pinController.text.length == 6) {
       await otpSubmitProcess(mobileNum: mobileNum);
-
-
-        LocalStorage.isLoginSuccess(isLoggedIn: true);
-        LocalStorage.saveEmail(email: mobileNum);
-        Get.offAllNamed(Routes.dashboardScreen);
+      LocalStorage.isLoginSuccess(isLoggedIn: true);
+      LocalStorage.saveEmail(email: mobileNum);
 
     } else {
       CustomSnackBar.error(Strings.enterPin);

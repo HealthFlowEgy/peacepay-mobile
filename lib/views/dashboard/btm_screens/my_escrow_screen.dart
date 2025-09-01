@@ -1,7 +1,7 @@
-import 'package:adescrow_app/backend/backend_utils/no_data_widget.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/backend/backend_utils/no_data_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../../backend/local_storage/local_storage.dart';
 import '../../../backend/services/api_endpoint.dart';

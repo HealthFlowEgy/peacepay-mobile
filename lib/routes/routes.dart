@@ -1,4 +1,4 @@
-import 'package:adescrow_app/routes/route_pages.dart';
+import 'package:peacepay/routes/route_pages.dart';
 
 class Routes {
   // Page List
@@ -21,6 +21,7 @@ class Routes {
 
   static const String dashboardScreen = '/dashboardScreen';
   static const String createPINScreen = '/createPINScreen';
+  static const String checkPinScreen = '/checkPinScreen';
   static const String notificationScreen = '/notificationScreen';
 
   static const String conversationScreen = '/conversationScreen';

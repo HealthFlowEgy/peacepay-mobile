@@ -1,4 +1,4 @@
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../utils/basic_widget_imports.dart';

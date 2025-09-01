@@ -1,6 +1,6 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/widgets/inputs/password_input_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/widgets/inputs/password_input_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../controller/auth/login_controller.dart';

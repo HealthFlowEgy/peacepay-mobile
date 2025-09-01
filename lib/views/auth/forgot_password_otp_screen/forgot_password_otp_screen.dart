@@ -1,5 +1,5 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
 
 import '../../../controller/auth/forgot_otp_controller.dart';
 import '../../../widgets/buttons/secondary_button.dart';

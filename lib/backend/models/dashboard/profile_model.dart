@@ -133,6 +133,10 @@ class User{
   final Address address;
   final String fullname;
   final String userImage;
+  int emailVerified;
+  int smsVerified;
+  int kycVerified;
+  dynamic verCode;
 
   User({
     required this.id,
@@ -148,6 +152,10 @@ class User{
     required this.address,
     required this.fullname,
     required this.userImage,
+    required this.emailVerified,
+    required this.smsVerified,
+    required this.kycVerified,
+    required this.verCode,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -164,6 +172,10 @@ class User{
     address: Address.fromJson(json["address"] ?? {}),
     fullname: json["fullname"],
     userImage: json["userImage"],
+    emailVerified: json["email_verified"],
+    smsVerified: json["sms_verified"],
+    kycVerified: json["kyc_verified"],
+    verCode: json["ver_code"],
   );
 }
 

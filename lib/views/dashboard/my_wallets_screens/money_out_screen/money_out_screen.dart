@@ -1,12 +1,14 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
-import 'package:adescrow_app/widgets/text_labels/title_heading5_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/widgets/text_labels/title_heading5_widget.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../backend/backend_utils/custom_snackbar.dart';
 import '../../../../backend/models/money_out/money_out_index_model.dart';
 import '../../../../controller/dashboard/my_wallets/money_out_controller.dart';
+import '../../../../routes/routes.dart';
+import '../../../../widgets/appbar/back_button.dart';
 import '../../../../widgets/custom_dropdown_widget/wallet_dropdown_widget.dart';
 import '../../../../widgets/keyboard/keyboard_widget.dart';
 
@@ -21,8 +23,25 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
         child: ResponsiveLayout(
           mobileScaffold: Scaffold(
               backgroundColor: Colors.transparent,
-              appBar: const PrimaryAppBar(
-                title: Strings.moneyOut,
+              // appBar: const PrimaryAppBar(
+              //   title: Strings.moneyOut,
+              // ),
+              appBar: AppBar(
+                title: TitleHeading2Widget(
+                  text: Strings.moneyOut,
+                  fontWeight: FontWeight.w600,
+                ),
+                elevation: 0,
+                leading:  BackButtonWidget(
+                  onTap: (){
+                    Get.offAllNamed(Routes.dashboardScreen,);
+                  },
+                ) ,
+                backgroundColor: Colors.transparent,
+                iconTheme: IconThemeData(
+                  color: Theme.of(context).primaryColor,
+                  size: 30,
+                ),
               ),
               body: Obx(() => controller.isLoading
                   ? const CustomLoadingWidget()

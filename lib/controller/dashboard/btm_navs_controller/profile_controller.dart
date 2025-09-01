@@ -1,4 +1,4 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 
 import '../../../backend/backend_utils/logger.dart';
 import '../../../backend/local_storage/local_storage.dart';
@@ -37,4 +37,23 @@ class ProfileController extends GetxController{
   void routeUpdateKYC() => Get.toNamed(Routes.kycFormScreen);
   void routeFASecurity() => Get.toNamed(Routes.faSecurityScreen);
   void routeChangePassword() => Get.toNamed(Routes.changePasswordScreen);
+  logOutProcess() async{
+
+    _isLoading.value = true;
+    update();
+
+    await ApiServices.logOutApi().then((value) {
+      if(value != null) {
+        LocalStorage.logout();
+        Get.offAllNamed(Routes.loginScreen);
+      }
+      update();
+    }).catchError((onError) {
+      log.e(onError);
+    });
+
+    _isLoading.value = false;
+    update();
+
+  }
 }

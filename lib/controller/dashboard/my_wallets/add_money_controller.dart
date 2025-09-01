@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:adescrow_app/backend/services/api_endpoint.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/views/auth/PIN/pINCheckScreen.dart';
+import 'package:peacepay/backend/services/api_endpoint.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/views/auth/PIN/pINCheckScreen.dart';
 
 import '../../../backend/models/tatum/tatum_model.dart' as tatum;
 import '../../../backend/models/dashboard/home_model.dart' as home;

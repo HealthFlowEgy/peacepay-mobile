@@ -5,6 +5,6 @@
 // ignore_for_file: lines_longer_than_80_chars
 class AssetsRes {
 AssetsRes._();
-  static const String PLUGIN_NAME = 'adescrow_app';
+  static const String PLUGIN_NAME = 'peacepay';
   static const String PLUGIN_VERSION = '1.4.2+7';
 }

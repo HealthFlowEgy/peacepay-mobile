@@ -6,8 +6,8 @@ import '../../../backend/models/dashboard/home_model.dart';
 import '../../../backend/services/api_endpoint.dart';
 import '../../../backend/services/api_services.dart';
 import '../../../backend/services/delivery_api_service.dart';
-import 'package:adescrow_app/backend/models/common/common_success_model.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/backend/models/common/common_success_model.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 
 import '../../../language/language_controller.dart';
 

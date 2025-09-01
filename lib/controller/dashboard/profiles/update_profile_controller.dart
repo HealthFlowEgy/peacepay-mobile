@@ -1,4 +1,4 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../../../backend/backend_utils/logger.dart';

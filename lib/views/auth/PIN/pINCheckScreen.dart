@@ -1,14 +1,15 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../controller/auth/checkPinCode.dart';
+import '../../../routes/routes.dart';
 
 
 class CheckPinScreen extends StatelessWidget {
   final CheckPinController controller = Get.put(CheckPinController());
-
-  CheckPinScreen({super.key});
+  final int? index;
+  CheckPinScreen({super.key,required this.index,});
 
   @override
   Widget build(BuildContext context) {
@@ -28,23 +29,12 @@ class CheckPinScreen extends StatelessWidget {
               obscureText: controller.isPinObscured.value,
               obscuringCharacter: '●',
               animationType: AnimationType.fade,
-              pinTheme: PinTheme(
-                shape: PinCodeFieldShape.box,
-                borderRadius: BorderRadius.circular(4),
-                fieldHeight: 40,
-                fieldWidth: 40,
-                activeFillColor: Colors.white,
-                inactiveFillColor: Colors.white,
-                selectedFillColor: Colors.grey.shade200,
-                inactiveColor: Colors.grey,
-                activeColor: Colors.blue,
-                selectedColor: Colors.blue,
-              ),
-              animationDuration: Duration(milliseconds: 300),
-              backgroundColor: Colors.transparent,
-              keyboardType: TextInputType.number,
-              onChanged: controller.setPin,
               controller: pinTextController,
+              onChanged: controller.setPin,
+              keyboardType: TextInputType.number,
+              pinTheme: _buildPinTheme(),
+              animationDuration: const Duration(milliseconds: 300),
+              backgroundColor: Colors.transparent,
             )),
             SizedBox(height: 15.h),
             Obx(() => IconButton(
@@ -61,14 +51,35 @@ class CheckPinScreen extends StatelessWidget {
             )),
             SizedBox(height: 24),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+              ),
               onPressed: () async {
-                controller.checkPinProcess();
+                await controller.checkPinProcess(screenIndex:index!);
               },
-              child: Text('Verify PIN'),
+              child: Text('Verify PIN',style: TextStyle(
+                fontSize: 16.sp
+              ),),
             ),
           ],
         ),
       ),
+    );
+  }
+  PinTheme _buildPinTheme() {
+    return PinTheme(
+      shape: PinCodeFieldShape.box,
+      borderRadius: BorderRadius.circular(6.r),
+      fieldHeight: 50.h,
+      fieldWidth: 45.w,
+      activeFillColor: Colors.white,
+      inactiveFillColor: Colors.white,
+      selectedFillColor: Colors.grey.shade100,
+      inactiveColor: Colors.grey,
+      activeColor: Colors.blue,
+      selectedColor: Colors.blue,
     );
   }
 }

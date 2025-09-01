@@ -10,142 +10,128 @@ import '../utils/basic_widget_imports.dart';
 import 'backend_utils/custom_snackbar.dart';
 
 mixin DownloadFile {
-  Future<bool> checkPermission() async {
-    bool checkPermission1 = await Permission.storage.isGranted;
-
-    try{
-      //For android
-      DeviceInfoPlugin plugin = DeviceInfoPlugin();
-      AndroidDeviceInfo android = await plugin.androidInfo;
-      debugPrint(android.version.sdkInt.toString());
-      if (android.version.sdkInt < 33) {
-        debugPrint("SDK Version < 33");
-        if (await Permission.storage.request().isGranted) {
-          checkPermission1 = true;
-        } else if (await Permission.storage.request().isPermanentlyDenied) {
-          await openAppSettings();
-        }
-      } else {
-
-        debugPrint("SDK Version > 33");
-        if (await Permission.photos.request().isGranted) {
-          checkPermission1 = true;
-        }
-        else if (await Permission.photos.request().isPermanentlyDenied) {
-          await openAppSettings();
-        }
-        else if (await Permission.photos.request().isDenied) {
-          checkPermission1 = false;
-        }
-      }
-
-      debugPrint(checkPermission1.toString());
-    }catch(e){
-      debugPrint(e.toString());
-    }
-
-    return checkPermission1;
+  /// Only request CAMERA when you actually open the camera.
+  /// No storage/photos permission requests (policy-safe).
+  Future<bool> ensureCameraPermissionIfNeeded() async {
+    if (!Platform.isAndroid && !Platform.isIOS) return true;
+    final status = await Permission.camera.request();
+    return status.isGranted;
   }
 
-  Future<void> downloadFile({required String url, required String name}) async {
-    bool isChecked = Platform.isIOS ? true : await checkPermission();
-    if (isChecked) {
-      final http.Response response = await http.get(Uri.parse(url));
+  /// App-scoped base directory for saving files (policy-safe, no permission).
+  Future<Directory> _appScopedDownloadDir() async {
+    if (Platform.isIOS) {
+      // iOS: Documents directory is fine (visible via Files > On My iPhone > YourApp)
+      return await getApplicationDocumentsDirectory();
+    }
+    // Android: use app-specific external dir (Android/data/<pkg>/files)
+    // This doesn't require storage permissions and is policy-compliant.
+    final dir = await getExternalStorageDirectory();
+    // Fallback to temp if null (rare)
+    return dir ?? await getTemporaryDirectory();
+  }
 
-      debugPrint("Url ->>>   $url");
-      debugPrint("Status Code ->>>   ${response.statusCode}");
-      debugPrint("Save ->>>   Start");
+  /// OPTIONAL: If you want a user-visible "Save As..." dialog to Downloads
+  /// use SAF via file_saver. No storage permission needed.
+  /// Uncomment dependency & code if you want this flow.
+  // Future<void> _saveWithSystemPicker({
+  //   required Uint8List bytes,
+  //   required String name,
+  //   String mimeType = 'application/octet-stream',
+  // }) async {
+  //   await FileSaver.instance.saveFile(
+  //     name: name,
+  //     bytes: bytes,
+  //     mimeType: mimeType,
+  //   );
+  // }
 
-      if (response.statusCode == 200) {
-        debugPrint("Save ->>>   1");
-        Directory? downloadsDirectory;
-        if (Platform.isIOS) {
-          downloadsDirectory = await getApplicationDocumentsDirectory();
-        } else {
-          debugPrint("Save ->>>   2");
-          String directory;
-          if (Platform.isAndroid) {
-            debugPrint("Save ->>>   3");
+  /// Download a file from URL and save to app-scoped directory (no permissions).
+  Future<void> downloadFile({
+    required String url,
+    required String name,
+    String? mimeType, // optional, for SAF if you switch
+    bool useSystemPicker = false, // set true if you integrate file_saver
+  }) async {
+    try {
+      final resp = await http.get(Uri.parse(url));
+      debugPrint("Download URL: $url");
+      debugPrint("HTTP ${resp.statusCode}");
 
-            directory = "/storage/emulated/0/";
-            debugPrint("Save ->>>   4");
-
-            final bool dirDownloadExists =
-                await Directory("$directory/Download").exists();
-            debugPrint("Save ->>>   5");
-
-            directory += dirDownloadExists ? "Download" : "Downloads";
-          } else {
-            // Handle other platforms here, if applicable
-            return;
-          }
-          debugPrint("Save ->>>   6");
-
-          downloadsDirectory = Directory(directory);
-        }
-
-        debugPrint("Save ->>>   7");
-
-        final File file = File('${downloadsDirectory.path}/$name');
-        debugPrint("Save ->>>   ${file.path}");
-        debugPrint("Save ->>>   8");
-        try {
-          await file.writeAsBytes(response.bodyBytes).then((value) {
-            CustomSnackBar.success(
-                'File downloaded successfully at ${file.path}!');
-            debugPrint(file.path);
-          });
-        } catch (e, s) {
-          debugPrint("Save ->>>   Error");
-          debugPrint("@@ $e");
-          debugPrint("## $s");
-          CustomSnackBar.error('Failed to download the file.');
-        }
-      } else {
+      if (resp.statusCode != 200) {
         CustomSnackBar.error('Failed to download the file.');
+        return;
       }
-    } else {
-      CustomSnackBar.error('Permission is not granted.');
+
+      final bytes = resp.bodyBytes;
+
+      // If you want a system "Save As..." dialog (SAF), flip useSystemPicker=true and
+      // uncomment the file_saver import & method above.
+      // if (useSystemPicker) {
+      //   await _saveWithSystemPicker(
+      //     bytes: bytes,
+      //     name: name,
+      //     mimeType: mimeType ?? 'application/octet-stream',
+      //   );
+      //   CustomSnackBar.success('File saved via system picker.');
+      //   return;
+      // }
+
+      final baseDir = await _appScopedDownloadDir();
+      // Create a subfolder for clarity
+      final downloadsDir = Directory('${baseDir.path}/downloads');
+      if (!await downloadsDir.exists()) {
+        await downloadsDir.create(recursive: true);
+      }
+
+      final file = File('${downloadsDir.path}/$name');
+      await file.writeAsBytes(bytes);
+      CustomSnackBar.success('File downloaded: ${file.path}');
+      debugPrint('Saved to: ${file.path}');
+    } catch (e, s) {
+      debugPrint('Download error: $e\n$s');
+      CustomSnackBar.error('Failed to download the file.');
     }
   }
 
-  Future<void> downloadFile2(
-      {required Uint8List pdfData, required String name}) async {
+  /// Save provided bytes (e.g., PDF) to app-scoped directory (no permissions).
+  Future<void> downloadFile2({
+    required Uint8List pdfData,
+    required String name,
+    String? mimeType, // for SAF if you switch
+    bool useSystemPicker = false, // set true if integrating file_saver
+  }) async {
+    try {
+      // if (useSystemPicker) {
+      //   await _saveWithSystemPicker(
+      //     bytes: pdfData,
+      //     name: name,
+      //     mimeType: mimeType ?? 'application/pdf',
+      //   );
+      //   CustomSnackBar.success('File saved via system picker.');
+      //   return;
+      // }
 
-    bool isChecked = Platform.isIOS ? true : await checkPermission();
-
-
-    if (isChecked) {
-      Directory? downloadsDirectory;
-      if (Platform.isIOS) {
-        downloadsDirectory = await getApplicationDocumentsDirectory();
-      } else {
-        String directory;
-        if (Platform.isAndroid) {
-          directory = "/storage/emulated/0/";
-          final bool dirDownloadExists =
-              await Directory("$directory/Download").exists();
-          directory += dirDownloadExists ? "Download" : "Downloads";
-        } else {
-          return;
-        }
-        downloadsDirectory = Directory(directory);
+      final baseDir = await _appScopedDownloadDir();
+      final downloadsDir = Directory('${baseDir.path}/downloads');
+      if (!await downloadsDir.exists()) {
+        await downloadsDir.create(recursive: true);
       }
-      final File file = File('${downloadsDirectory.path}/$name');
-      try {
-        await file.writeAsBytes(pdfData).then((value) {
-          CustomSnackBar.success(
-              'File downloaded successfully at ${file.path}!');
-          debugPrint(file.path);
-        });
-      } catch (e, s) {
-        debugPrint("Save ->>>   Error");
-        debugPrint("@@ $e");
-        debugPrint("## $s");
-        CustomSnackBar.error('Failed to download the file.');
-      }
-    } else {
-      CustomSnackBar.error('Permission is not granted.');
+
+      final file = File('${downloadsDir.path}/$name');
+      await file.writeAsBytes(pdfData);
+      CustomSnackBar.success('File downloaded: ${file.path}');
+      debugPrint('Saved to: ${file.path}');
+    } catch (e, s) {
+      debugPrint('Save error: $e\n$s');
+      CustomSnackBar.error('Failed to download the file.');
     }
+  }
+
+  /// (Optional) Quick SDK check helper if you need version-specific logic.
+  Future<int> androidSdkInt() async {
+    if (!Platform.isAndroid) return -1;
+    final info = await DeviceInfoPlugin().androidInfo;
+    return info.version.sdkInt;
   }
 }

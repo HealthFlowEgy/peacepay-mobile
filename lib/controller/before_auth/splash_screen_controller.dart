@@ -1,4 +1,4 @@
-import 'package:adescrow_app/backend/local_storage/local_storage.dart';
+import 'package:peacepay/backend/local_storage/local_storage.dart';
 import 'package:get/get.dart';
 
 import '../../backend/local_auth/local_auth_controller.dart';

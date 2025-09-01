@@ -1,7 +1,8 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/snackbar/snackbar.dart';
 
+import '../../backend/local_storage/local_storage.dart';
 import '../../backend/models/auth/createPinModel.dart';
 import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
@@ -64,12 +65,12 @@ class PinController extends GetxController {
 
     Map<String, dynamic> inputBody = {
       'pin_code': pin.value,
-      // 'current_pin_code':'44444',
       'pin_code_confirmation': confirmPin.value,
     };
 
-    await ApiServices.createPINApi(body: inputBody).then((value) {
+    await ApiServices.createPINApi(body: inputBody).then((value)async {
       _createPinModel = value!;
+      await LocalStorage.saveHasPin(hasPin: true);
        Get.toNamed(Routes.dashboardScreen);
       update();
     }).catchError((onError) {

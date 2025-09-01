@@ -1,6 +1,6 @@
 import 'dart:core';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import '../../routes/routes.dart';

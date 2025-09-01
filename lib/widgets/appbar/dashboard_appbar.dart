@@ -1,7 +1,8 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../language/language_drop_down.dart';
 import '../../utils/svg_assets.dart';
 
 // custom appbar
@@ -24,7 +25,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: title,
       elevation: 0,
-      leading: Animate(
+     /* leading: Animate(
         effects: const [FadeEffect(), ScaleEffect()],
         child: IconButton(
             onPressed: onMenuTap,
@@ -33,7 +34,18 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
               height: Dimensions.heightSize * 2.2,
               width: Dimensions.widthSize * 2.2,
             )),
+      ),*/
+      leading: Animate(
+        effects: const [FadeEffect(), ScaleEffect()],
+        child: SizedBox(
+          width: 70, // same as default leading width
+          child: FittedBox( // shrink content to fit
+            fit: BoxFit.scaleDown,
+            child: ChangeLanguageWidget(isOnboard: true),
+          ),
+        ),
       ),
+
       actions: actions,
       centerTitle: true,
       backgroundColor: Colors.transparent,

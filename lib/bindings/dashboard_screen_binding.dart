@@ -1,4 +1,4 @@
-import 'package:adescrow_app/controller/dashboard/delivery/delivery_controller.dart';
+import 'package:peacepay/controller/dashboard/delivery/delivery_controller.dart';
 import 'package:get/get.dart';
 
 import '../controller/before_auth/basic_settings_controller.dart';

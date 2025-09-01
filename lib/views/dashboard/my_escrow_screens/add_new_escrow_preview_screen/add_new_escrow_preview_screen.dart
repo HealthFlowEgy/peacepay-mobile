@@ -1,5 +1,5 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
 
 import '../../../../backend/models/escrow/escrow_submit_model.dart';
 import '../../../../controller/dashboard/my_escrows/add_new_escrow_controller.dart';

@@ -1,5 +1,5 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
 
 import '../../../backend/backend_utils/no_data_widget.dart';
 import '../../../controller/dashboard/notification_controller.dart';

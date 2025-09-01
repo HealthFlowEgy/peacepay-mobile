@@ -1,4 +1,4 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 
 import '../../../backend/models/escrow/escrow_index_model.dart';
 import '../../../backend/services/escrow_api_service.dart';

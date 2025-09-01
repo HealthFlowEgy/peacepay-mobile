@@ -1,5 +1,5 @@
 
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../controller/before_auth/basic_settings_controller.dart';
 import '../../utils/basic_widget_imports.dart';

@@ -14,7 +14,7 @@ const String isOnBoardDoneKey = "isOnBoardDoneKey";
 const String language = "language";
 const String smallLanguage = "smallLanguage";
 const String capitalLanguage = "capitalLanguage";
-
+const String hasPinKey = "hasPinKey";
 class LocalStorage {
 
   static Future<void> saveUserId({required int id}) async {
@@ -81,6 +81,21 @@ class LocalStorage {
 
   static bool isDataLoaded() {
     return GetStorage().read(isDataLoadedKey) ?? false;
+  }
+
+
+  static Future<void> saveHasPin({required bool hasPin}) async {
+    final box = GetStorage();
+    await box.write(hasPinKey, hasPin);
+  }
+
+  static bool hasPin() {
+    return GetStorage().read(hasPinKey) ?? false;
+  }
+
+  static Future<void> clearHasPin() async {
+    final box = GetStorage();
+    await box.remove(hasPinKey);
   }
 
   static bool isOnBoardDone() {

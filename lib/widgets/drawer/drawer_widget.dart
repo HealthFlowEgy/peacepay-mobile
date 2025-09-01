@@ -1,5 +1,5 @@
-import 'package:adescrow_app/controller/dashboard/dashboard_controller.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/controller/dashboard/dashboard_controller.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../backend/services/api_endpoint.dart';

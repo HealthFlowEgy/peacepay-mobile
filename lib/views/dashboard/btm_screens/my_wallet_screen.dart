@@ -1,6 +1,6 @@
-import 'package:adescrow_app/backend/services/api_endpoint.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/backend/services/api_endpoint.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../backend/models/dashboard/home_model.dart';
@@ -81,8 +81,7 @@ class MyWalletScreen extends GetView<MyWalletController> {
   }
 
   _gridViewWidget(BuildContext context, int index) {
-    UserWallet data =
-        controller.walletsController.homeModel.data.userWallet[index];
+    UserWallet data = controller.walletsController.homeModel.data.userWallet[index];
     return InkWell(
       onTap: () {
         controller.routeCurrentBalanceScreen(index, data);

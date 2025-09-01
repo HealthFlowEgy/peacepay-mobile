@@ -1,9 +1,9 @@
-name: adescrow_app
-description: Escroc App
+name: peacepay
+description: PeacePay Application
 
 publish_to: 'none'
 
-version: 1.4.2+7
+version: 1.4.2+9
 
 environment:
   sdk: ">=3.5.0 <4.2.0"
@@ -53,16 +53,17 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: 5.0.0
-#  flutter_launcher_icons: 0.13.1
-#  change_app_package_name: 1.3.0
-#  build_runner:
-#  flutter_gen_runner:
+  flutter_launcher_icons: 0.13.1
+  change_app_package_name: 1.3.0
+  build_runner:
+  flutter_gen_runner:
 
-#flutter_icons:
-#  android: "launcher_icon"
-#  ios: true
-#  image_path: "assets/logo/app_launcher.jpg"
-#
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo/app_launcher.png"
+  adaptive_icon_background: "#ffffff"
+
 #flutter_gen:
 #  output: lib/custom_assets/ # Optional (default: lib/gen/)
 #  line_length: 80 # Optional (default: 80)

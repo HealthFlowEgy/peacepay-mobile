@@ -1,4 +1,4 @@
-package net.appdevs.escroc
+package com.peacepay.pay
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

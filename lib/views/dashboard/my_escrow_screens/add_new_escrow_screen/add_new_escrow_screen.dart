@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../../../backend/models/escrow/escrow_create_model.dart';
 import '../../../../backend/models/escrow/userPolicyModel.dart';

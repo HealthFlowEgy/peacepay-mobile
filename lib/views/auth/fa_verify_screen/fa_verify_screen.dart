@@ -1,5 +1,5 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
 
 import '../../../controller/auth/fa_verify_controller.dart';
 import '../../../widgets/others/app_icon_widget.dart';

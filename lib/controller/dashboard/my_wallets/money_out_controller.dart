@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 
 import '../../../backend/models/dashboard/home_model.dart' as home;
 

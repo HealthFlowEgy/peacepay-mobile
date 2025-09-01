@@ -18,11 +18,7 @@ class BackButtonWidget extends StatelessWidget {
           effects: const [FadeEffect(), ScaleEffect()],
           child: Transform.rotate(
             angle: Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? 3.14 : 0,
-            child: SvgPicture.string(
-                SVGAssets.backButtonPrimary,
-              height: Dimensions.heightSize* 2.2,
-              width: Dimensions.widthSize * 2.2,
-            ),
+            child: Icon(Icons.arrow_back_ios_new_rounded)
           )
       ),
     );

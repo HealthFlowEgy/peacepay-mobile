@@ -1,4 +1,4 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 
 class NavButtonWidget extends StatelessWidget {
   const NavButtonWidget(

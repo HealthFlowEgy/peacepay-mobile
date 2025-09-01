@@ -1,4 +1,4 @@
-import 'package:adescrow_app/backend/models/escrow/userPolicyModel.dart';
+import 'package:peacepay/backend/models/escrow/userPolicyModel.dart';
 
 import '../../language/language_controller.dart';
 import '../../utils/basic_screen_imports.dart';

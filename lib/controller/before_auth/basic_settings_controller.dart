@@ -1,6 +1,6 @@
 
 
-import 'package:adescrow_app/backend/services/api_endpoint.dart';
+import 'package:peacepay/backend/services/api_endpoint.dart';
 import 'package:get/get.dart';
 
 import '../../backend/backend_utils/logger.dart';

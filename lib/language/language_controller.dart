@@ -21,19 +21,63 @@ class LanguageSettingController extends GetxController {
   bool get isLoading => isLoadingValue.value;
   static const String selectedLanguageKey = 'selectedLanguage';
 
+  // Future<void> fetchLanguages() async {
+  //   isLoadingValue.value = true;
+  //   try {
+  //     final languageService = LanguageService();
+  //     languages = await languageService.fetchLanguages();
+  //     isLoadingValue.value = false;
+  //     debugPrint('>> Fetch Language');
+  //   } catch (e) {
+  //     debugPrint('Error fetching language data: $e');
+  //   }
+  // }
   Future<void> fetchLanguages() async {
     isLoadingValue.value = true;
+
     try {
+      final deviceLang = Get.deviceLocale?.languageCode ?? 'en';
+
       final languageService = LanguageService();
-      languages = await languageService.fetchLanguages();
-      isLoadingValue.value = false;
-      debugPrint('>> Fetch Language');
+      languages = await languageService.fetchLanguages(langCode: deviceLang);
+
+      debugPrint('>> Fetched $deviceLang Languages');
+
+      getDefaultKey(); // Load default or saved
     } catch (e) {
       debugPrint('Error fetching language data: $e');
+    } finally {
+      isLoadingValue.value = false;
     }
   }
 
   // >> get default language key
+  String getDefaultKey() {
+    isLoadingValue.value = true;
+
+    if (languages.isEmpty) {
+      // fallback to system
+      final systemLang = Get.deviceLocale?.languageCode ?? 'en';
+      defLangKey.value = systemLang;
+      selectedLanguage.value = systemLang;
+      isLoadingValue.value = false;
+      return systemLang;
+    }
+
+    final selectedLang = languages.firstWhere(
+          (lang) => lang.status == true,
+      orElse: () => languages.first,
+    );
+
+    defLangKey.value = selectedLang.code;
+
+    final box = GetStorage();
+    selectedLanguage.value = box.read(selectedLanguageKey) ?? defLangKey.value;
+    isLoadingValue.value = false;
+    return defLangKey.value;
+  }
+
+  /*
   String getDefaultKey() {
     isLoadingValue.value = true;
     final selectedLang = languages.firstWhere(
@@ -49,7 +93,7 @@ class LanguageSettingController extends GetxController {
     selectedLanguage.value = box.read(selectedLanguageKey) ?? defLangKey.value;
     isLoadingValue.value = false;
     return selectedLang.code;
-  }
+  }*/
 
   void changeLanguage(String newLanguage) {
     selectedLanguage.value = newLanguage;
@@ -83,6 +127,15 @@ class LanguageSettingController extends GetxController {
     }
 
     return value;
+  }
+  Locale get currentLocale {
+    final code = selectedLanguage.value.isNotEmpty
+        ? selectedLanguage.value
+        : defLangKey.value.isNotEmpty
+        ? defLangKey.value
+        : Get.deviceLocale?.languageCode ?? 'en';
+
+    return Locale(code);
   }
 
   /// Get text direction [ when selected language null return default direction ]

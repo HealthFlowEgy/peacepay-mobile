@@ -1,11 +1,13 @@
-import 'package:adescrow_app/backend/backend_utils/custom_snackbar.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/widgets/text_labels/title_heading5_widget.dart';
+import 'package:peacepay/backend/backend_utils/custom_snackbar.dart';
+import 'package:peacepay/routes/routes.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/widgets/text_labels/title_heading5_widget.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../backend/models/add_money/add_money_index_model.dart';
 import '../../../../controller/dashboard/my_wallets/add_money_controller.dart';
+import '../../../../widgets/appbar/back_button.dart';
 import '../../../../widgets/custom_dropdown_widget/wallet_dropdown_widget.dart';
 import '../../../../widgets/keyboard/keyboard_widget.dart';
 import '../../../../widgets/others/custom_loading_widget.dart';
@@ -21,8 +23,22 @@ class AddMoneyScreen extends GetView<AddMoneyController> {
         child: ResponsiveLayout(
           mobileScaffold: Scaffold(
               backgroundColor: Colors.transparent,
-              appBar: const PrimaryAppBar(
-                title: Strings.addMoney,
+              appBar: AppBar(
+                title: TitleHeading2Widget(
+                  text: Strings.addMoney,
+                  fontWeight: FontWeight.w600,
+                ),
+                elevation: 0,
+                leading:BackButtonWidget(
+                  onTap: (){
+                    Get.offAllNamed(Routes.dashboardScreen);
+                  },
+                ),
+
+                iconTheme: IconThemeData(
+                  color: Theme.of(context).primaryColor,
+                  size: 30,
+                ),
               ),
               body: Obx(() => controller.isLoading
                   ? const CustomLoadingWidget()

@@ -1,6 +1,6 @@
 
 
-import 'package:adescrow_app/controller/auth/register_otp_controller.dart';
+import 'package:peacepay/controller/auth/register_otp_controller.dart';
 
 import '../../backend/backend_utils/logger.dart';
 import '../../backend/local_storage/local_storage.dart';

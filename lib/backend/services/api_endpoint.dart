@@ -1,4 +1,4 @@
-import 'package:adescrow_app/extensions/custom_extensions.dart';
+import 'package:peacepay/extensions/custom_extensions.dart';
 
 class ApiEndpoint {
   static const String mainDomain = "http://stg.peacepay.me";
@@ -16,6 +16,7 @@ class ApiEndpoint {
   /*signup section*/
   static String registrationURL = '/user/register'.addBaseURl();
   static String createPinURL = '/user/profile/pin'.addBaseURl();
+  static String checkPinURL = '/user/profile/check/pin'.addBaseURl();
   // static String emailVerificationURL = '/user/email/otp/verify'.addBaseURl();
   static String mobileVerificationURL = '/mobile/verify'.addBaseURl();
   static String signUpResendOtpURL = '/user/email/resend/code'.addBaseURl();
@@ -62,13 +63,9 @@ class ApiEndpoint {
   static String userPolicy = '/user/policies'.addBaseURl();
   static String escrowConfirmURL = '/user/my-escrow/confirm-escrow'.addBaseURl();
   static String escrowManualSubmitURL = '/user/my-escrow/manual/payment/confirmed'.addBaseURl();
-
   static String buyerPaymentIndexURL = '/user/api-escrow-action/payment/approval-pending/'.addBaseURl();
   static String buyerPaymentSubmitURL = '/user/api-escrow-action/escrow/payment/approval-submit/'.addBaseURl();
   static String buyerPaymentManualConfirmURL = '/user/api-escrow-action/approval-pending/manual/confirm'.addBaseURl();
-
-
-
   static String conversationURL = '/user/api-escrow-action/conversation'.addBaseURl();
   static String messageSendURL = '/user/api-escrow-action/message/send'.addBaseURl();
   static String disputeURL = '/user/api-escrow-action/dispute-payment'.addBaseURl();

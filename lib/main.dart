@@ -1,19 +1,19 @@
-import 'package:adescrow_app/routes/routes.dart';
-import 'package:adescrow_app/utils/theme.dart';
-import 'package:adescrow_app/views/auth/PIN/create-ConfirmPinScreen.dart';
+import 'package:peacepay/routes/routes.dart';
+import 'package:peacepay/utils/theme.dart';
+import 'package:peacepay/views/auth/PIN/create-ConfirmPinScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+import 'Translation/fallback_translation.dart';
 import 'backend/backend_utils/network_check/dependency_injection.dart';
 import 'backend/utils/maintenance/maintenance_dialog.dart';
 import 'language/english.dart';
 import 'language/language_controller.dart';
 
 void main() async {
-  // Locking Device Orientation
   WidgetsFlutterBinding.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
   SystemChrome.setPreferredOrientations([
@@ -21,10 +21,14 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  InternetCheckDependencyInjection.init();
-  // main app
-
   await GetStorage.init();
+
+  // 🔥 Put Language controller before runApp
+  Get.put(LanguageSettingController(), permanent: true);
+  Get.put(SystemMaintenanceController(), permanent: true);
+
+  InternetCheckDependencyInjection.init();
+
   final savedTheme = Themes().savedUserTheme;
   runApp(MyApp(savedTheme: savedTheme));
 }
@@ -48,6 +52,7 @@ class MyApp extends StatelessWidget {
     return ScreenUtilInit(
       designSize: const Size(414, 896),
       builder: (_, child) => GetMaterialApp(
+
         title: Strings.appName,
         debugShowCheckedModeBanner: false,
         theme: initialTheme,
@@ -57,7 +62,10 @@ class MyApp extends StatelessWidget {
         initialRoute: Routes.splashScreen,
         getPages: Routes.list,
         // translations: LocalString(),
-        locale: const Locale('en'),
+        locale: languageSettingsController.currentLocale,/// Advice from Eng: A.Adel
+        // locale: const Locale('en'),
+        translations: FallbackTranslation(),
+        fallbackLocale: const Locale('en'),
         initialBinding: BindingsBuilder(
               () {
                 Get.put(SystemMaintenanceController(), permanent: true);

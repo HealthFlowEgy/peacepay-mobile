@@ -1,6 +1,6 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/widgets/list_tile/text_value_form_widget.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/widgets/list_tile/text_value_form_widget.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../backend/models/dashboard/home_model.dart';
 import '../../backend/services/api_endpoint.dart';

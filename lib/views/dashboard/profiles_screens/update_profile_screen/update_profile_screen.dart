@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
 
 import '../../../../backend/models/dashboard/profile_model.dart';
 import '../../../../controller/dashboard/profiles/update_profile_controller.dart';

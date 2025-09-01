@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/views/dashboard/my_escrow_screens/conversation_screen/message_model.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/views/dashboard/my_escrow_screens/conversation_screen/message_model.dart';
 
 import '../../../../backend/models/conversation/conversation_model.dart';
 import '../../../../controller/dashboard/my_escrows/conversation_controller.dart';

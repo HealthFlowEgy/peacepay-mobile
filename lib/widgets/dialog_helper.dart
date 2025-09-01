@@ -1,5 +1,5 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/widgets/text_labels/title_heading5_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/widgets/text_labels/title_heading5_widget.dart';
 
 
 class DialogHelper{

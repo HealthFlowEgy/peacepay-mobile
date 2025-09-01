@@ -1,4 +1,4 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 
 import '../../backend/backend_utils/logger.dart';
 import '../../backend/download_file.dart';
@@ -18,7 +18,7 @@ class DashboardController extends GetxController with DownloadFile{
 
   @override
   void onInit() {
-    checkPermission();
+    ensureCameraPermissionIfNeeded();
     super.onInit();
   }
 
@@ -30,7 +30,7 @@ class DashboardController extends GetxController with DownloadFile{
   final selectedIndex = 0.obs;
 
   List body = [
-     HomeScreen(),
+          HomeScreen(),
     const MyEscrowScreen(),
     const MyWalletScreen(),
     const ProfileScreen()

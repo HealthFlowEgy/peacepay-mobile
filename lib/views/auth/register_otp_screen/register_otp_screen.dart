@@ -1,6 +1,6 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../../controller/auth/register_otp_controller.dart';
 import '../../../routes/routes.dart';

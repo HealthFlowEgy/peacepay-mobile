@@ -1,4 +1,4 @@
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:http/http.dart' as http;

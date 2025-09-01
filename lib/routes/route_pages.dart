@@ -1,7 +1,7 @@
-import 'package:adescrow_app/routes/routes.dart';
-import 'package:adescrow_app/views/auth/PIN/create-ConfirmPinScreen.dart';
-import 'package:adescrow_app/views/auth/fa_verify_screen/fa_verify_screen.dart';
-import 'package:adescrow_app/views/dashboard/btm_screens/home_screen.dart';
+import 'package:peacepay/routes/routes.dart';
+import 'package:peacepay/views/auth/PIN/create-ConfirmPinScreen.dart';
+import 'package:peacepay/views/auth/fa_verify_screen/fa_verify_screen.dart';
+import 'package:peacepay/views/dashboard/btm_screens/home_screen.dart';
 import 'package:get/get.dart';
 
 import '../backend/backend_utils/network_check/no_internet_screen.dart';
@@ -17,6 +17,7 @@ import '../bindings/onboard_screen_binding.dart';
 import '../bindings/register_screen_binding.dart';
 import '../bindings/splash_screen_binding.dart';
 import '../bindings/welcome_screen_binding.dart';
+import '../views/auth/PIN/pINCheckScreen.dart';
 import '../views/auth/forgot_password_otp_screen/forgot_password_otp_screen.dart';
 import '../views/auth/kyc_form_screen/kyc_form_screen.dart';
 import '../views/auth/login_screen/login_screen.dart';
@@ -123,6 +124,11 @@ class RoutePageList {
     GetPage(
       name: Routes.createPINScreen,
       page: () =>  CreateAndConfirmPinScreen(),
+      // binding: DashboardBinding(),
+    ),
+    GetPage(
+      name: Routes.checkPinScreen,
+      page: () =>  CheckPinScreen(index:  Get.arguments as int),
       // binding: DashboardBinding(),
     ),
     GetPage(

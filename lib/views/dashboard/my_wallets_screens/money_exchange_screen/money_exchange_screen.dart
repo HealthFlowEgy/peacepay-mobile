@@ -1,8 +1,8 @@
-import 'package:adescrow_app/backend/backend_utils/custom_snackbar.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
-import 'package:adescrow_app/widgets/text_labels/title_heading5_widget.dart';
+import 'package:peacepay/backend/backend_utils/custom_snackbar.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/widgets/text_labels/title_heading5_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

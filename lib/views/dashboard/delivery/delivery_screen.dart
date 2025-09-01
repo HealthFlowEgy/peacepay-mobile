@@ -1,8 +1,8 @@
-import 'package:adescrow_app/controller/dashboard/btm_navs_controller/home_controller.dart';
-import 'package:adescrow_app/controller/dashboard/btm_navs_controller/profile_controller.dart';
-import 'package:adescrow_app/controller/dashboard/delivery/delivery_controller.dart';
-import 'package:adescrow_app/controller/dashboard/profiles/update_profile_controller.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/controller/dashboard/btm_navs_controller/home_controller.dart';
+import 'package:peacepay/controller/dashboard/btm_navs_controller/profile_controller.dart';
+import 'package:peacepay/controller/dashboard/delivery/delivery_controller.dart';
+import 'package:peacepay/controller/dashboard/profiles/update_profile_controller.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
 
 import '../../../utils/basic_screen_imports.dart';
 import '../../../widgets/others/custom_loading_widget.dart';

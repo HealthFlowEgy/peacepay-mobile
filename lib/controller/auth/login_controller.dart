@@ -1,6 +1,6 @@
 
-import 'package:adescrow_app/backend/local_storage/local_storage.dart';
-import 'package:adescrow_app/controller/auth/register_otp_controller.dart';
+import 'package:peacepay/backend/local_storage/local_storage.dart';
+import 'package:peacepay/controller/auth/register_otp_controller.dart';
 
 import '../../backend/backend_utils/logger.dart';
 import '../../backend/models/auth/forgot_send_otp_model.dart';
@@ -17,8 +17,6 @@ final log = logger(LoginController);
 class LoginController extends GetxController{
   final formKey = GlobalKey<FormState>();
   final forgotPassFormKey = GlobalKey<FormState>();
-
-
   final forgotEmailController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -59,7 +57,6 @@ class LoginController extends GetxController{
 
     await ApiServices.signInApi(body: inputBody).then((value) {
       _signInModel = value!;
-
       int kycVerified = _signInModel.data.user.kycVerified;
       int twoFaStatus = _signInModel.data.user.twoFactorStatus;
       int twoFaVerified = _signInModel.data.user.twoFactorVerified;
@@ -67,7 +64,7 @@ class LoginController extends GetxController{
       if (_signInModel.data.user.smsVerified == 0) {
         Get.put(RegisterOTPController());
         Get.to(() => RegisterOTPScreen(
-          mobileNumber:emailController.text
+            mobileNumber:emailController.text
         ));
       }else if(_signInModel.data.user.hasCode == false){
         Get.toNamed(Routes.createPINScreen);

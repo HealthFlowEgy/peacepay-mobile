@@ -1,6 +1,6 @@
 
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
 import '../../../widgets/text_labels/title_sub_title_widget.dart';
 
 class ConfirmScreen extends StatelessWidget{

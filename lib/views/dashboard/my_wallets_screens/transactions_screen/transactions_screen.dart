@@ -1,9 +1,11 @@
-import 'package:adescrow_app/backend/backend_utils/no_data_widget.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/backend/backend_utils/no_data_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../../../controller/dashboard/my_wallets/transactions_controller.dart';
+import '../../../../routes/routes.dart';
+import '../../../../widgets/appbar/back_button.dart';
 import '../../../../widgets/list_tile/transaction_tile_widget.dart';
 
 class TransactionsScreen extends GetView<TransactionsController> {
@@ -15,8 +17,22 @@ class TransactionsScreen extends GetView<TransactionsController> {
       child: ResponsiveLayout(
         mobileScaffold: Scaffold(
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            appBar: const PrimaryAppBar(
-              title: Strings.transactions,
+            appBar: AppBar(
+              title: TitleHeading2Widget(
+                text: Strings.transactions,
+                fontWeight: FontWeight.w600,
+              ),
+              elevation: 0,
+              leading:  BackButtonWidget(
+                onTap: (){
+                  Get.offAllNamed(Routes.dashboardScreen,);
+                },
+              ) ,
+              backgroundColor: Colors.transparent,
+              iconTheme: IconThemeData(
+                color: Theme.of(context).primaryColor,
+                size: 30,
+              ),
             ),
             body: Obx(() => controller.isLoading
                 ? const CustomLoadingWidget()

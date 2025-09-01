@@ -1,6 +1,6 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../../../controller/dashboard/my_wallets/add_money_controller.dart';
 import '../../../../widgets/list_tile/text_value_form_widget.dart';

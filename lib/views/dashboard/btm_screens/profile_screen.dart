@@ -1,15 +1,18 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../../backend/services/api_endpoint.dart';
 import '../../../controller/before_auth/basic_settings_controller.dart';
 import '../../../controller/dashboard/btm_navs_controller/profile_controller.dart';
 import '../../../controller/dashboard/profiles/update_profile_controller.dart';
 import '../../../widgets/dialog_helper.dart';
+import '../../../widgets/list_tile/drawer_tile_button_widget.dart';
 import '../../../widgets/list_tile/profile_tile_button_widget.dart';
 import '../../../widgets/others/profile_image_widget.dart';
 import '../../../widgets/buttons/switch_button_widget.dart';
+import '../../web_view/web_view_screen.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -38,15 +41,15 @@ class ProfileScreen extends GetView<ProfileController> {
                     isCircle: false,
                   ),
                   verticalSpace(Dimensions.marginSizeVertical * .7),
-                  TitleHeading1Widget(
-                    text: Get.find<UpdateProfileController>()
-                        .profileModel
-                        .data
-                        .user
-                        .fullname,
-                    fontSize: Dimensions.headingTextSize1 * .85,
-                  ).animate().fadeIn(duration: 900.ms, delay: 300.ms).move(
-                      begin: const Offset(-16, 0), curve: Curves.easeOutQuad),
+                  // TitleHeading1Widget(
+                  //   text: Get.find<UpdateProfileController>()
+                  //       .profileModel
+                  //       .data
+                  //       .user
+                  //       .fullname,
+                  //   fontSize: Dimensions.headingTextSize1 * .85,
+                  // ).animate().fadeIn(duration: 900.ms, delay: 300.ms).move(
+                  //     begin: const Offset(-16, 0), curve: Curves.easeOutQuad),
                   verticalSpace(Dimensions.marginSizeVertical * .2),
                   TitleHeading3Widget(
                     text: Get.find<UpdateProfileController>()
@@ -113,16 +116,69 @@ class ProfileScreen extends GetView<ProfileController> {
                       icon: Icons.article_outlined,
                     ),
                   ),
-                  ProfileTileButtonWidget(
-                    onTap: controller.routeFASecurity,
-                    text: Strings.faSecurity,
-                    icon: Icons.security_outlined,
-                  ),
+                  // ProfileTileButtonWidget(
+                  //   onTap: controller.routeFASecurity,
+                  //   text: Strings.faSecurity,
+                  //   icon: Icons.security_outlined,
+                  // ),
                   ProfileTileButtonWidget(
                     onTap: controller.routeChangePassword,
                     text: Strings.changePassword,
                     icon: Icons.lock_outline,
                   ),
+                  DrawerTileButtonWidget(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const WebViewScreen(
+                                appTitle: Strings.helpCenter,
+                                link: "https://peacepay.me/support-center",
+                              )));
+                    },
+                    text: Strings.helpCenter,
+                    icon: Icons.help_outline_rounded,
+                  ),
+                  DrawerTileButtonWidget(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const WebViewScreen(
+                                appTitle: Strings.privacyPolicy,
+                                link: "https://peacepay.me/privacy",
+                              )));
+                    },
+                    text: Strings.privacyPolicy,
+                    icon: Icons.privacy_tip_outlined,
+                  ),
+                  // DrawerTileButtonWidget(
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //             builder: (context) => const WebViewScreen(
+                  //               appTitle: Strings.aboutUs,
+                  //               link: "${ApiEndpoint.mainDomain}/about-us",
+                  //             )));
+                  //   },
+                  //   text: Strings.aboutUs,
+                  //   icon: Icons.info_outline,
+                  // ),
+                  Obx(() => controller.isLoading
+                      ? const CustomLoadingWidget()
+                      : DrawerTileButtonWidget(
+                    onTap: () {
+                      DialogHelper.showAlertDialog(context,
+                          title: Strings.logout,
+                          content: Strings.logOutContent, onTap: () async {
+                            Get.close(1);
+                            await controller.logOutProcess();
+                          });
+                    },
+                    text: Strings.logout,
+                    icon: Icons.power_settings_new_outlined,
+                  )),
                   Obx(() => controller.isLoading
                       ? const CustomLoadingWidget()
                       : ProfileTileButtonWidget(

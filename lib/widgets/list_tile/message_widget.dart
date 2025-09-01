@@ -1,4 +1,4 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
 
 import '../../views/dashboard/my_escrow_screens/conversation_screen/image_viewer.dart';
 import '../../views/dashboard/my_escrow_screens/conversation_screen/message_model.dart';

@@ -1,5 +1,5 @@
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -66,8 +66,8 @@ class DashboardScreen extends GetView<DashboardController> {
                     width: width * 1,
                     child: controller.selectedIndex.value == 0
                         ? AppIconWidget(
-                            height: Dimensions.buttonHeight * .55,
-                            width: MediaQuery.sizeOf(context).width * .23,
+                            height: Dimensions.buttonHeight * .59,
+                            width: MediaQuery.sizeOf(context).width * .20,
                           )
                         : Padding(
                           padding: const EdgeInsets.only(top: 10),
@@ -84,17 +84,9 @@ class DashboardScreen extends GetView<DashboardController> {
                   },
                   actions: [
                     Visibility(
-                      visible: controller.selectedIndex.value == 0,
-                      child: Animate(
-                        effects: const [FadeEffect(), ScaleEffect()],
-                        child: IconButton(
-                          onPressed: controller.notificationRoute,
-                          icon: SvgPicture.string(
-                              SVGAssets.dashboardNotification,
-                            height: Dimensions.heightSize * 2.2,
-                            width: Dimensions.widthSize * 2.2,
-                          ),
-                        ),
+                      visible: controller.selectedIndex.value == 2,
+                      child: SizedBox(
+                        width: Dimensions.widthSize * 4,
                       ),
                     ),
                     Visibility(
@@ -117,21 +109,15 @@ class DashboardScreen extends GetView<DashboardController> {
                         ),
                       ),
                     ),
-                    Visibility(
-                      visible: controller.selectedIndex.value == 2,
-                      child: SizedBox(
-                        width: Dimensions.widthSize * 4,
-                      ),
-                    ),
-                    Visibility(
-                      visible: controller.selectedIndex.value == 3,
-                      child: const ChangeLanguageWidget(
-                        isOnboard: true,
-                      ),
-                    ),
+                    // Visibility(
+                    //   visible: controller.selectedIndex.value == 3,
+                    //   child: const ChangeLanguageWidget(
+                    //     isOnboard: true,
+                    //   ),
+                    // ),
                   ],
                 ),
-                drawer: DrawerWidget(controller: controller),
+                // drawer: DrawerWidget(controller: controller),
                 body: Obx(() => controller.body[controller.selectedIndex.value]),
                 bottomNavigationBar: _bottomNavWidget(context),
               ),

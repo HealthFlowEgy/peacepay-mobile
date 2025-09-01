@@ -1,6 +1,8 @@
-import 'package:adescrow_app/backend/services/api_endpoint.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
+import 'package:peacepay/backend/services/api_endpoint.dart';
+import 'package:peacepay/controller/auth/login_controller.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/views/auth/PIN/pINCheckScreen.dart';
 
 import '../../../../backend/backend_utils/no_data_widget.dart';
 import '../../../../backend/models/dashboard/home_model.dart';
@@ -14,7 +16,6 @@ import '../../../../widgets/others/wallet_flag_image_widget.dart';
 
 class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
   CurrentBalanceScreen({super.key});
-
   final UserWallet data = Get.arguments;
 
   @override
@@ -96,28 +97,60 @@ class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
                 name: Strings.addMoney,
                 icon: Icons.add,
                 onTap: () {
-                  Get.toNamed(Routes.addMoneyScreen, arguments: data);
+                  // Get.toNamed(Routes.checkPinScreen,);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CheckPinScreen(index: 0),
+                    ),
+                  );
                 },
               ),
+              // CircleIconButtonWidget(
+              //   name: Strings.moneyOut,
+              //   icon: Icons.remove,
+              //   onTap: () {
+              //     Get.toNamed(Routes.moneyOutScreen, arguments: data);
+              //   },
+              // ),
               CircleIconButtonWidget(
                 name: Strings.moneyOut,
                 icon: Icons.remove,
                 onTap: () {
-                  Get.toNamed(Routes.moneyOutScreen, arguments: data);
+                  if (controller.profileController.profileModel.data.user.kycVerified == 0) {
+                    Get.toNamed(Routes.kycFormScreen);
+                  } else {
+                    // Get.toNamed(Routes.moneyOutScreen, arguments: data);
+                    // Get.toNamed(Routes.checkPinScreen,);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CheckPinScreen(index: 1),
+                      ),
+                    );
+
+                  }
                 },
               ),
-              CircleIconButtonWidget(
-                name: Strings.exchange,
-                icon: Icons.currency_exchange_outlined,
-                onTap: () {
-                  Get.toNamed(Routes.moneyExchangeScreen);
-                },
-              ),
+
+              // CircleIconButtonWidget(
+              //   name: Strings.exchange,
+              //   icon: Icons.currency_exchange_outlined,
+              //   onTap: () {
+              //     Get.toNamed(Routes.moneyExchangeScreen);
+              //   },
+              // ),
               CircleIconButtonWidget(
                 name: Strings.transactions,
                 icon: Icons.history,
                 onTap: () {
-                  Get.toNamed(Routes.transactionsScreen);
+                  // Get.toNamed(Routes.transactionsScreen);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CheckPinScreen(index: 2),
+                    ),
+                  );
                 },
               ),
             ],

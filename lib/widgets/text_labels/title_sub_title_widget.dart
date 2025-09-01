@@ -1,4 +1,4 @@
-import 'package:adescrow_app/utils/basic_widget_imports.dart';
+import 'package:peacepay/utils/basic_widget_imports.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 class TitleSubTitleWidget extends StatelessWidget {

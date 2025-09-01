@@ -1,4 +1,4 @@
-import 'package:adescrow_app/backend/models/common/common_success_model.dart';
+import 'package:peacepay/backend/models/common/common_success_model.dart';
 
 import '../backend_utils/api_method.dart';
 import '../backend_utils/custom_snackbar.dart';

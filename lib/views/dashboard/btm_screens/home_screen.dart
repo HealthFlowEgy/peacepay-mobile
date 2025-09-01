@@ -1,11 +1,12 @@
-import 'package:adescrow_app/controller/dashboard/btm_navs_controller/my_wallet_controller.dart';
-import 'package:adescrow_app/controller/dashboard/btm_navs_controller/profile_controller.dart';
-import 'package:adescrow_app/controller/dashboard/my_wallets/current_balance_controller.dart';
-import 'package:adescrow_app/extensions/custom_extensions.dart';
-import 'package:adescrow_app/utils/basic_screen_imports.dart';
-import 'package:adescrow_app/utils/responsive_layout.dart';
-import 'package:adescrow_app/views/dashboard/delivery/delivery_screen.dart';
-import 'package:adescrow_app/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/controller/dashboard/btm_navs_controller/my_wallet_controller.dart';
+import 'package:peacepay/controller/dashboard/btm_navs_controller/profile_controller.dart';
+import 'package:peacepay/controller/dashboard/my_wallets/current_balance_controller.dart';
+import 'package:peacepay/extensions/custom_extensions.dart';
+import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/utils/responsive_layout.dart';
+import 'package:peacepay/views/dashboard/btm_screens/my_wallet_screen.dart';
+import 'package:peacepay/views/dashboard/delivery/delivery_screen.dart';
+import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../backend/backend_utils/no_data_widget.dart';
@@ -18,11 +19,12 @@ import '../../../language/language_controller.dart';
 import '../../../routes/routes.dart';
 import '../../../widgets/buttons/circle_icon_button_widget.dart';
 import '../../../widgets/list_tile/transaction_tile_widget.dart';
+import '../../../widgets/others/wallet_flag_image_widget.dart';
 import '../../../widgets/text_labels/title_heading5_widget.dart';
 import '../../../backend/models/dashboard/home_model.dart';
 class HomeScreen extends GetView<HomeController> {
     HomeScreen({super.key});
-    // final UserWallet? data = Get.arguments;
+
 
    @override
   Widget build(BuildContext context) {
@@ -175,50 +177,62 @@ class HomeScreen extends GetView<HomeController> {
                   decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(Dimensions.radius)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Animate(
-                        effects: const [FadeEffect(), ScaleEffect()],
-                        child: Container(
-                          height: double.infinity,
-                          width: Dimensions.widthSize * 6,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(Dimensions.radius * 1),
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                    "${ApiEndpoint.mainDomain}/${data.imagePath}/${data.flag}",
-                                  ),
-                                  fit: BoxFit.fill)),
+                  child: InkWell(
+                    onTap: (){
+
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => MyWalletScreen()));
+
+                        Get.toNamed(Routes.currentBalanceScreen, arguments: data);
+
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Animate(
+                          effects: const [FadeEffect(), ScaleEffect()],
+                          child: Container(
+                            height: double.infinity,
+                            width: Dimensions.widthSize * 6,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(Dimensions.radius * 1),
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                      "${ApiEndpoint.mainDomain}/${data.imagePath}/${data.flag}",
+                                    ),
+                                    fit: BoxFit.fill)),
+                          ),
                         ),
-                      ),
-                      horizontalSpace(Dimensions.marginSizeHorizontal * .5),
-                      FittedBox(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TitleHeading2Widget(
-                              text:
-                                  "${data.currencySymbol} ${makeBalance(data.balance.toString(), data.currencyType == "FIAT" ? 2 : 6)}",
-                              fontSize: Dimensions.headingTextSize2 * .85,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                TitleHeading4Widget(
-                                  text: "${data.name} - ${data.currencyCode}",
-                                  fontSize: Dimensions.headingTextSize4 * .85,
-                                  opacity: .4,
-                                )
-                              ],
-                            )
-                          ],
-                        ),
-                      )
-                    ],
+                        horizontalSpace(Dimensions.marginSizeHorizontal * .5),
+                        FittedBox(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              TitleHeading2Widget(
+                                text:
+                                    "${data.currencySymbol} ${makeBalance(data.balance.toString(), data.currencyType == "FIAT" ? 2 : 6)}",
+                                fontSize: Dimensions.headingTextSize2 * .85,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TitleHeading4Widget(
+                                    text: "${data.name} - ${data.currencyCode}",
+                                    fontSize: Dimensions.headingTextSize4 * .85,
+                                    opacity: .4,
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 );
               },
@@ -367,4 +381,6 @@ class HomeScreen extends GetView<HomeController> {
       ),
     );
   }
+
+
 }

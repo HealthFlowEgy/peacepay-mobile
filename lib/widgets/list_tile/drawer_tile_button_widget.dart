@@ -20,7 +20,7 @@ class DrawerTileButtonWidget extends StatelessWidget {
       onTap: onTap,
       child: Padding(
         padding: EdgeInsets.symmetric(
-           horizontal: Dimensions.paddingSizeHorizontal * 1,
+           horizontal: Dimensions.paddingSizeHorizontal * 0.5,
            vertical: Dimensions.paddingSizeHorizontal * .3,
         ),
         child: Row(
@@ -34,10 +34,12 @@ class DrawerTileButtonWidget extends StatelessWidget {
                   vertical: Dimensions.paddingSizeVertical * .1,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  // color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.circular(Dimensions.radius * .7)
                 ),
-                child: Icon(icon, size: Dimensions.iconSizeDefault * 1.3, color: CustomColor.whiteColor),
+                child: Icon(icon, size: Dimensions.iconSizeDefault * 1.3,
+                    // color: CustomColor.whiteColor,
+                ),
               ),
             ),
             
