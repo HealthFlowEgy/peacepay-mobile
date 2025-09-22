@@ -37,8 +37,6 @@ class WelcomeController extends GetxController {
   }
 
   void loginWithEmail() async{
-
-
     await ApiServices.logOutApi(false).then((value) {
       LocalStorage.logout();
       Get.offNamed(Routes.loginScreen);

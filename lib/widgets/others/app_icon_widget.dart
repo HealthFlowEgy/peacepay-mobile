@@ -15,21 +15,33 @@ class AppIconWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: Dimensions.paddingSizeHorizontal * 3
+        horizontal: Dimensions.paddingSizeHorizontal * 3,
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Obx(() => Get.find<BasicSettingsController>().isLoading ? const CustomLoadingWidget(): CustomCachedNetworkImage(
-            imageUrl: Get.find<BasicSettingsController>().appIconLink,
-            height: height ?? 80,
-            width: width ?? 100.w,
-              radius: 0,
-              isCircle: false
-          )),
-          verticalSpace(height == null ? Dimensions.paddingSizeVertical : 0),
-        ],
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          reverse: true, // keeps bottom aligned
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom, // keyboard padding
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Obx(() => Get.find<BasicSettingsController>().isLoading
+                  ? const CustomLoadingWidget()
+                  : CustomCachedNetworkImage(
+                imageUrl: Get.find<BasicSettingsController>().appIconLink,
+                height: height ?? 80,
+                width: width ?? 100.w,
+                radius: 0,
+                isCircle: false,
+              )),
+              verticalSpace(height == null ? Dimensions.paddingSizeVertical : 0),
+            ],
+          ),
+        ),
       ),
     );
+
   }
 }

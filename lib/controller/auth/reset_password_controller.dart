@@ -5,6 +5,8 @@ import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
 import '../../utils/basic_widget_imports.dart';
 import '../../views/confirm_screen.dart';
+import '../dashboard/profiles/change_password_controller.dart';
+import 'forgot_otp_controller.dart';
 import 'login_controller.dart';
 
 final log = logger(ResetPasswordController);
@@ -33,12 +35,12 @@ class ResetPasswordController extends GetxController {
     update();
 
     Map<String, dynamic> inputBody = {
-      'password': newPasswordController.text,
-      'password_confirmation': confirmPasswordController.text,
-      'token': Get.find<LoginController>().token.value,
+      'reset_token': Get.find<ForgotOTPController>().modelData!.data.token,
+      'pin_code': newPasswordController.text,
+      'pin_code_confirmation': confirmPasswordController.text,
     };
 
-    await ApiServices.resetPasswordApi(body: inputBody).then((value) {
+    await ApiServices.resetPinwordApi(body: inputBody).then((value) {
       _modelData = value!;
       update();
     }).catchError((onError) {
@@ -58,7 +60,7 @@ class ResetPasswordController extends GetxController {
           MaterialPageRoute(
               builder: (context) => ConfirmScreen(
                     message: Strings.resetPasswordConfirmationMSG,
-                    onOkayTap: () => Get.offAllNamed(Routes.loginScreen),
+                    onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
                   ))));
     }
   }

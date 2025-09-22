@@ -62,7 +62,7 @@ android {
     defaultConfig {
         applicationId "com.peacepay.pay"
         minSdkVersion 25
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
 

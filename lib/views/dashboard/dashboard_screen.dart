@@ -3,10 +3,12 @@ import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:peacepay/views/dashboard/notification_screen/notification_screen.dart';
 
 import '../../controller/dashboard/dashboard_controller.dart';
 import '../../controller/dashboard/profiles/update_profile_controller.dart';
 import '../../language/language_drop_down.dart';
+import '../../routes/routes.dart';
 import '../../utils/svg_assets.dart';
 import '../../widgets/appbar/dashboard_appbar.dart';
 import '../../widgets/drawer/drawer_widget.dart';
@@ -79,6 +81,7 @@ class DashboardScreen extends GetView<DashboardController> {
                             ),
                         ),
                   ),
+
                   onMenuTap: () {
                     controller.scaffoldKey.currentState!.openDrawer();
                   },
@@ -90,22 +93,18 @@ class DashboardScreen extends GetView<DashboardController> {
                       ),
                     ),
                     Visibility(
-                      visible: controller.selectedIndex.value == 0 && Get.find<UpdateProfileController>().selectedUserType.value=='seller',
+                      visible: controller.selectedIndex.value ==0,
                       child: IconButton(
-                        onPressed: controller.addNewEscrowRoute,
+                        onPressed: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const NotificationScreen()));                        },
                         icon: Animate(
                           effects: const [FadeEffect(), ScaleEffect()],
-                          child: Column(
-                            children: [
-                              Container(
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Theme.of(context).primaryColor),
-                                  child: const Icon(Icons.add,
-                                      color: CustomColor.whiteColor)),
-                              // Text(Strings.addNewEscrow),
-                            ],
-                          ),
+                          child: Icon(Icons.notifications_none_sharp,
+                           size: 30.sp,
+                             ),
                         ),
                       ),
                     ),
@@ -162,21 +161,21 @@ class DashboardScreen extends GetView<DashboardController> {
                 text: Strings.myEscrow,
                 isSelected: controller.selectedIndex.value == 1,
               ),
+              // NavButtonWidget(
+              //   onTap: () {
+              //     controller.selectedIndex.value = 2;
+              //   },
+              //   icon: Icons.account_balance_wallet_outlined,
+              //   text: Strings.myWallet,
+              //   isSelected: controller.selectedIndex.value == 2,
+              // ),
               NavButtonWidget(
                 onTap: () {
                   controller.selectedIndex.value = 2;
                 },
-                icon: Icons.account_balance_wallet_outlined,
-                text: Strings.myWallet,
-                isSelected: controller.selectedIndex.value == 2,
-              ),
-              NavButtonWidget(
-                onTap: () {
-                  controller.selectedIndex.value = 3;
-                },
                 icon: Icons.account_circle_outlined,
                 text: Strings.profile,
-                isSelected: controller.selectedIndex.value == 3,
+                isSelected: controller.selectedIndex.value == 2,
               ),
             ],
           )),

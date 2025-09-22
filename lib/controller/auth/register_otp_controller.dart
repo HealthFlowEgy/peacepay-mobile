@@ -58,21 +58,24 @@ class RegisterOTPController extends GetxController {
     _isLoading.value = true;
     update();
 
-    Map<String, dynamic> inputBody = {"code": pinController.text,
+    Map<String, dynamic> inputBody = {
+      "code":pinController.text,
       "mobile":mobileNum};
     await ApiServices.emailVerificationApi(body: inputBody).then((value) {
       if (value != null) {
-         if(Get.find<LoginController>().signInModel.data.user.hasCode==false){
+         if(Get.find<LoginController>().signInModel.data.user.hasPin==false){
           Get.offAllNamed(Routes.createPINScreen);
-        }else if (LocalStorage.hasPin()){
+        }else if (LocalStorage.hasPin()==false){
            Get.offAll(() => CheckPinScreen(index: 3));
          }else{
           Get.offAllNamed(Routes.dashboardScreen);
         }
+      }else{
+        CustomSnackBar.error("Verification Otp is Invalid");
       }
       update();
     }).catchError((onError) {
-      log.e(onError);
+      CustomSnackBar.error(onError.toString());
     });
 
     _isLoading.value = false;
@@ -99,11 +102,10 @@ class RegisterOTPController extends GetxController {
   }
 
   void onOTPSubmitProcess({required mobileNum}) async {
-    if (pinController.text.length == 6) {
+    if (pinController.text.length == 4) {
       await otpSubmitProcess(mobileNum: mobileNum);
       LocalStorage.isLoginSuccess(isLoggedIn: true);
       LocalStorage.saveEmail(email: mobileNum);
-
     } else {
       CustomSnackBar.error(Strings.enterPin);
     }

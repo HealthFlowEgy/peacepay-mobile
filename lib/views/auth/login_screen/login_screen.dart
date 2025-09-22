@@ -3,10 +3,12 @@ import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:peacepay/widgets/inputs/password_input_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../../backend/local_storage/local_storage.dart';
 import '../../../controller/auth/login_controller.dart';
 import '../../../widgets/buttons/secondary_button.dart';
 import '../../../widgets/others/app_icon_widget.dart';
 import '../../../widgets/others/custom_loading_widget.dart';
+import '../../../widgets/others/rich_text_widget.dart';
 import '../../../widgets/text_labels/title_heading5_widget.dart';
 import '../../../widgets/text_labels/title_sub_title_widget.dart';
 
@@ -15,6 +17,7 @@ class LoginScreen extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
+    // LocalStorage.clearHasPin();
     return SafeArea(
       child: ResponsiveLayout(
         mobileScaffold: Scaffold(
@@ -111,7 +114,7 @@ class LoginScreen extends GetView<LoginController> {
       child: Form(
         key: controller.formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
             verticalSpace(Dimensions.marginBetweenInputBox * .9),
@@ -121,22 +124,24 @@ class LoginScreen extends GetView<LoginController> {
               maxLength: 11,
               keyboardType: TextInputType.phone,
             ),
-            verticalSpace(Dimensions.marginBetweenInputBox * .8),
+            verticalSpace(Dimensions.marginBetweenInputBox * .9),
             // PasswordInputWidget(
             //   controller: controller.passwordController,
             //   hintText: Strings.password,
             // ),
-            verticalSpace(Dimensions.marginBetweenInputBox * .3),
-            // InkWell(
-            //   onTap: () {
-            //     _showDialog(context);
-            //   },
-            //   child: TitleHeading5Widget(
-            //     text: Strings.forgotPassword,
-            //     fontWeight: FontWeight.w500,
-            //     color: Theme.of(context).primaryColor,
-            //   ),
-            // )
+
+            RichTextWidget(
+              onPressed: ()=> controller.onTermsAndConditionWebView(context),
+              onPressedEnd: ()=> controller.privacyPolicyWebView(context),
+              preText: Strings.iHaveAgreed,
+              postText: Strings.termsOfUse,
+              endText: Strings.privacyPolicy,
+              textAlign: TextAlign.start,
+              opacity: .6,
+            ),
+
+
+
           ],
         ),
       ),

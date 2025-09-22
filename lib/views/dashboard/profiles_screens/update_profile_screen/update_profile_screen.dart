@@ -104,17 +104,17 @@ class UpdateProfileScreen extends GetView<UpdateProfileController> {
                     labelText: Strings.firstName,
                   ),
                 ),
-                horizontalSpace(Dimensions.marginSizeHorizontal * .5),
-                Expanded(
-                  child: PrimaryTextInputWidget(
-                    controller: controller.lastNameController,
-                    labelText: Strings.lastName,
-                  ),
-                )
+                // horizontalSpace(Dimensions.marginSizeHorizontal * .5),
+                // Expanded(
+                //   child: PrimaryTextInputWidget(
+                //     controller: controller.lastNameController,
+                //     labelText: Strings.lastName,
+                //   ),
+                // )
               ],
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
-            _countryDropDown(context),
+            // _countryDropDown(context),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
             PrimaryTextInputWidget(
               controller: controller.numberController,
@@ -145,13 +145,13 @@ class UpdateProfileScreen extends GetView<UpdateProfileController> {
                     labelText: Strings.city,
                   ),
                 ),
-                horizontalSpace(Dimensions.marginSizeHorizontal * .5),
-                Expanded(
-                  child: PrimaryTextInputWidget(
-                    controller: controller.zipController,
-                    labelText: Strings.zip,
-                  ),
-                )
+                // horizontalSpace(Dimensions.marginSizeHorizontal * .5),
+                // Expanded(
+                //   child: PrimaryTextInputWidget(
+                //     controller: controller.zipController,
+                //     labelText: Strings.zip,
+                //   ),
+                // )
               ],
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),

@@ -2,6 +2,7 @@ import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import '../../../backend/local_storage/local_storage.dart';
 import '../../../controller/auth/pin_Controller.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';

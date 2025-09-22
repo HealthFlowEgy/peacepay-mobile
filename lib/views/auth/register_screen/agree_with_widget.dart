@@ -36,15 +36,15 @@ class RememberMeWidget extends StatelessWidget {
 
           horizontalSpace(Dimensions.marginSizeHorizontal * .2),
 
-          Expanded(
-            child: RichTextWidget(
-              onPressed: ()=> controller.privacyPolicyWebView(context),
-              preText: Strings.iHaveAgreed,
-              postText: Strings.termsOfUse,
-              textAlign: TextAlign.start,
-              opacity: .6,
-            ),
-          )
+          // Expanded(
+          //   child: RichTextWidget(
+          //     onPressed: ()=> controller.privacyPolicyWebView(context),
+          //     preText: Strings.iHaveAgreed,
+          //     postText: Strings.termsOfUse,
+          //     textAlign: TextAlign.start,
+          //     opacity: .6,
+          //   ),
+          // )
 
         ],
       ),

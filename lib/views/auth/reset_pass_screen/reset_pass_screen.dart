@@ -3,6 +3,7 @@ import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:peacepay/widgets/inputs/password_input_widget.dart';
 
 import '../../../controller/auth/reset_password_controller.dart';
+import '../../../language/language_controller.dart';
 import '../../../widgets/others/app_icon_widget.dart';
 import '../../../widgets/others/custom_loading_widget.dart';
 import '../../../widgets/text_labels/title_sub_title_widget.dart';
@@ -77,37 +78,67 @@ class ResetPassScreen extends GetView<ResetPasswordController> {
   _inputWidget(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeHorizontal * .7,
-                vertical: Dimensions.paddingSizeVertical * .7,
-            ),
+        horizontal: Dimensions.paddingSizeHorizontal * .7,
+        vertical: Dimensions.paddingSizeVertical * .7,
+      ),
       margin: EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeHorizontal * .7,
-                vertical: Dimensions.paddingSizeVertical * .7,
-            ),
+        horizontal: Dimensions.paddingSizeHorizontal * .7,
+        vertical: Dimensions.paddingSizeVertical * .7,
+      ),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(Dimensions.radius * 1.5)
+        borderRadius: BorderRadius.circular(Dimensions.radius * 1.5),
       ),
       child: Form(
         key: controller.formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-
-            PasswordInputWidget(
+            PinInputWidget(
               controller: controller.newPasswordController,
               hintText: Strings.newPassword,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return Get.find<LanguageSettingController>().getTranslation(
+                    Strings.pleaseFillOutTheField,
+                  );
+                }
+                if (value.length != 6) {
+                  return Get.find<LanguageSettingController>().getTranslation(
+                    'password Must Be 6 Digits',
+                  );
+                }
+                return null;
+              },
             ),
-
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
-
-            PasswordInputWidget(
-                controller: controller.confirmPasswordController,
-                hintText: Strings.confirmPassword,
+            PinInputWidget(
+              controller: controller.confirmPasswordController,
+              hintText: Strings.confirmPassword,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return Get.find<LanguageSettingController>().getTranslation(
+                    Strings.pleaseFillOutTheField,
+                  );
+                }
+                if (value.length != 6) {
+                  return Get.find<LanguageSettingController>().getTranslation(
+                    'PIN Must Be 6 Digits',
+                  );
+                }
+                if (value != controller.newPasswordController.text) {
+                  return Get.find<LanguageSettingController>().getTranslation(
+                   'PIN Not Match'
+                  );
+                }
+                return null;
+              },
             ),
           ],
         ),
       ),
     );
   }
+
+
 }

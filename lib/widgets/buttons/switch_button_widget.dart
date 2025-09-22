@@ -33,8 +33,8 @@ class _SwitchButtonWidgetState extends State<SwitchButtonWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _btn(context, 'Buyer', 'buyer'),
-        _btn(context, 'Seller', 'seller'),
+        _btn(context, Strings.buyer, 'buyer'),
+        _btn(context, Strings.seller, 'seller'),
         _btn(context, 'Delivery', 'delivery'),
       ],
     );
@@ -47,13 +47,10 @@ class _SwitchButtonWidgetState extends State<SwitchButtonWidget> {
       onTap: () {
         setState(() {
           selectedTheme = themeKey;
-
           // Update controller state
           Get.find<UpdateProfileController>().selectedUserType.value = themeKey;
-
           // Switch theme globally
           Themes().changeUserTheme(themeKey);
-
           // Optional callback
           widget.onTap?.call(themeKey);
           Get.find<UpdateProfileController>().setUserType(themeKey);
@@ -62,8 +59,8 @@ class _SwitchButtonWidgetState extends State<SwitchButtonWidget> {
       },
       child: Container(
         alignment: Alignment.center,
-        height: Dimensions.buttonHeight * 0.9,
-        width: Dimensions.widthSize * 6,
+        height: Dimensions.buttonHeight * 0.95,
+        width: Dimensions.widthSize * 7,
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: isSelected

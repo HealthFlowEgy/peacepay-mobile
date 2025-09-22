@@ -90,7 +90,7 @@ class RoutePageList {
     ),
     GetPage(
       name: Routes.forgotOTPScreen,
-      page: () => const ForgotPasswordOTPScreen(),
+      page: () =>  ForgotPasswordOTPScreen(currentPage: Get.arguments as String,),
       binding: ForgotOTPBinding()
     ),
     GetPage(

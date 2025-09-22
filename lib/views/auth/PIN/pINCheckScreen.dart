@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../controller/auth/checkPinCode.dart';
+import '../../../controller/dashboard/profiles/update_profile_controller.dart';
 import '../../../routes/routes.dart';
 
 
@@ -13,6 +14,7 @@ class CheckPinScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(UpdateProfileController());
     final pinTextController = TextEditingController();
 
     return Scaffold(
@@ -36,13 +38,34 @@ class CheckPinScreen extends StatelessWidget {
               animationDuration: const Duration(milliseconds: 300),
               backgroundColor: Colors.transparent,
             )),
-            SizedBox(height: 15.h),
-            Obx(() => IconButton(
-              icon: Icon(controller.isPinObscured.value
-                  ? Icons.visibility_off
-                  : Icons.visibility),
-              onPressed: controller.togglePinVisibility,
+            SizedBox(height: 10.h),
+            Obx(() => Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Icon(controller.isPinObscured.value
+                      ? Icons.visibility_off
+                      : Icons.visibility),
+                  onPressed: controller.togglePinVisibility,
+                ),
+              ],
             )),
+            Row(
+              children: [
+                GestureDetector(
+                    onTap: ()async{
+                      controller.onForgotPassProcessBeforePin();
+                    },
+                    child:  Text(Strings.forgotPassword,style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 14.sp,
+                    ),)),
+                Text('?',style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 14.sp,
+                ),)
+              ],
+            ),
             Obx(() => controller.error.value == null
                 ? SizedBox.shrink()
                 : Text(
@@ -58,6 +81,7 @@ class CheckPinScreen extends StatelessWidget {
               ),
               onPressed: () async {
                 await controller.checkPinProcess(screenIndex:index!);
+
               },
               child: Text('Verify PIN',style: TextStyle(
                 fontSize: 16.sp

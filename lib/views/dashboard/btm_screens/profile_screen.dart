@@ -3,6 +3,7 @@ import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../../backend/local_storage/local_storage.dart';
 import '../../../backend/services/api_endpoint.dart';
 import '../../../controller/before_auth/basic_settings_controller.dart';
 import '../../../controller/dashboard/btm_navs_controller/profile_controller.dart';
@@ -41,16 +42,6 @@ class ProfileScreen extends GetView<ProfileController> {
                     isCircle: false,
                   ),
                   verticalSpace(Dimensions.marginSizeVertical * .7),
-                  // TitleHeading1Widget(
-                  //   text: Get.find<UpdateProfileController>()
-                  //       .profileModel
-                  //       .data
-                  //       .user
-                  //       .fullname,
-                  //   fontSize: Dimensions.headingTextSize1 * .85,
-                  // ).animate().fadeIn(duration: 900.ms, delay: 300.ms).move(
-                  //     begin: const Offset(-16, 0), curve: Curves.easeOutQuad),
-                  verticalSpace(Dimensions.marginSizeVertical * .2),
                   TitleHeading3Widget(
                     text: Get.find<UpdateProfileController>()
                         .profileModel
@@ -109,7 +100,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     icon: Icons.account_circle_outlined,
                   ),
                   Visibility(
-                    visible: Get.find<BasicSettingsController>().basicSettingModel.data.kycStatus == 1,
+                    // visible: Get.find<BasicSettingsController>().basicSettingModel.data.kycStatus == 0,
                     child: ProfileTileButtonWidget(
                       onTap: controller.routeUpdateKYC,
                       text: Strings.updateKycForm,
@@ -133,11 +124,24 @@ class ProfileScreen extends GetView<ProfileController> {
                           MaterialPageRoute(
                               builder: (context) => const WebViewScreen(
                                 appTitle: Strings.helpCenter,
-                                link: "https://peacepay.me/support-center",
+                                link: "https://peacepay.me/help-center",
                               )));
                     },
                     text: Strings.helpCenter,
                     icon: Icons.help_outline_rounded,
+                  ),
+                  DrawerTileButtonWidget(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const WebViewScreen(
+                                appTitle: 'Support Center',
+                                link: "https://peacepay.me/support-center",
+                              )));
+                    },
+                    text: 'Support Center',
+                    icon: Icons.support_agent,
                   ),
                   DrawerTileButtonWidget(
                     onTap: () {
@@ -152,19 +156,19 @@ class ProfileScreen extends GetView<ProfileController> {
                     text: Strings.privacyPolicy,
                     icon: Icons.privacy_tip_outlined,
                   ),
-                  // DrawerTileButtonWidget(
-                  //   onTap: () {
-                  //     Navigator.push(
-                  //         context,
-                  //         MaterialPageRoute(
-                  //             builder: (context) => const WebViewScreen(
-                  //               appTitle: Strings.aboutUs,
-                  //               link: "${ApiEndpoint.mainDomain}/about-us",
-                  //             )));
-                  //   },
-                  //   text: Strings.aboutUs,
-                  //   icon: Icons.info_outline,
-                  // ),
+                  DrawerTileButtonWidget(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const WebViewScreen(
+                                appTitle: Strings.termsOfUse,
+                                link: "https://peacepay.me/terms-and-conditions",
+                              )));
+                    },
+                    text: Strings.termsOfUse,
+                    icon: Icons.info_outline,
+                  ),
                   Obx(() => controller.isLoading
                       ? const CustomLoadingWidget()
                       : DrawerTileButtonWidget(

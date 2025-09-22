@@ -107,6 +107,8 @@ class LocalStorage {
     await box.remove(emailKey);
     await box.remove(isLoggedInKey);
     await box.remove(tokenKey);
+    await LocalStorage.clearHasPin();
+    await box.remove(hasPinKey);
   }
 
 

@@ -1,37 +1,67 @@
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:pinput/pinput.dart';
 
-import '../../language/language_controller.dart';
-import '../../utils/basic_widget_imports.dart';
+import '../../utils/custom_style.dart';
+import '../../utils/dimensions.dart';
+import '../../utils/size.dart';
 import '../../utils/svg_assets.dart';
-
-class PasswordInputWidget extends StatefulWidget {
-  const PasswordInputWidget({
+import '../text_labels/title_heading4_widget.dart';
+class PinInputWidget extends StatefulWidget {
+  const PinInputWidget({
     super.key,
     required this.controller,
     required this.hintText,
-    this.keyboardType,
     this.readOnly = false,
     this.focusedBorderWidth = 1.2,
     this.enabledBorderWidth = 1,
     this.color = Colors.transparent,
+    this.validator, // 👈 add validator
   });
+
   final TextEditingController controller;
   final String hintText;
-  final TextInputType? keyboardType;
-  final bool? readOnly;
-  final Color? color;
+  final bool readOnly;
+  final Color color;
   final double focusedBorderWidth;
   final double enabledBorderWidth;
+  final String? Function(String?)? validator; // 👈 add validator callback
 
   @override
-  State<PasswordInputWidget> createState() => _PasswordInputWidgetState();
+  State<PinInputWidget> createState() => _PinInputWidgetState();
 }
 
-class _PasswordInputWidgetState extends State<PasswordInputWidget> {
-  bool isVisibility = true;
+class _PinInputWidgetState extends State<PinInputWidget> {
+  bool isObscured = true;
 
   @override
   Widget build(BuildContext context) {
+    final defaultPinTheme = PinTheme(
+      width: 48,
+      height: 48,
+      textStyle: CustomStyle.lightHeading4TextStyle
+          .copyWith(color: Theme.of(context).primaryColor),
+      decoration: BoxDecoration(
+        color: widget.color,
+        borderRadius: BorderRadius.circular(Dimensions.radius * 0.5),
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withOpacity(0.2),
+          width: widget.enabledBorderWidth,
+        ),
+      ),
+    );
+
+    final focusedPinTheme = defaultPinTheme.copyWith(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(Dimensions.radius * 0.5),
+        border: Border.all(
+          color: Theme.of(context).primaryColor,
+          width: widget.focusedBorderWidth,
+        ),
+      ),
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -40,78 +70,34 @@ class _PasswordInputWidgetState extends State<PasswordInputWidget> {
           fontWeight: FontWeight.w600,
         ),
         verticalSpace(Dimensions.marginBetweenInputBox * .5),
-        TextFormField(
-          cursorColor: Theme.of(context).primaryColor,
-          readOnly: false,
-          style: CustomStyle.lightHeading4TextStyle
-              .copyWith(color: Theme.of(context).primaryColor),
-          controller: widget.controller,
-          keyboardType: widget.keyboardType,
-          validator: (String? value) {
-            if (value!.isEmpty) {
-              return Get.find<LanguageSettingController>().isLoading
-                  ? ""
-                  : Get.find<LanguageSettingController>()
-                      .getTranslation(Strings.pleaseFillOutTheField);
-            } else {
-              return null;
-            }
-          },
-          decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(Dimensions.radius * 0.5),
-              borderSide: BorderSide(
-                  color: Theme.of(context).primaryColor.withOpacity(0.2),
-                  width: widget.enabledBorderWidth),
+        Row(
+          children: [
+            Expanded(
+              child: Pinput(
+                controller: widget.controller,
+                length: 6,
+                obscureText: isObscured,
+                obscuringCharacter: '•',
+                readOnly: widget.readOnly,
+                defaultPinTheme: defaultPinTheme,
+                focusedPinTheme: focusedPinTheme,
+                keyboardType: TextInputType.number,
+                validator: widget.validator, // 👈 use validator
+              ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: Theme.of(context).primaryColor,
-                  width: widget.focusedBorderWidth),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(Dimensions.radius * 0.5),
-              borderSide: const BorderSide(color: Colors.red, width: 1),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(Dimensions.radius * 0.5),
-              borderSide: const BorderSide(color: Colors.red, width: 1),
-            ),
-            filled: true,
-            fillColor: widget.color,
-            contentPadding:
-                const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
-            hintText: Get.find<LanguageSettingController>().isLoading
-                ? ""
-                : "${Get.find<LanguageSettingController>().getTranslation(Strings.enter)} ${Get.find<LanguageSettingController>().getTranslation(widget.hintText)}",
-            hintStyle: Get.isDarkMode
-                ? CustomStyle.darkHeading3TextStyle.copyWith(
-                    color: CustomColor.primaryDarkTextColor.withOpacity(0.2),
-                    fontWeight: FontWeight.w500,
-                    fontSize: Dimensions.headingTextSize3,
-                  )
-                : CustomStyle.lightHeading3TextStyle.copyWith(
-                    color: CustomColor.primaryLightTextColor.withOpacity(0.2),
-                    fontWeight: FontWeight.w500,
-                    fontSize: Dimensions.headingTextSize3,
-                  ),
-            suffixIcon: IconButton(
+            IconButton(
               icon: Opacity(
-                opacity: .2,
+                opacity: .6,
                 child: SvgPicture.string(
-                  isVisibility ? SVGAssets.eyeSlash : SVGAssets.eye,
+                  isObscured ? SVGAssets.eyeSlash : SVGAssets.eye,
                 ),
               ),
-              color: widget.color,
-              onPressed: () {
-                setState(() {
-                  isVisibility = !isVisibility;
-                });
-              },
+              onPressed: () => setState(() {
+                isObscured = !isObscured;
+              }),
             ),
-          ),
-          obscureText: isVisibility,
-        )
+          ],
+        ),
       ],
     );
   }

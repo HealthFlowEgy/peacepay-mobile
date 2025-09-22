@@ -2,6 +2,7 @@ import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
+import '../../../backend/local_storage/local_storage.dart';
 import '../../../controller/auth/register_otp_controller.dart';
 import '../../../routes/routes.dart';
 import '../../../widgets/buttons/secondary_button.dart';
@@ -108,13 +109,13 @@ class RegisterOTPScreen extends GetView<RegisterOTPController> {
     return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.only(
-        left: Dimensions.paddingSizeHorizontal * .7,
-        right: Dimensions.paddingSizeHorizontal * .7,
+        left: Dimensions.paddingSizeHorizontal * .3,
+        right: Dimensions.paddingSizeHorizontal * .2,
         top: Dimensions.paddingSizeVertical * .7,
         bottom: Dimensions.paddingSizeVertical * .24,
       ),
       margin: EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeHorizontal * .7,
+        horizontal: Dimensions.paddingSizeHorizontal * .90,
         vertical: Dimensions.paddingSizeVertical * .7,
       ),
       decoration: BoxDecoration(

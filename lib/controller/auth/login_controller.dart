@@ -9,12 +9,14 @@ import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
 import '../../utils/basic_widget_imports.dart';
 import '../../views/auth/register_otp_screen/register_otp_screen.dart';
+import '../../views/web_view/web_view_screen.dart';
 import '../before_auth/basic_settings_controller.dart';
 
 
 final log = logger(LoginController);
 
 class LoginController extends GetxController{
+
   final formKey = GlobalKey<FormState>();
   final forgotPassFormKey = GlobalKey<FormState>();
   final forgotEmailController = TextEditingController();
@@ -38,10 +40,8 @@ class LoginController extends GetxController{
       await signInProcess();
     }
   }
-
   final _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
-
   late LoginModel _signInModel;
   LoginModel get signInModel => _signInModel;
 
@@ -49,12 +49,9 @@ class LoginController extends GetxController{
   Future<LoginModel> signInProcess() async {
     _isLoading.value = true;
     update();
-
     Map<String, dynamic> inputBody = {
       'mobile': emailController.text,
-      // 'password': passwordController.text,
     };
-
     await ApiServices.signInApi(body: inputBody).then((value) {
       _signInModel = value!;
       int kycVerified = _signInModel.data.user.kycVerified;
@@ -66,7 +63,7 @@ class LoginController extends GetxController{
         Get.to(() => RegisterOTPScreen(
             mobileNumber:emailController.text
         ));
-      }else if(_signInModel.data.user.hasCode == false){
+      }else if(_signInModel.data.user.hasPin == false){
         Get.toNamed(Routes.createPINScreen);
       }
       else {
@@ -98,7 +95,28 @@ class LoginController extends GetxController{
     update();
     return _signInModel;
   }
-
+  void onTermsAndConditionWebView(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const WebViewScreen(
+              beforeAuth: true,
+              appTitle: Strings.termsOfUse,
+              link:
+              "https://peacepay.me/terms-and-conditions",
+            )));
+  }
+  void privacyPolicyWebView(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const WebViewScreen(
+              beforeAuth: true,
+              appTitle: Strings.privacyPolicy,
+              link:
+              "https://peacepay.me/privacy",
+            )));
+  }
   void _goToSavedUser(LoginModel signInModel) {
     debugPrint("Verified => Save User and Dashboard");
 
@@ -106,8 +124,6 @@ class LoginController extends GetxController{
     LocalStorage.saveEmail(email: emailController.text);
     Get.offAllNamed(Routes.dashboardScreen);
   }
-
-
   void onForgotPassProcess() async{
     if(forgotPassFormKey.currentState!.validate()) {
       await sendOTPProcess().then((value) {
@@ -116,6 +132,9 @@ class LoginController extends GetxController{
       });
     }
   }
+
+
+
 
   final _isForgotLoading = false.obs;
   bool get isForgotLoading => _isForgotLoading.value;
@@ -133,9 +152,9 @@ class LoginController extends GetxController{
       'credentials': forgotEmailController.text,
     };
 
-    await ApiServices.forgotPasswordSendOTPApi(body: inputBody).then((value) {
+    await ApiServices.forgotPinSendOTPApi(body: inputBody).then((value) {
       _forgotModel = value!;
-      token = _forgotModel!.data.user.token.obs;
+      token = _forgotModel!.data.token.obs;
       Get.toNamed(Routes.forgotOTPScreen);
       update();
     }).catchError((onError) {

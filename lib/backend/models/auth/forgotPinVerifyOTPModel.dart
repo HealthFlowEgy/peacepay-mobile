@@ -1,14 +1,14 @@
-class ForgetSendOtpModel {
+class ForgetPinVerifyOtpModel {
   final Message message;
   final OtpData data;
 
-  ForgetSendOtpModel({
+  ForgetPinVerifyOtpModel({
     required this.message,
     required this.data,
   });
 
-  factory ForgetSendOtpModel.fromJson(Map<String, dynamic> json) {
-    return ForgetSendOtpModel(
+  factory ForgetPinVerifyOtpModel.fromJson(Map<String, dynamic> json) {
+    return ForgetPinVerifyOtpModel(
       message: Message.fromJson(json['message'] ?? const {}),
       data: OtpData.fromJson(json['data'] ?? const {}),
     );
@@ -40,7 +40,7 @@ class OtpData {
 
   factory OtpData.fromJson(Map<String, dynamic> json) {
     // Adjust the key if your backend uses a different name (e.g., 'otp_token')
-    final tok = json['token'] ?? json['otp_token'] ?? json['ver_code'];
+    final tok = json['reset_token'] ?? json['reset_token'] ?? json['reset_token'];
     return OtpData(token: tok?.toString() ?? '');
   }
 }

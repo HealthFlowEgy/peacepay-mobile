@@ -4,6 +4,7 @@ import 'package:peacepay/widgets/inputs/password_input_widget.dart';
 import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../../../controller/dashboard/profiles/change_password_controller.dart';
+import '../../../../language/language_controller.dart';
 
 class ChangePassScreen extends GetView<ChangePasswordController> {
   const ChangePassScreen({super.key});
@@ -49,7 +50,22 @@ class ChangePassScreen extends GetView<ChangePasswordController> {
 
           // inputs widgets
           _inputWidget(context),
-
+          Row(
+            children: [
+              GestureDetector(
+                  onTap: (){
+                    controller.onForgotPassProcess();
+                  },
+                  child:  Text(Strings.forgotPassword,style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 14.sp,
+                  ),)),
+              Text('?',style: TextStyle(
+                color: Colors.blue,
+                fontSize: 14.sp,
+              ),)
+            ],
+          ),
           verticalSpace(Dimensions.marginSizeVertical * .8),
 
           // primary button
@@ -61,6 +77,7 @@ class ChangePassScreen extends GetView<ChangePasswordController> {
                 )),
 
           verticalSpace(Dimensions.paddingSizeVertical * 1.5),
+
         ],
       ),
     );
@@ -73,30 +90,56 @@ class ChangePassScreen extends GetView<ChangePasswordController> {
         vertical: Dimensions.paddingSizeVertical * .7,
       ),
       decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(Dimensions.radius * 1.5)),
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(Dimensions.radius * 1.5),
+      ),
       child: Form(
         key: controller.formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            PasswordInputWidget(
+            PinInputWidget(
               controller: controller.oldPasswordController,
               hintText: Strings.oldPassword,
+              validator: (value) {
+                if (value == null || value.length != 6) {
+                  return Get.find<LanguageSettingController>()
+                      .getTranslation(Strings.pleaseFillOutTheField);
+                }
+                return null;
+              },
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
-            PasswordInputWidget(
+            PinInputWidget(
               controller: controller.newPasswordController,
               hintText: Strings.newPassword,
+              validator: (value) {
+                if (value == null || value.length != 6) {
+                  return Get.find<LanguageSettingController>()
+                      .getTranslation(Strings.pleaseFillOutTheField);
+                }
+                return null;
+              },
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
-            PasswordInputWidget(
+            PinInputWidget(
               controller: controller.confirmPasswordController,
               hintText: Strings.confirmPassword,
+              validator: (value) {
+                if (value == null || value.length != 6) {
+                  return Get.find<LanguageSettingController>()
+                      .getTranslation(Strings.pleaseFillOutTheField);
+                }
+                if (value != controller.newPasswordController.text) {
+                  return Get.find<LanguageSettingController>()
+                      .getTranslation('password Not Match');
+                }
+                return null;
+              },
             ),
           ],
         ),
       ),
     );
   }
+
 }

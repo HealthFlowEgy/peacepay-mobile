@@ -77,7 +77,10 @@ class WelcomeScreen extends GetView<WelcomeController> {
                         return  Obx(()=> CircleSVGButtonWidget(
                           onTap: () {
                             // controller.setIndex(index);
-                            biometric.showLocalAuth();
+                            // biometric.showLocalAuth();
+                            biometric.requireUnlock(onUnlocked: () {
+                              controller.setIndex(index);
+                            });
                           },
                           color: controller.selectedIndex.value == index ? CustomColor.primaryLightColor : CustomColor.primaryLightScaffoldBackgroundColor,
                           textColor: controller.selectedIndex.value == index ? CustomColor.primaryLightColor : CustomColor.primaryLightTextColor.withOpacity(.4),

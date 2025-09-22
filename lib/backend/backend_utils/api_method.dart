@@ -31,7 +31,15 @@ Future<Map<String, String>> bearerHeaderInfo() async {
     HttpHeaders.authorizationHeader: "Bearer $accessToken",
   };
 }
+Future<Map<String, String>> bearerHeaderInfoForPutMethod() async {
+  String accessToken = LocalStorage.getToken()!;
 
+  return {
+    HttpHeaders.acceptHeader: "application/json",
+    HttpHeaders.contentTypeHeader: "application/json",
+    HttpHeaders.authorizationHeader: "Bearer $accessToken",
+  };
+}
 class ApiMethod {
   ApiMethod({required this.isBasic});
 
@@ -156,10 +164,9 @@ class ApiMethod {
           .put(
         Uri.parse(url),
         body: jsonEncode(body),
-        headers: isBasic ? basicHeaderInfo() : await bearerHeaderInfo(),
-      )
-          .timeout(Duration(seconds: duration));
-
+        headers: isBasic ? basicHeaderInfo() : await bearerHeaderInfoForPutMethod(),
+      ).timeout(Duration(seconds: duration));
+       // print(LocalStorage.getToken()!+"token");
       log.i('|📒📒📒|-----------------[[ PUT ]] method response start ------------------|📒📒📒|');
       if (showResult) log.i(response.body);
       log.i(response.statusCode);
@@ -208,98 +215,109 @@ class ApiMethod {
       return null;
     }
   }
-
+  String? _extractInfoTextFromErrorBody(dynamic raw) {
+    try {
+      if (raw is Map &&
+          raw['message'] is List &&
+          (raw['message'] as List).isNotEmpty) {
+        final msg0 = (raw['message'] as List).first;
+        if (msg0 is Map && msg0['data'] is Map) {
+          final data = msg0['data'] as Map;
+          final infoText = data['info_text'];
+          if (infoText is String && infoText.trim().isNotEmpty) {
+            return infoText;
+          }
+        }
+      }
+    } catch (_) {
+      // ignore parse errors and let normal handling continue
+    }
+    return null;
+  }
   // Post Method
   Future<Map<String, dynamic>?> post(String url, Map<String, dynamic> body,
       {int code = 201, int duration = 30, bool showResult = false}) async {
     try {
-      log.i(
-          '|📍📍📍|-----------------[[ POST ]] method details start -----------------|📍📍📍|');
-
+      log.i('|📍📍📍|-----------------[[ POST ]] method details start -----------------|📍📍📍|');
       log.i(url);
-
       log.i(body);
-
-      log.i(
-          '|📍📍📍|-----------------[[ POST ]] method details end ------------|📍📍📍|');
+      log.i('|📍📍📍|-----------------[[ POST ]] method details end ------------|📍📍📍|');
 
       final response = await http
           .post(
-            Uri.parse(url),
-            body: jsonEncode(body),
-            headers: isBasic ? basicHeaderInfo() : await bearerHeaderInfo(),
-          )
+        Uri.parse(url),
+        body: jsonEncode(body),
+        headers: isBasic ? basicHeaderInfo() : await bearerHeaderInfo(),
+      )
           .timeout(Duration(seconds: duration));
 
-      log.i(
-          '|📒📒📒|-----------------[[ POST ]] method response start ------------------|📒📒📒|');
-
+      log.i('|📒📒📒|-----------------[[ POST ]] method response start ------------------|📒📒📒|');
       if (showResult) {
         log.i(response.body.toString());
       }
-
       log.i(response.statusCode);
-
-      log.i(
-          '|📒📒📒|-----------------[[ POST ]] method response end --------------------|📒📒📒|');
-      bool isMaintenance = response.statusCode == 503;
-
-      _maintenanceCheck(isMaintenance, response.body);
+      log.i('|📒📒📒|-----------------[[ POST ]] method response end --------------------|📒📒📒|');
 
       // Check Unauthorized
       if (response.statusCode == 401) {
         LocalStorage.logout();
       }
-      // Check Server Error
-      if (response.statusCode == 500) {
-        CustomSnackBar.error('Server error');
-      }
 
+      // Success path (exact code expected)
       if (response.statusCode == code) {
         return jsonDecode(response.body);
-      } else {
-        log.e('🐞🐞🐞 Error Alert On Status Code 🐞🐞🐞');
+      }
 
-        log.e(
-            'unknown error hitted in status code ${jsonDecode(response.body)}');
+      //  Non-success path (e.g., 400)
+      log.e('🐞🐞🐞 Error Alert On Status Code 🐞🐞🐞');
 
-        ErrorResponse res = ErrorResponse.fromJson(jsonDecode(response.body));
+      Map<String, dynamic>? parsed;
+      try {
+        parsed = jsonDecode(response.body) as Map<String, dynamic>?;
+      } catch (_) {
+        parsed = null;
+      }
 
-        if (!isMaintenance) CustomSnackBar.error(res.message!.error!.join(''));
-
+      // Try to show info_text if the backend sent it
+      final infoText = _extractInfoTextFromErrorBody(parsed);
+      if (infoText != null) {
+        CustomSnackBar.error(infoText);
         return null;
       }
+
+      // Fallback to your existing ErrorResponse mapping
+      try {
+        if (parsed != null) {
+          ErrorResponse res = ErrorResponse.fromJson(parsed);
+          // CustomSnackBar.error(res.message!.error!.join('ssss'));
+        } else {
+          // CustomSnackBar.error('Request failed (${response.statusCode}).');
+        }
+      } catch (_) {
+        // Last resort generic message
+        // CustomSnackBar.error('Request failed (${response.statusCode}).');
+      }
+
+      return null;
     } on SocketException {
       log.e('🐞🐞🐞 Error Alert on Socket Exception 🐞🐞🐞');
-
       CustomSnackBar.error('Check your Internet Connection and try again!');
-
       return null;
     } on TimeoutException {
       log.e('🐞🐞🐞 Error Alert Timeout Exception🐞🐞🐞');
-
       log.e('Time out exception$url');
-
       CustomSnackBar.error('Something Went Wrong! Try again');
-
       return null;
     } on http.ClientException catch (err, stackrace) {
       log.e('🐞🐞🐞 Error Alert Client Exception🐞🐞🐞');
-
       log.e('client exception hitted');
-
       log.e(err.toString());
-
       log.e(stackrace.toString());
-
       return null;
     } catch (e) {
-      log.e('🐞🐞🐞 Other Error Alert 🐞🐞🐞');
-
+      log.e('$e🐞🐞🐞 Other Error Alert 🐞🐞🐞');
       log.e('❌❌❌ unlisted error received');
-
       log.e("❌❌❌ $e");
-
       return null;
     }
   }

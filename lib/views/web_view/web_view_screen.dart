@@ -28,14 +28,14 @@ class _WebViewScreenState extends State<WebViewScreen> {
         // ignore: deprecated_member_use
         child: WillPopScope(
           onWillPop: ()async{
-            widget.beforeAuth ?  Get.offAllNamed(Routes.loginScreen): Get.offAllNamed(Routes.dashboardScreen);
+            widget.beforeAuth ?  Get.offNamed(Routes.loginScreen): Get.offAllNamed(Routes.dashboardScreen);
             return false;
           },
           child: Scaffold(
             appBar: PrimaryAppBar(
               title: widget.appTitle,
               onTap: (){
-                widget.beforeAuth ?  Get.offAllNamed(Routes.loginScreen): Get.offAllNamed(Routes.dashboardScreen);
+                widget.beforeAuth ?  Get.offNamed(Routes.loginScreen): Get.offAllNamed(Routes.dashboardScreen);
               },
             ),
 

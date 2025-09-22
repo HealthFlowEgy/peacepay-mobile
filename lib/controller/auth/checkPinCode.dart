@@ -1,9 +1,12 @@
 import 'package:get/get.dart';
 
 import '../../backend/backend_utils/custom_snackbar.dart';
+import '../../backend/local_storage/local_storage.dart';
 import '../../backend/models/auth/checkPinModel.dart';
+import '../../backend/models/auth/forgot_send_otp_model.dart';
 import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
+import '../dashboard/profiles/update_profile_controller.dart';
 class CheckPinController extends GetxController {
   // --- State
   final RxString pin = ''.obs;
@@ -46,16 +49,11 @@ class CheckPinController extends GetxController {
 
     try {
       final value = await ApiServices.checkPINApi(body: inputBody);
-
       if (value != null) {
         _checkPinModel = value;
-
-        // API: { "message": { "success": ["PIN success!"] }, "data": null }
+        Get.back(result: true);
         final msg = _checkPinModel!.firstSuccessMessage ?? "PIN verified successfully";
-        CustomSnackBar.success(msg);
-
-        // Navigate
-        // Get.toNamed(nextRoute);
+        // CustomSnackBar.success(msg);
         if (screenIndex == 0) {
           Get.offAllNamed(Routes.addMoneyScreen);
         } else if (screenIndex == 1) {
@@ -64,18 +62,87 @@ class CheckPinController extends GetxController {
           Get.offAllNamed(Routes.transactionsScreen);
       }else if (screenIndex == 3) {
           Get.offAllNamed(Routes.dashboardScreen);
+          LocalStorage.saveHasPin(hasPin: true);
         }
       } else {
         error.value = "Failed to verify PIN";
       }
     } catch (e) {
-      log.e("🐞🐞🐞 Controller error in checkPinProcess ==> $e 🐞🐞🐞");
       error.value = "Error while verifying PIN";
+
     } finally {
       _isLoading.value = false;
       update();
     }
 
     return _checkPinModel;
+  }
+  final _isForgotLoading = false.obs;
+  bool get isForgotLoading => _isForgotLoading.value;
+
+  late ForgetSendOtpModel? _forgotModel;
+  ForgetSendOtpModel? get forgotModel => _forgotModel;
+
+  late RxString token;
+  Future<ForgetSendOtpModel?> sendOTPProcess() async {
+    _isForgotLoading.value = true;
+    update();
+
+    Map<String, dynamic> inputBody = {
+      'credentials': Get.find<UpdateProfileController>()
+          .profileModel
+          .data
+          .user.mobile,
+    };
+
+    await ApiServices.forgotPinSendOTPApi(body: inputBody).then((value) {
+      _forgotModel = value!;
+      token = _forgotModel!.data.token.obs;
+      Get.toNamed(Routes.forgotOTPScreen);
+      update();
+    }).catchError((onError) {
+    });
+
+    _isForgotLoading.value = false;
+    update();
+    return _forgotModel;
+  }
+  Future<ForgetSendOtpModel?> sendOTPProcessBeforePin() async {
+
+    _isForgotLoading.value = true;
+    update();
+
+    Map<String, dynamic> inputBody = {
+      'credentials': Get.find<UpdateProfileController>()
+          .profileModel
+          .data
+          .user.mobile,
+    };
+
+    await ApiServices.forgotPinSendOTPApi(body: inputBody).then((value) {
+      _forgotModel = value!;
+      token = _forgotModel!.data.token.obs;
+      Get.toNamed(Routes.forgotOTPScreen,arguments: 'beforeLogin');
+      update();
+    }).catchError((onError) {
+    });
+
+    _isForgotLoading.value = false;
+    update();
+    return _forgotModel;
+  }
+  void onForgotPassProcess() async{
+    await sendOTPProcess().then((value) {
+      if(value != null) {
+      }
+    });
+
+  }
+  void onForgotPassProcessBeforePin() async{
+    await sendOTPProcessBeforePin().then((value) {
+      if(value != null) {
+      }
+    });
+
   }
 }

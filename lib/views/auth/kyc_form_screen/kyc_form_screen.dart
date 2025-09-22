@@ -53,8 +53,7 @@ class KYCFormScreen extends StatelessWidget {
                 subTitle: Strings.kycFormSubTitle,
               ),
             ),
-            (controller.kycModel.data.kycStatus == 0 ||
-                    controller.kycModel.data.kycStatus == 3)
+            (controller.kycModel.data.kycStatus == 0 || controller.kycModel.data.kycStatus == 3)
                 ? Column(
                     children: [
                       verticalSpace(Dimensions.paddingSizeVertical * 1),

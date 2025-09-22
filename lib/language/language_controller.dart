@@ -34,22 +34,34 @@ class LanguageSettingController extends GetxController {
   // }
   Future<void> fetchLanguages() async {
     isLoadingValue.value = true;
-
     try {
       final deviceLang = Get.deviceLocale?.languageCode ?? 'en';
-
       final languageService = LanguageService();
-      languages = await languageService.fetchLanguages(langCode: deviceLang);
 
+      languages = await languageService.fetchLanguages(langCode: deviceLang);
       debugPrint('>> Fetched $deviceLang Languages');
 
-      getDefaultKey(); // Load default or saved
+      // 👇 Set device language as selected if available
+      final box = GetStorage();
+      final savedLang = box.read(selectedLanguageKey);
+
+      if (savedLang != null && savedLang.isNotEmpty) {
+        selectedLanguage.value = savedLang; // use cached selection
+      } else {
+        // Check if device language exists in list
+        final deviceLangExists = languages.any((lang) => lang.code == deviceLang);
+        selectedLanguage.value = deviceLangExists ? deviceLang : 'en';
+        box.write(selectedLanguageKey, selectedLanguage.value);
+      }
+
+      getDefaultKey(); // fallback + sync with defaults
     } catch (e) {
       debugPrint('Error fetching language data: $e');
     } finally {
       isLoadingValue.value = false;
     }
   }
+
 
   // >> get default language key
   String getDefaultKey() {

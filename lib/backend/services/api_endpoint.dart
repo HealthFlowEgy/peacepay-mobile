@@ -1,7 +1,8 @@
 import 'package:peacepay/extensions/custom_extensions.dart';
 
 class ApiEndpoint {
-  static const String mainDomain = "http://stg.peacepay.me";
+  static const String mainDomain = "http://stg.peacepay.me";//TEST
+  // static const String mainDomain = "http://app.peacepay.me";//Live
 
   static const String baseUrl = "$mainDomain/api/v1";
 
@@ -9,9 +10,9 @@ class ApiEndpoint {
   static String languageURL = '/app-settings/languages'.addBaseURl();
 
   static String loginURL = '/user/login'.addBaseURl();
-  static String forgotSendOTPURL = '/user/forgot/password/send/otp'.addBaseURl();
-  static String forgotVerifyOTPURL = '/user/forgot/password/verify'.addBaseURl();
-  static String resetPasswordURL = '/user/forgot/password/reset'.addBaseURl();
+  static String forgotSendOTPURL = '/user/profile/forget-pin/send-otp'.addBaseURl();
+  static String forgotVerifyOTPURL = '/user/profile/forget-pin/verify-otp'.addBaseURl();
+  static String resetPasswordURL = '/user/profile/forget-pin/reset'.addBaseURl();
 
   /*signup section*/
   static String registrationURL = '/user/register'.addBaseURl();

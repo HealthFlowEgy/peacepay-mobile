@@ -142,10 +142,10 @@ class RegisterScreen extends GetView<RegisterController> {
               keyboardType: TextInputType.phone,
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
-            PasswordInputWidget(
-              controller: controller.passwordController,
-              hintText: Strings.password,
-            ),
+            // PasswordInputWidget(
+            //   controller: controller.passwordController,
+            //   hintText: Strings.password,
+            // ),
 
             verticalSpace(Dimensions.marginBetweenInputBox * .6),
 

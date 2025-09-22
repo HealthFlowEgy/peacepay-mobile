@@ -1,11 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:peacepay/backend/models/auth/createPinModel.dart';
 import 'package:peacepay/backend/models/common/common_success_model.dart';
 
 import '../../language/language_controller.dart';
+import '../../utils/basic_screen_imports.dart';
 import '../backend_utils/api_method.dart';
 import '../backend_utils/custom_snackbar.dart';
 import '../backend_utils/logger.dart';
+import '../local_storage/local_storage.dart';
 import '../models/auth/checkPinModel.dart';
+import '../models/auth/forgotPinVerifyOTPModel.dart';
 import '../models/auth/forgot_send_otp_model.dart';
 import '../models/auth/login_model.dart';
 import '../models/auth/registration_model.dart';
@@ -68,11 +72,11 @@ class ApiServices {
   }
 
   ///Send OTP Api method
-  static Future<ForgetSendOtpModel?> forgotPasswordSendOTPApi(
+  static Future<ForgetSendOtpModel?> forgotPinSendOTPApi(
       {required Map<String, dynamic> body}) async {
     Map<String, dynamic>? mapResponse;
     try {
-      mapResponse = await ApiMethod(isBasic: true).post(
+      mapResponse = await ApiMethod(isBasic: false).post(
         "${ApiEndpoint.forgotSendOTPURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
@@ -93,11 +97,11 @@ class ApiServices {
   }
 
   ///Verify OTP Api method
-  static Future<CommonSuccessModel?> forgotPasswordVerifyOTPApi(
+  static Future<ForgetPinVerifyOtpModel?> forgotPasswordVerifyOTPApi(
       {required Map<String, dynamic> body}) async {
     Map<String, dynamic>? mapResponse;
     try {
-      mapResponse = await ApiMethod(isBasic: true).post(
+      mapResponse = await ApiMethod(isBasic: false).post(
         "${ApiEndpoint.forgotVerifyOTPURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
@@ -105,7 +109,7 @@ class ApiServices {
         showResult: true,
       );
       if (mapResponse != null) {
-        CommonSuccessModel model = CommonSuccessModel.fromJson(mapResponse);
+        ForgetPinVerifyOtpModel model = ForgetPinVerifyOtpModel.fromJson(mapResponse);
         // CustomSnackBar.success(loginModel.message.success.first.toString());
         return model;
       }
@@ -118,11 +122,11 @@ class ApiServices {
   }
 
   ///ResetPassword Api method
-  static Future<CommonSuccessModel?> resetPasswordApi(
+  static Future<CommonSuccessModel?> resetPinwordApi(
       {required Map<String, dynamic> body}) async {
     Map<String, dynamic>? mapResponse;
     try {
-      mapResponse = await ApiMethod(isBasic: true).post(
+      mapResponse = await ApiMethod(isBasic: false).post(
         "${ApiEndpoint.resetPasswordURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
@@ -178,6 +182,7 @@ class ApiServices {
         duration: 15,
         showResult: true,
       );
+
       if (mapResponse != null) {
         CreatePinModel pinModel = CreatePinModel.fromJson(mapResponse);
         return pinModel;
@@ -201,19 +206,17 @@ class ApiServices {
         duration: 15,
         showResult: true,
       );
-
+      print(languageSettingsController.selectedLanguage.value.toString()+"GGGGGG");
       if (mapResponse != null) {
         CheckPinModel checkPinModel = CheckPinModel.fromJson(mapResponse);
 
         // API returns: { "message": { "success": ["PIN success!"] }, "data": null }
         final msg = checkPinModel.firstSuccessMessage ?? "PIN verified successfully";
-        CustomSnackBar.success(msg);
-
+        // CustomSnackBar.success(msg);
         return checkPinModel;
       }
     } catch (e) {
-      log.e('🐞🐞🐞 err from Check PIN api service ==> $e 🐞🐞🐞');
-      CustomSnackBar.error('Something went Wrong! in CheckPINModel');
+      CustomSnackBar.error(e.toString());
       return null;
     }
     return null;
@@ -278,11 +281,6 @@ class ApiServices {
       if (mapResponse != null) {
         CommonSuccessModel commonSuccessModel =
             CommonSuccessModel.fromJson(mapResponse);
-        print("Gggggggg");
-        // if(kDebugMode){
-        //   CustomSnackBar.success(
-        //       commonSuccessModel.message.success.first.toString());
-        // }
         return commonSuccessModel;
       }
     } catch (e) {
@@ -367,7 +365,29 @@ class ApiServices {
     }
     return null;
   }
+  static Future<CreatePinModel?> updatePINApi(
+      {required Map<String, dynamic> body}) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).put(
+        "${ApiEndpoint.createPinURL}?lang=${languageSettingsController.selectedLanguage.value}",
+        body,
+        code: 200,
+        duration: 15,
+        showResult: true,
+      );
 
+      if (mapResponse != null) {
+        CreatePinModel pinModel = CreatePinModel.fromJson(mapResponse);
+        return pinModel;
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from Create PIN api service ==> $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong! in CreatePINModel');
+      return null;
+    }
+    return null;
+  }
   static Future<CommonSuccessModel?> releasePaymentApi(
       {required Map<String, dynamic> body}) async {
     Map<String, dynamic>? mapResponse;

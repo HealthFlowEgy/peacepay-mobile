@@ -22,14 +22,14 @@ class PinCodeWidget extends StatelessWidget {
           appContext: context,
           cursorColor: Theme.of(context).primaryColor,
           keyboardType: TextInputType.number,
-          length: 6,
+          length:4,
           onChanged: (value) {
             // Handle PIN code changes
           },
           onCompleted: (value) {
             // Handle PIN code entry completion
-            // If the text length is 6, close the keyboard
-            if (value.length == 6) {
+            // If the text length is 4, close the keyboard
+            if (value.length == 4) {
               FocusManager.instance.primaryFocus?.unfocus();
             }
           },

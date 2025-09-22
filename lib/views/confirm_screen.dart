@@ -70,7 +70,7 @@ class ConfirmScreen extends StatelessWidget{
             SizedBox(
               width: MediaQuery.of(context).size.width,
               child: TitleSubTitleWidget(
-                title: Strings.congratulations,
+                title: Strings.preview,
                 subTitle: message,
               ),
             ),

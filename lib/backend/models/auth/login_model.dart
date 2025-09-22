@@ -36,7 +36,7 @@ class User {
   final int kycVerified;
   final int twoFactorVerified;
   final int twoFactorStatus;
-  final bool hasCode;
+  final bool hasPin;
 
   User({
     required this.emailVerified,
@@ -45,7 +45,7 @@ class User {
     required this.twoFactorVerified,
     // required this.twoFactorSecret,
     required this.twoFactorStatus,
-    required this.hasCode,
+    required this.hasPin,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -55,7 +55,7 @@ class User {
     twoFactorVerified: json["two_factor_verified"],
     // twoFactorSecret: json["two_factor_secret"],
     twoFactorStatus: json["two_factor_status"],
-    hasCode: json["has_pin"],
+    hasPin: json["has_pin"],
   );
 }
 

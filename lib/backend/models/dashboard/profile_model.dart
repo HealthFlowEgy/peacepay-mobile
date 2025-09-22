@@ -13,9 +13,9 @@ class ProfileModel {
 }
 
 class Data {
-  final String defaultImage;
-  final String imagePath;
-  final String baseUr;
+  final dynamic defaultImage;
+  final dynamic imagePath;
+  final dynamic baseUr;
   final User user;
   final List<Country> countries;
   final Wallet wallet;
@@ -42,7 +42,7 @@ class Data {
 }
 class Wallet {
   final double balance;
-  final String currencyCode;
+  final dynamic currencyCode;
 
   Wallet({
     required this.balance,
@@ -56,8 +56,8 @@ class Wallet {
 }
 
 class Country extends DropdownModel{
-  final String name;
-  final String mobileCode;
+  final dynamic name;
+  final dynamic mobileCode;
 
   Country({
     required this.name,
@@ -121,18 +121,18 @@ class Country extends DropdownModel{
 
 class User{
   final int id;
-  final String firstname;
-  final String lastname;
-  final String username;
-  final String email;
-  final String type;
+  final dynamic firstname;
+  final dynamic lastname;
+  final dynamic username;
+  final dynamic email;
+  final dynamic type;
   final dynamic mobileCode;
   final dynamic mobile;
   final dynamic fullMobile;
-  final String image;
+  final dynamic image;
   final Address address;
-  final String fullname;
-  final String userImage;
+  final dynamic fullname;
+  final dynamic userImage;
   int emailVerified;
   int smsVerified;
   int kycVerified;

@@ -32,14 +32,14 @@ class DashboardController extends GetxController with DownloadFile{
   List body = [
           HomeScreen(),
     const MyEscrowScreen(),
-    const MyWalletScreen(),
+    // const MyWalletScreen(),
     const ProfileScreen()
   ];
 
   List bodyText = [
     Strings.home,
     Strings.myEscrow,
-    Strings.myWallet,
+    // Strings.myWallet,
     Strings.profile
   ];
 
