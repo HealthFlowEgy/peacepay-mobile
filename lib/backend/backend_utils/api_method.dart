@@ -235,8 +235,13 @@ class ApiMethod {
     return null;
   }
   // Post Method
-  Future<Map<String, dynamic>?> post(String url, Map<String, dynamic> body,
-      {int code = 201, int duration = 30, bool showResult = false}) async {
+  Future<Map<String, dynamic>?> post(
+      String url,
+      Map<String, dynamic> body, {
+        int code = 201,
+        int duration = 30,
+        bool showResult = false,
+      }) async {
     try {
       log.i('|📍📍📍|-----------------[[ POST ]] method details start -----------------|📍📍📍|');
       log.i(url);
@@ -268,7 +273,7 @@ class ApiMethod {
         return jsonDecode(response.body);
       }
 
-      //  Non-success path (e.g., 400)
+      //  Non-success path (e.g., 400, 422, 500…)
       log.e('🐞🐞🐞 Error Alert On Status Code 🐞🐞🐞');
 
       Map<String, dynamic>? parsed;
@@ -285,11 +290,22 @@ class ApiMethod {
         return null;
       }
 
+      // 👇 Handle Laravel-style validation error like:
+      // {"message":{"error":["The mobile format is invalid."]}}
+      if (parsed?['message']?['error'] != null) {
+        final errors = parsed?['message']?['error'] as List?;
+        if (errors != null && errors.isNotEmpty) {
+          CustomSnackBar.error(errors.first.toString());
+          return null;
+        }
+      }
+
       // Fallback to your existing ErrorResponse mapping
       try {
         if (parsed != null) {
           ErrorResponse res = ErrorResponse.fromJson(parsed);
-          // CustomSnackBar.error(res.message!.error!.join('ssss'));
+          // You can enable this if you want to show error from ErrorResponse
+          // CustomSnackBar.error(res.message!.error!.join('\n'));
         } else {
           // CustomSnackBar.error('Request failed (${response.statusCode}).');
         }

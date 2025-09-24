@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:peacepay/controller/auth/login_controller.dart';
 
 import '../../backend/local_storage/local_storage.dart';
 import '../../routes/routes.dart';
@@ -19,6 +18,9 @@ class BiometricController extends GetxController with WidgetsBindingObserver {
 
   /// keep an "unlocked" session while app is in foreground
   bool _sessionUnlocked = false;
+
+  /// track last unlock method
+  UnlockMode _lastUnlockMode = UnlockMode.pin;
 
   @override
   void onInit() {
@@ -48,14 +50,10 @@ class BiometricController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  // ---------- Public APIs ----------
-
-  /// Splash router: decides where to go after splash (Login / Create PIN / Check PIN / Dashboard)
+  /// Splash router
   Future<void> gateIntoApp() async {
-
     if (_navigated.value) return;
 
-    // must have finished onboarding first (handled in SplashController)
     final loggedIn = LocalStorage.isLoggedIn();
     if (!loggedIn) {
       _go(() => Get.offAllNamed(Routes.loginScreen));
@@ -64,36 +62,31 @@ class BiometricController extends GetxController with WidgetsBindingObserver {
 
     final hasPin = LocalStorage.hasPin() == true;
     if (!hasPin) {
-      _go(() => Get.offAllNamed(
-        Routes.createPINScreen,
-      ));
+      _go(() => Get.offAllNamed(Routes.createPINScreen));
       return;
     }
 
+    // عنده PIN
     final hasBio = await _deviceHasBiometricsReady();
-    if (!hasBio) {
-      _go(() => Get.offAllNamed(
-        Routes.checkPinScreen,
-        arguments: 3,
-      ));
-      return;
+
+    if (hasBio && _lastUnlockMode == UnlockMode.biometric) {
+      // آخر مرة كان فاتح بالبصمة → جرّب البصمة
+      final ok = await _authenticateBiometric();
+      if (ok) {
+        _sessionUnlocked = true;
+        _lastUnlockMode = UnlockMode.biometric;
+        _go(() => Get.offAllNamed(Routes.dashboardScreen));
+        return;
+      }
     }
 
-    final ok = await _authenticateBiometric();
-    if (ok) {
-      _sessionUnlocked = true;
-      _go(() => Get.offAllNamed(Routes.dashboardScreen));
-    } else {
-      _go(() => Get.offAllNamed(
-        Routes.checkPinScreen,
-        arguments: 3,
-      ));
-    }
+    // في باقي الحالات → لازم يدخل PIN
+    _lastUnlockMode = UnlockMode.pin;
+    _go(() => Get.offAllNamed(Routes.checkPinScreen, arguments: 3));
   }
 
-  /// Use this to protect any action/screen. Runs [onUnlocked] only after biometric OR PIN success.
+  /// Use this to protect any action/screen
   Future<void> requireUnlock({required VoidCallback onUnlocked}) async {
-    // if already unlocked in this foreground session, just run the action
     if (_sessionUnlocked) {
       onUnlocked();
       return;
@@ -111,34 +104,33 @@ class BiometricController extends GetxController with WidgetsBindingObserver {
       return;
     }
 
-    // try biometrics first if available
-    if (await _deviceHasBiometricsReady()) {
+    if (await _deviceHasBiometricsReady() && _lastUnlockMode == UnlockMode.biometric) {
       final ok = await _authenticateBiometric();
       if (ok) {
         _sessionUnlocked = true;
+        _lastUnlockMode = UnlockMode.biometric;
         onUnlocked();
         return;
       }
-      // fall through to PIN
     }
 
-    // fallback to PIN; your CheckPinScreen must call: Get.back(result: true) on success
-    final result = await Get.toNamed(Routes.checkPinScreen, arguments: 3,);
+    // fallback → Check PIN
+    final result = await Get.toNamed(Routes.checkPinScreen, arguments: 3);
     if (result == true) {
       _sessionUnlocked = true;
+      _lastUnlockMode = UnlockMode.pin;
       onUnlocked();
     }
   }
 
-  /// Backward-compat for any old calls
+  /// Backward-compat for old calls
   Future<void> showLocalAuth() => requireUnlock(onUnlocked: () {});
 
   // ---------- Internals ----------
-
   Future<bool> _deviceHasBiometricsReady() async {
     try {
       final supported = await auth.isDeviceSupported();
-      final enrolled = await auth.canCheckBiometrics; // true if at least one biometric enrolled
+      final enrolled = await auth.canCheckBiometrics;
       return supported && enrolled;
     } catch (_) {
       return false;
@@ -150,9 +142,9 @@ class BiometricController extends GetxController with WidgetsBindingObserver {
       return await auth.authenticate(
         localizedReason: 'Authenticate to continue',
         options: const AuthenticationOptions(
-          biometricOnly: true, // we handle PIN ourselves
+          biometricOnly: true,
           stickyAuth: true,
-          useErrorDialogs: true,
+          useErrorDialogs: false, // no default system dialogs
         ),
       );
     } catch (_) {
@@ -168,3 +160,4 @@ class BiometricController extends GetxController with WidgetsBindingObserver {
 }
 
 enum SupportState { unknown, supported, unsupported }
+enum UnlockMode { pin, biometric }

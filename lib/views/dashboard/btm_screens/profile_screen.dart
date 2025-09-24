@@ -117,19 +117,19 @@ class ProfileScreen extends GetView<ProfileController> {
                     text: Strings.changePassword,
                     icon: Icons.lock_outline,
                   ),
-                  DrawerTileButtonWidget(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const WebViewScreen(
-                                appTitle: Strings.helpCenter,
-                                link: "https://peacepay.me/help-center",
-                              )));
-                    },
-                    text: Strings.helpCenter,
-                    icon: Icons.help_outline_rounded,
-                  ),
+                  // DrawerTileButtonWidget(
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //             builder: (context) => const WebViewScreen(
+                  //               appTitle: Strings.helpCenter,
+                  //               link: "https://peacepay.me/help-center",
+                  //             )));
+                  //   },
+                  //   text: Strings.helpCenter,
+                  //   icon: Icons.help_outline_rounded,
+                  // ),
                   DrawerTileButtonWidget(
                     onTap: () {
                       Navigator.push(

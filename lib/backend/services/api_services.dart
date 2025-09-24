@@ -47,25 +47,29 @@ class ApiServices {
   }
 
   ///Login Api method
-  static Future<LoginModel?> signInApi(
-      {required Map<String, dynamic> body}) async {
-    Map<String, dynamic>? mapResponse;
+  static Future<LoginModel?> signInApi({required Map<String, dynamic> body}) async {
     try {
-      mapResponse = await ApiMethod(isBasic: true).post(
+      final mapResponse = await ApiMethod(isBasic: true).post(
         "${ApiEndpoint.loginURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
         duration: 15,
         showResult: true,
       );
-      if (mapResponse != null) {
-        LoginModel loginModel = LoginModel.fromJson(mapResponse);
-        // CustomSnackBar.success(loginModel.message.success.first.toString());
-        return loginModel;
+
+      if (mapResponse != null && mapResponse['data'] != null) {
+        // Success case
+        return LoginModel.fromJson(mapResponse);
+      } else if (mapResponse != null) {
+        //  Handle 422 / validation error
+        final errorMessage = (mapResponse['message']?['error'] as List?)?.first ??
+            mapResponse['message'].toString();
+        CustomSnackBar.error(errorMessage);
+        return null;
       }
     } catch (e) {
       log.e('🐞🐞🐞 err from sign in api service ==> $e 🐞🐞🐞');
-      CustomSnackBar.error('Something went Wrong! in LoginModel');
+      // ⚠️ No need for generic snackbar here, backend message already handled
       return null;
     }
     return null;

@@ -54,23 +54,25 @@ class RegisterOTPController extends GetxController {
   final _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
 
-  otpSubmitProcess({String ?mobileNum}) async {
+  otpSubmitProcess({String? mobileNum}) async {
     _isLoading.value = true;
     update();
 
     Map<String, dynamic> inputBody = {
-      "code":pinController.text,
-      "mobile":mobileNum};
-    await ApiServices.emailVerificationApi(body: inputBody).then((value) {
+      "code": pinController.text,
+      "mobile": mobileNum,
+    };
+    await ApiServices.emailVerificationApi(body: inputBody).then((value) async {
       if (value != null) {
-         if(Get.find<LoginController>().signInModel.data.user.hasPin==false){
+        LocalStorage.isLoginSuccess(isLoggedIn: true);
+        final hasPinFromServer = Get.find<LoginController>().signInModel.data.user.hasPin;
+        await LocalStorage.saveHasPin(hasPin: hasPinFromServer);
+        if (hasPinFromServer == false) {
           Get.offAllNamed(Routes.createPINScreen);
-        }else if (LocalStorage.hasPin()==false){
-           Get.offAll(() => CheckPinScreen(index: 3));
-         }else{
-          Get.offAllNamed(Routes.dashboardScreen);
+        } else {
+          Get.offAll(() => CheckPinScreen(index: 3));
         }
-      }else{
+      } else {
         CustomSnackBar.error("Verification Otp is Invalid");
       }
       update();
@@ -81,6 +83,7 @@ class RegisterOTPController extends GetxController {
     _isLoading.value = false;
     update();
   }
+
 
   resendOTPProcess() async {
     // _isLoading.value = true;
@@ -104,7 +107,7 @@ class RegisterOTPController extends GetxController {
   void onOTPSubmitProcess({required mobileNum}) async {
     if (pinController.text.length == 4) {
       await otpSubmitProcess(mobileNum: mobileNum);
-      LocalStorage.isLoginSuccess(isLoggedIn: true);
+
       LocalStorage.saveEmail(email: mobileNum);
     } else {
       CustomSnackBar.error(Strings.enterPin);

@@ -46,54 +46,53 @@ class LoginController extends GetxController{
   LoginModel get signInModel => _signInModel;
 
 
-  Future<LoginModel> signInProcess() async {
+  Future<LoginModel?> signInProcess() async {
     _isLoading.value = true;
     update();
-    Map<String, dynamic> inputBody = {
-      'mobile': emailController.text,
-    };
-    await ApiServices.signInApi(body: inputBody).then((value) {
-      _signInModel = value!;
-      int kycVerified = _signInModel.data.user.kycVerified;
-      int twoFaStatus = _signInModel.data.user.twoFactorStatus;
-      int twoFaVerified = _signInModel.data.user.twoFactorVerified;
-      LocalStorage.saveToken(token: _signInModel.data.token);
-      if (_signInModel.data.user.smsVerified == 0) {
-        Get.put(RegisterOTPController());
-        Get.to(() => RegisterOTPScreen(
-            mobileNumber:emailController.text
-        ));
-      }else if(_signInModel.data.user.hasPin == false){
-        Get.toNamed(Routes.createPINScreen);
-      }
-      else {
-        debugPrint("Phone Verified => Login Process :: ${twoFaStatus.toString()} :: ${twoFaVerified.toString()}");
-        debugPrint("Phone Verified => Login Process :: ${twoFaStatus.toString()} :: ${twoFaVerified.toString()}");
-        debugPrint("Phone Verified => Login Process :: ${twoFaStatus.toString()} :: ${twoFaVerified.toString()}");
 
-        if(kycVerified == 0 && Get.find<BasicSettingsController>().basicSettingModel.data.kycStatus == 1){
+    try {
+      Map<String, dynamic> inputBody = {
+        'mobile': emailController.text,
+      };
+
+      final value = await ApiServices.signInApi(body: inputBody);
+
+      //  If API returned null, error is already shown inside signInApi
+      if (value == null) return null;
+
+      _signInModel = value;
+      final user = _signInModel.data.user;
+
+      // Save token
+      LocalStorage.saveToken(token: _signInModel.data.token);
+
+      // Handle navigation flow
+      if (user.smsVerified == 0) {
+        Get.put(RegisterOTPController());
+        Get.to(() => RegisterOTPScreen(mobileNumber: emailController.text));
+      } else if (!user.hasPin) {
+        Get.toNamed(Routes.createPINScreen);
+      } else {
+        if (user.kycVerified == 0 &&
+            Get.find<BasicSettingsController>().basicSettingModel.data.kycStatus == 1) {
           Get.toNamed(Routes.kycFormScreen);
-        }
-        else{
-          if (twoFaStatus == 1 && twoFaVerified == 0) {
+        } else {
+          if (user.twoFactorStatus == 1 && user.twoFactorVerified == 0) {
             Get.toNamed(Routes.faVerifyScreen);
           } else {
             _goToSavedUser(_signInModel);
           }
         }
-
-        _isLoading.value = false;
-        update();
       }
 
+      return _signInModel;
+    } catch (e) {
+      log.e("🐞 Error in signInProcess: $e");
+      return null;
+    } finally {
+      _isLoading.value = false;
       update();
-    }).catchError((onError) {
-      log.e(onError);
-    });
-
-    _isLoading.value = false;
-    update();
-    return _signInModel;
+    }
   }
   void onTermsAndConditionWebView(BuildContext context) {
     Navigator.push(

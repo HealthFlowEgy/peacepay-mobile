@@ -87,9 +87,7 @@ class KYCFormScreen extends StatelessWidget {
                         borderRadius:
                             BorderRadius.circular(Dimensions.radius * 1.5)),
                     child: TitleHeading1Widget(
-                      text: controller.kycModel.data.kycStatus == 1
-                          ? Strings.verified
-                          : Strings.pending,
+                      text: controller.kycModel.data.kycStringStatus.value.toString(),
                       color: Theme.of(context).primaryColor,
                     ),
                   )

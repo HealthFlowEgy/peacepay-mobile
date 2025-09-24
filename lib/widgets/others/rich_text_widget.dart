@@ -23,36 +23,38 @@ class RichTextWidget extends StatelessWidget {
           onTap: onPressed,
           child: Row(
             children: [
-              Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
+              Expanded(
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
                         text: Get.find<LanguageSettingController>().isLoading
                             ? ""
-                            : Get.find<LanguageSettingController>()
-                            .getTranslation(preText),
+                            : Get.find<LanguageSettingController>().getTranslation(preText),
                         style: CustomStyle.lightHeading5TextStyle.copyWith(
-                            color: CustomColor.primaryLightTextColor.withOpacity(opacity ?? .7)
-                        )
-                    ),
-                    TextSpan(
+                          color: CustomColor.primaryLightTextColor.withOpacity(opacity ?? .7),
+                        ),
+                      ),
+                      TextSpan(
                         text: Get.find<LanguageSettingController>().isLoading
                             ? ""
-                            : Get.find<LanguageSettingController>()
-                            .getTranslation(postText),
+                            : Get.find<LanguageSettingController>().getTranslation(postText),
                         style: CustomStyle.lightHeading5TextStyle.copyWith(
                           color: CustomColor.primaryLightColor,
                           fontWeight: FontWeight.w500,
-                        )
-                    ),
-
-                  ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  textAlign: textAlign ?? TextAlign.start,
+                  overflow: TextOverflow.ellipsis, // prevents overflow
+                  softWrap: true,
                 ),
-                textAlign: textAlign ?? TextAlign.center,
               ),
             ],
           ),
         ),
+
         GestureDetector(
           onTap: onPressedEnd,
           child: Row(
