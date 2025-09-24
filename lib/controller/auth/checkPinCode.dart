@@ -54,22 +54,30 @@ class CheckPinController extends GetxController {
         Get.back(result: true);
         final msg = _checkPinModel!.firstSuccessMessage ?? "PIN verified successfully";
         // CustomSnackBar.success(msg);
+
         if (screenIndex == 0) {
           Get.offAllNamed(Routes.addMoneyScreen);
+          LocalStorage.saveLastRoute(Routes.addMoneyScreen);
         } else if (screenIndex == 1) {
           Get.offAllNamed(Routes.moneyOutScreen);
-        }else if (screenIndex == 2) {
+          LocalStorage.saveLastRoute(Routes.moneyOutScreen);
+        } else if (screenIndex == 2) {
           Get.offAllNamed(Routes.transactionsScreen);
-      }else if (screenIndex == 3) {
+          LocalStorage.saveLastRoute(Routes.transactionsScreen);
+        } else if (screenIndex == 3) {
+          // Get.offAllNamed(Routes.dashboardScreen);
+          // LocalStorage.saveHasPin(hasPin: true);
+          // LocalStorage.saveLastRoute(Routes.dashboardScreen);
           Get.offAllNamed(Routes.dashboardScreen);
           LocalStorage.saveHasPin(hasPin: true);
+          LocalStorage.setFirstLoginDone(true); //
+          LocalStorage.saveLastRoute(Routes.dashboardScreen);
         }
       } else {
         error.value = "Failed to verify PIN";
       }
     } catch (e) {
       error.value = "Error while verifying PIN";
-
     } finally {
       _isLoading.value = false;
       update();
@@ -77,6 +85,7 @@ class CheckPinController extends GetxController {
 
     return _checkPinModel;
   }
+
   final _isForgotLoading = false.obs;
   bool get isForgotLoading => _isForgotLoading.value;
 

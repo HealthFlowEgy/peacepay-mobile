@@ -69,15 +69,25 @@ class PrimaryTextInputWidget extends StatelessWidget {
           maxLength: maxLength,
           keyboardType: keyboardType,
           validator: (String? value) {
-            if (value!.isEmpty && maxLine == 1) {
+            if (value == null || value.isEmpty) {
               return Get.find<LanguageSettingController>().isLoading
                   ? ""
                   : Get.find<LanguageSettingController>()
-                      .getTranslation(Strings.pleaseFillOutTheField);
-            } else {
-              return null;
+                  .getTranslation(Strings.pleaseFillOutTheField);
             }
+            if (labelText == Strings.phoneNumber) {
+              if (!value.startsWith("01")) {
+                return "Phone number must start with 01";
+              }
+              if (value.length != 11) {
+                return "Phone number must be 11 digits";
+              }
+            }
+
+            return null;
           },
+
+
           onFieldSubmitted: onChanged,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(

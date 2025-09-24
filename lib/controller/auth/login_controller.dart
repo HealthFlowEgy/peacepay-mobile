@@ -22,6 +22,9 @@ class LoginController extends GetxController{
   final forgotEmailController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final RxString _errorMessage = "".obs;
+  String get errorMessage => _errorMessage.value;
+
 
   @override
   void dispose() {
@@ -51,13 +54,23 @@ class LoginController extends GetxController{
     update();
 
     try {
+      final mobile = emailController.text.trim();
+
+      // 👉 Local validation
+      if (!mobile.startsWith("01")) {
+        _errorMessage.value = "Mobile number must start with 01";
+        return null;
+      } else {
+        _errorMessage.value = ""; // clear old error if any
+      }
+
       Map<String, dynamic> inputBody = {
-        'mobile': emailController.text,
+        'mobile': mobile,
       };
 
       final value = await ApiServices.signInApi(body: inputBody);
 
-      //  If API returned null, error is already shown inside signInApi
+      // If API returned null, error is already shown inside signInApi
       if (value == null) return null;
 
       _signInModel = value;
@@ -69,7 +82,7 @@ class LoginController extends GetxController{
       // Handle navigation flow
       if (user.smsVerified == 0) {
         Get.put(RegisterOTPController());
-        Get.to(() => RegisterOTPScreen(mobileNumber: emailController.text));
+        Get.to(() => RegisterOTPScreen(mobileNumber: mobile));
       } else if (!user.hasPin) {
         Get.toNamed(Routes.createPINScreen);
       } else {

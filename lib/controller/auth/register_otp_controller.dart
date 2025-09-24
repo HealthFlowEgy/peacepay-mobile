@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:peacepay/backend/backend_utils/custom_snackbar.dart';
 import 'package:peacepay/backend/models/auth/registration_model.dart';
@@ -62,9 +63,11 @@ class RegisterOTPController extends GetxController {
       "code": pinController.text,
       "mobile": mobileNum,
     };
+
     await ApiServices.emailVerificationApi(body: inputBody).then((value) async {
       if (value != null) {
         LocalStorage.isLoginSuccess(isLoggedIn: true);
+        await LocalStorage.setMustCheckPin(true);
         final hasPinFromServer = Get.find<LoginController>().signInModel.data.user.hasPin;
         await LocalStorage.saveHasPin(hasPin: hasPinFromServer);
         if (hasPinFromServer == false) {
@@ -73,16 +76,24 @@ class RegisterOTPController extends GetxController {
           Get.offAll(() => CheckPinScreen(index: 3));
         }
       } else {
+        // 👉 Only fallback if post() didn’t send an error already
         CustomSnackBar.error("Verification Otp is Invalid");
       }
       update();
     }).catchError((onError) {
-      CustomSnackBar.error(onError.toString());
+      try {
+        final parsed = jsonDecode(onError.toString());
+        final msg = parsed["message"]?["error"]?[0] ?? "Something went wrong.";
+        CustomSnackBar.error(msg);
+      } catch (_) {
+        CustomSnackBar.error(onError.toString());
+      }
     });
 
     _isLoading.value = false;
     update();
   }
+
 
 
   resendOTPProcess() async {
