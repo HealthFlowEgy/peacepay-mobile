@@ -22,8 +22,8 @@ class Strings {
   static const String loginSubTitle = "loginSubTitle";
   static const String emailAddress = "emailAddress";
   static const String password = "password";
-  static const String forgotPassword = "forgotPassword";
-  // static const String forgotPasswordAsk = "forgotPasswordAsk";
+  static const String forgotPassword = "Forgot PIN?";
+  static const String forgotPasswordAsk = "forgotPasswordAsk";
   static const String forgotPasswordSubTitle = "forgotPasswordSubTitle";
   static const String dontHaveAnAccount = "dontHaveAnAccount";
   static const String resend = "resend";

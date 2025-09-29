@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:peacepay/controller/auth/reset_password_controller.dart';
 import 'package:peacepay/controller/dashboard/btm_navs_controller/profile_controller.dart';
@@ -70,7 +71,7 @@ class ForgotOTPController extends GetxController{
   ForgetPinVerifyOtpModel? get modelData => _modelData;
 
   // Get.find<ChangePasswordController>().forgotModel!.data.token
-  Future<ForgetPinVerifyOtpModel>verifyOTPProcess() async {
+  verifyOTPProcess() async {
     _isForgotLoading.value = true;
     update();
 
@@ -84,17 +85,25 @@ class ForgotOTPController extends GetxController{
         _modelData = value;
         Get.put(ResetPasswordController());
         Get.toNamed(Routes.resetPassScreen);
+      }else {
+        // Only fallback if post() didn’t send an error already
+        CustomSnackBar.error("Verification Otp is Invalid");
       }
       update();
     }).catchError((onError) {
-      log.e(onError);
+      try {
+        final parsed = jsonDecode(onError.toString());
+        final msg = parsed["message"]?["error"]?[0] ?? "Something went wrong.";
+        CustomSnackBar.error(msg);
+      } catch (_) {
+        CustomSnackBar.error(onError.toString());
+      }
     });
 
     _isForgotLoading.value = false;
     update();
-    return _modelData!;
   }
-  Future<ForgetPinVerifyOtpModel>verifyOTPProcessBeforeLogin() async {
+  verifyOTPProcessBeforeLogin() async {
     _isForgotLoading.value = true;
     update();
 
@@ -108,15 +117,23 @@ class ForgotOTPController extends GetxController{
         _modelData = value;
         Get.put(ResetPasswordController());
         Get.toNamed(Routes.resetPassScreen);
+      }else {
+        // Only fallback if post() didn’t send an error already
+        CustomSnackBar.error("Verification Otp is Invalid");
       }
       update();
     }).catchError((onError) {
-      log.e(onError);
+      try {
+        final parsed = jsonDecode(onError.toString());
+        final msg = parsed["message"]?["error"]?[0] ?? "Something went wrong.";
+        CustomSnackBar.error(msg);
+      } catch (_) {
+        CustomSnackBar.error(onError.toString());
+      }
     });
 
     _isForgotLoading.value = false;
     update();
-    return _modelData!;
   }
   void onOTPSubmitProcess() async{
     Get.put(CheckPinController());

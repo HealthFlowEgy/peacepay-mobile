@@ -147,6 +147,7 @@ class ApiMethod {
     }
   }
 // PUT Method
+
   Future<Map<String, dynamic>?> put(
       String url,
       Map<String, dynamic> body, {
@@ -165,55 +166,142 @@ class ApiMethod {
         Uri.parse(url),
         body: jsonEncode(body),
         headers: isBasic ? basicHeaderInfo() : await bearerHeaderInfoForPutMethod(),
-      ).timeout(Duration(seconds: duration));
-       // print(LocalStorage.getToken()!+"token");
+      )
+          .timeout(Duration(seconds: duration));
+
       log.i('|📒📒📒|-----------------[[ PUT ]] method response start ------------------|📒📒📒|');
       if (showResult) log.i(response.body);
       log.i(response.statusCode);
       log.i('|📒📒📒|-----------------[[ PUT ]] method response end --------------------|📒📒📒|');
 
-      bool isMaintenance = response.statusCode == 503;
+      final isMaintenance = response.statusCode == 503;
       _maintenanceCheck(isMaintenance, response.body);
 
       if (response.statusCode == 401) {
         LocalStorage.logout();
+        return null;
       }
 
       if (response.statusCode == 500) {
         CustomSnackBar.error('Server error');
+        return null;
       }
 
       if (response.statusCode == code) {
-        return jsonDecode(response.body);
-      } else {
-        log.e('🐞🐞🐞 Error Alert On Status Code 🐞🐞🐞');
-        log.e('unknown error hitted in status code ${jsonDecode(response.body)}');
-        ErrorResponse res = ErrorResponse.fromJson(jsonDecode(response.body));
-
-        if (!isMaintenance) CustomSnackBar.error(res.message?.error?.join('') ?? 'Unknown error');
-
-        return null;
+        if (response.body.isEmpty) return <String, dynamic>{};
+        final decoded = _safeJsonDecode(response.body);
+        return decoded ?? <String, dynamic>{};
       }
+
+      final message = _extractErrorMessage(
+        status: response.statusCode,
+        body: response.body,
+        contentType: response.headers['content-type'],
+      );
+
+      log.e('🐞 Error ${response.statusCode}: $message');
+
+      if (!isMaintenance) {
+        CustomSnackBar.error(message);
+      }
+
+      return null;
     } on SocketException {
-      log.e('🐞🐞🐞 Error Alert on Socket Exception 🐞🐞🐞');
+      log.e('🐞🐞🐞 SocketException 🐞🐞🐞');
       CustomSnackBar.error('Check your Internet Connection and try again!');
       return null;
     } on TimeoutException {
-      log.e('🐞🐞🐞 Error Alert Timeout Exception🐞🐞🐞');
+      log.e('🐞🐞🐞 TimeoutException 🐞🐞🐞');
       log.e('Time out exception $url');
       CustomSnackBar.error('Something Went Wrong! Try again');
       return null;
     } on http.ClientException catch (err, stacktrace) {
-      log.e('🐞🐞🐞 Error Alert Client Exception🐞🐞🐞');
+      log.e('🐞🐞🐞 ClientException 🐞🐞🐞');
       log.e(err.toString());
       log.e(stacktrace.toString());
+      CustomSnackBar.error('Network client error');
       return null;
     } catch (e) {
-      log.e('🐞🐞🐞 Other Error Alert 🐞🐞🐞');
-      log.e('❌❌❌ unlisted error received');
-      log.e('❌❌❌ $e');
+      log.e('🐞🐞🐞 Other Error 🐞🐞🐞');
+      log.e('Unlisted error received');
+      log.e('$e');
+      CustomSnackBar.error('Unexpected error');
       return null;
     }
+  }
+
+// ============== Helpers ==============
+
+  Map<String, dynamic>? _safeJsonDecode(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      return (decoded is Map<String, dynamic>) ? decoded : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _extractErrorMessage({
+    required int status,
+    required String body,
+    String? contentType,
+  }) {
+    String fallbackStatus() => 'Request failed ($status)';
+
+    final trimmed = body.trim();
+    if (trimmed.isEmpty) return fallbackStatus();
+
+    final isJson = (contentType ?? '').toLowerCase().contains('application/json');
+
+    if (!isJson) {
+      return trimmed;
+    }
+
+    final map = _safeJsonDecode(trimmed);
+    if (map == null) return trimmed;
+
+    final msg = map['message'];
+    if (msg is String && msg.trim().isNotEmpty) {
+      return msg.trim();
+    }
+
+    if (msg is Map) {
+      final parts = <String>[];
+      msg.forEach((_, v) {
+        if (v is String && v.trim().isNotEmpty) {
+          parts.add(v.trim());
+        } else if (v is List) {
+          parts.addAll(
+            v.whereType<String>().map((e) => e.trim()).where((e) => e.isNotEmpty),
+          );
+        }
+      });
+      if (parts.isNotEmpty) return parts.join('\n');
+    }
+
+    final errors = map['errors'];
+    if (errors is Map) {
+      final parts = <String>[];
+      errors.forEach((_, v) {
+        if (v is String && v.trim().isNotEmpty) {
+          parts.add(v.trim());
+        } else if (v is List) {
+          parts.addAll(
+            v.whereType<String>().map((e) => e.trim()).where((e) => e.isNotEmpty),
+          );
+        }
+      });
+      if (parts.isNotEmpty) return parts.join('\n');
+    }
+
+    for (final key in const ['error', 'detail', 'title', 'error_description']) {
+      final val = map[key];
+      if (val is String && val.trim().isNotEmpty) {
+        return val.trim();
+      }
+    }
+
+    return trimmed.isNotEmpty ? trimmed : fallbackStatus();
   }
   String? _extractInfoTextFromErrorBody(dynamic raw) {
     try {

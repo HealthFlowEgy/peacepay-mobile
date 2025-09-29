@@ -144,13 +144,13 @@ class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
                 name: Strings.transactions,
                 icon: Icons.history,
                 onTap: () {
-                  // Get.toNamed(Routes.transactionsScreen);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CheckPinScreen(index: 2),
-                    ),
-                  );
+                  Get.toNamed(Routes.transactionsScreen);
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => CheckPinScreen(index: 2),
+                  //   ),
+                  // );
                 },
               ),
             ],

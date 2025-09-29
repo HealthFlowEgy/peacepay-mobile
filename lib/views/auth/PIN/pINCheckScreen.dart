@@ -60,10 +60,6 @@ class CheckPinScreen extends StatelessWidget {
                       color: Colors.blue,
                       fontSize: 14.sp,
                     ),)),
-                Text('?',style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 14.sp,
-                ),)
               ],
             ),
             Obx(() => controller.error.value == null

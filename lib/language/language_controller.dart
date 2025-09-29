@@ -20,18 +20,6 @@ class LanguageSettingController extends GetxController {
 
   bool get isLoading => isLoadingValue.value;
   static const String selectedLanguageKey = 'selectedLanguage';
-
-  // Future<void> fetchLanguages() async {
-  //   isLoadingValue.value = true;
-  //   try {
-  //     final languageService = LanguageService();
-  //     languages = await languageService.fetchLanguages();
-  //     isLoadingValue.value = false;
-  //     debugPrint('>> Fetch Language');
-  //   } catch (e) {
-  //     debugPrint('Error fetching language data: $e');
-  //   }
-  // }
   Future<void> fetchLanguages() async {
     isLoadingValue.value = true;
     try {
@@ -53,7 +41,6 @@ class LanguageSettingController extends GetxController {
         selectedLanguage.value = deviceLangExists ? deviceLang : 'en';
         box.write(selectedLanguageKey, selectedLanguage.value);
       }
-
       getDefaultKey(); // fallback + sync with defaults
     } catch (e) {
       debugPrint('Error fetching language data: $e');
@@ -62,11 +49,9 @@ class LanguageSettingController extends GetxController {
     }
   }
 
-
   // >> get default language key
   String getDefaultKey() {
     isLoadingValue.value = true;
-
     if (languages.isEmpty) {
       // fallback to system
       final systemLang = Get.deviceLocale?.languageCode ?? 'en';
@@ -88,25 +73,6 @@ class LanguageSettingController extends GetxController {
     isLoadingValue.value = false;
     return defLangKey.value;
   }
-
-  /*
-  String getDefaultKey() {
-    isLoadingValue.value = true;
-    final selectedLang = languages.firstWhere(
-      (lang) => lang.status == true,
-      orElse: () => languages.firstWhere(
-        (lang) => lang.status == false,
-      ), // Fallback to language default code, when status true.
-    );
-    defLangKey.value = selectedLang.code;
-
-    // Load selected language from cache
-    final box = GetStorage();
-    selectedLanguage.value = box.read(selectedLanguageKey) ?? defLangKey.value;
-    isLoadingValue.value = false;
-    return selectedLang.code;
-  }*/
-
   void changeLanguage(String newLanguage) {
     selectedLanguage.value = newLanguage;
     final box = GetStorage();

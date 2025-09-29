@@ -30,7 +30,6 @@ import '../backend/services/api_endpoint.dart';
 import 'language_model.dart';
 
 class LanguageService {
-  // ✅ Now accepts a language code
   Future<List<Language>> fetchLanguages({required String langCode}) async {
     try {
       final uri = Uri.parse("${ApiEndpoint.languageURL}?lang=$langCode");

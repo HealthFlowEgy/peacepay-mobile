@@ -76,7 +76,7 @@ class RegisterOTPController extends GetxController {
           Get.offAll(() => CheckPinScreen(index: 3));
         }
       } else {
-        // 👉 Only fallback if post() didn’t send an error already
+        // Only fallback if post() didn’t send an error already
         CustomSnackBar.error("Verification Otp is Invalid");
       }
       update();

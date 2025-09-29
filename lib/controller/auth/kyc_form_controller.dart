@@ -136,20 +136,22 @@ class KYCFormController extends GetxController with KycApiService{
         totalFile++;
         hasFile.value = true;
         inputFileFields.add(
-          Column(
-            mainAxisAlignment: mainStart,
-            crossAxisAlignment: crossStart,
-            children: [
-              CustomUploadFileWidget(
-                labelText: data[item].label,
-                hint: data[item].validation.mimes.join(","),
-                onTap: (File value) {
-                  updateImageData(data[item].name, value.path);
-                },
-              ),
-            ],
-          ),
-        );
+            Column(
+              mainAxisAlignment: mainStart,
+              crossAxisAlignment: crossStart,
+              children: [
+                Flexible( // <-- allows child to fit without overflow
+                  fit: FlexFit.loose,
+                  child: CustomUploadFileWidget(
+                    labelText: data[item].label,
+                    hint: data[item].validation.mimes.join(","),
+                    onTap: (File value) {
+                      updateImageData(data[item].name, value.path);
+                    },
+                  ),
+                ),
+              ],
+            ));
       }
       else if (data[item].type.contains('text')) {
         inputFields.add(

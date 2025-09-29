@@ -325,11 +325,11 @@ class DeliveryAgentScreen extends GetView<HomeController> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      TitleHeading4Widget(
-                                        text: "${data.name} - ${data.currencyCode}",
-                                        fontSize: Dimensions.headingTextSize4 * .85,
-                                        opacity: .4,
-                                      )
+                                      // TitleHeading4Widget(
+                                      //   text: "${data.name} - ${data.currencyCode}",
+                                      //   fontSize: Dimensions.headingTextSize4 * .85,
+                                      //   opacity: .4,
+                                      // )
                                     ],
                                   )
                                 ],

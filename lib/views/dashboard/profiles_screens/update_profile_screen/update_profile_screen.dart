@@ -115,27 +115,27 @@ class UpdateProfileScreen extends GetView<UpdateProfileController> {
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
             // _countryDropDown(context),
-            verticalSpace(Dimensions.marginBetweenInputBox * .8),
-            PrimaryTextInputWidget(
-              controller: controller.numberController,
-              keyboardType: TextInputType.number,
-              labelText: Strings.phoneNumber,
-              prefixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Obx(() => TitleHeading3Widget(
-                        text: controller.code.value,
-                        textAlign: TextAlign.center,
-                        padding: EdgeInsets.only(
-                          right: Dimensions.paddingSizeHorizontal * .2,
-                          left: Dimensions.paddingSizeHorizontal * .3
-                        ),
-                        opacity: .2,
-                        fontSize: Dimensions.headingTextSize3 * .85,
-                      )),
-                ],
-              ),
-            ),
+            // verticalSpace(Dimensions.marginBetweenInputBox * .8),
+            // PrimaryTextInputWidget(
+            //   controller: controller.numberController,
+            //   keyboardType: TextInputType.number,
+            //   labelText: Strings.phoneNumber,
+            //   prefixIcon: Row(
+            //     mainAxisSize: MainAxisSize.min,
+            //     children: [
+            //       Obx(() => TitleHeading3Widget(
+            //             text: controller.code.value,
+            //             textAlign: TextAlign.center,
+            //             padding: EdgeInsets.only(
+            //               right: Dimensions.paddingSizeHorizontal * .2,
+            //               left: Dimensions.paddingSizeHorizontal * .3
+            //             ),
+            //             opacity: .2,
+            //             fontSize: Dimensions.headingTextSize3 * .85,
+            //           )),
+            //     ],
+            //   ),
+            // ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
             Row(
               children: [
