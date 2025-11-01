@@ -45,7 +45,7 @@ class AddMoneyScreen extends GetView<AddMoneyController> {
                   : Column(
                       children: [
                         _walletWidget(context),
-                        _keyboardWidget(context),
+                        _keyboardAddMoneyWidget(context),
                       ],
                     ))),
         ),
@@ -106,11 +106,11 @@ class AddMoneyScreen extends GetView<AddMoneyController> {
                 ],
               ),
               verticalSpace(Dimensions.marginSizeVertical * 1),
-              _infoTextWidget(context,
-                  name: Strings.exchangeRate,
-                  value:
-                      "1.00 ${controller.selectedCurrency.value} - ${controller.exchangeRate.value.toStringAsFixed(2)} ${controller.selectedMethodCurrencyCode.value}"),
-              verticalSpace(Dimensions.marginSizeVertical * .2),
+              // _infoTextWidget(context,
+              //     name: Strings.exchangeRate,
+              //     value:
+              //         "1.00 ${controller.selectedCurrency.value} - ${controller.exchangeRate.value.toStringAsFixed(2)} ${controller.selectedMethodCurrencyCode.value}"),
+              // verticalSpace(Dimensions.marginSizeVertical * .2),
               _infoTextWidget(context,
                   name: Strings.charge,
                   value:
@@ -163,48 +163,117 @@ class AddMoneyScreen extends GetView<AddMoneyController> {
     );
   }
 
-  _keyboardWidget(BuildContext context) {
+  Widget _keyboardAddMoneyWidget(BuildContext context) {
     return Expanded(
-        flex: 12,
-        child: Obx(() => KeyboardScreenWidget(
+      flex: 12,
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: controller.amountController,
+        builder: (context, value, _) {
+          final amount = double.tryParse(value.text.trim()) ?? 0.0;
+          final pct   = controller.selectedMethodPCharge.value;
+          final fee   = amount * (pct / 100.0);
+          final total = amount + fee;
+          final code  = controller.selectedMethodCurrencyCode.value;
+
+          final btnText = 'Top-up';
+          return KeyboardScreenWidget(
             onTap: () {
-              if (controller.amountController.text.isNotEmpty) {
+              if (amount > 0) {
                 controller.addMoneyBTNClicked(context);
               } else {
                 CustomSnackBar.error(Strings.enterAmount);
               }
             },
-            widget: _paymentMethodDropDownWidget(context),
-            buttonText: Strings.addMoney,
+            buttonText: btnText,
             isLoading: controller.isSubmitLoading,
-            amountController: controller.amountController)));
+            amountController: controller.amountController,
+          );
+        },
+      ),
+    );
   }
 
-  _currencyDropDownWidget(BuildContext context) {
-    return Obx(() => SizedBox(
-          // width: MediaQuery.sizeOf(context).width * .3,
-          child: WalletDropDown<UserWallet>(
-            items: controller.addMoneyIndexModel.data.userWallet,
-            image: controller.selectedCurrencyImage.value,
-            hint: controller.selectedCurrency.value,
-            onChanged: (value) {
-              controller.selectedCurrency.value = value!.title;
-              controller.selectedCurrencyRate.value = value.rate;
-              controller.selectedCurrencyImage.value = value.img;
 
-              controller.exchangeCalculation();
-            },
-            titleTextColor: CustomColor.whiteColor,
-            dropDownColor: Theme.of(context).primaryColor,
-            borderEnable: true,
-            dropDownFieldColor: Theme.of(context).primaryColor,
-            dropDownIconColor: CustomColor.whiteColor,
-            border: Border.all(
-              color: Theme.of(context).primaryColor,
-            ),
+
+  Widget _currencyDropDownWidget(BuildContext context) {
+    return Obx(() {
+      final wallets = controller.addMoneyIndexModel.data.userWallet ?? [];
+
+      // 0 items → hide (or show a placeholder; your call)
+      if (wallets.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      // 1 item → show read-only chip/field (no dropdown)
+      if (wallets.length == 1) {
+        final single = wallets.first;
+
+        // Set selection once without causing build-time state churn
+        if (controller.selectedCurrency.value != single.title) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            controller.selectedCurrency.value = single.title;
+            controller.selectedCurrencyRate.value = single.rate;
+            controller.selectedCurrencyImage.value = single.img;
+            controller.exchangeCalculation();
+          });
+        }
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Theme.of(context).primaryColor),
           ),
-        ));
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (controller.selectedCurrencyImage.value.toString().isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Image.network(
+                    controller.selectedCurrencyImage.value,
+                    width: 20,
+                    height: 20,
+                    errorBuilder: (_, __, ___) => const SizedBox(width: 20, height: 20),
+                  ),
+                ),
+              Text(
+                controller.selectedCurrency.value,
+                style: TextStyle(
+                  color: CustomColor.whiteColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      // 2+ items → normal dropdown
+      return SizedBox(
+        child: WalletDropDown<UserWallet>(
+          items: wallets,
+          image: controller.selectedCurrencyImage.value,
+          hint: controller.selectedCurrency.value,
+          onChanged: (value) {
+            if (value == null) return;
+            controller.selectedCurrency.value = value.title;
+            controller.selectedCurrencyRate.value = value.rate;
+            controller.selectedCurrencyImage.value = value.img;
+            controller.exchangeCalculation();
+          },
+          titleTextColor: CustomColor.whiteColor,
+          dropDownColor: Theme.of(context).primaryColor,
+          borderEnable: true,
+          dropDownFieldColor: Theme.of(context).primaryColor,
+          dropDownIconColor: CustomColor.whiteColor,
+          border: Border.all(color: Theme.of(context).primaryColor),
+        ),
+      );
+    });
   }
+
 
   _paymentMethodDropDownWidget(BuildContext context) {
     return Obx(() => SizedBox(

@@ -3,6 +3,7 @@ import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
+import '../../../../controller/dashboard/btm_navs_controller/home_controller.dart';
 import '../../../../controller/dashboard/my_wallets/transactions_controller.dart';
 import '../../../../routes/routes.dart';
 import '../../../../widgets/appbar/back_button.dart';
@@ -58,7 +59,8 @@ class TransactionsScreen extends GetView<TransactionsController> {
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Obx(() => TransactionTileWidget(
-                          onTap: () {
+
+                      onTap: () {
                             if (controller.openTileIndex.value != index) {
                               controller.openTileIndex.value = index;
                             } else {

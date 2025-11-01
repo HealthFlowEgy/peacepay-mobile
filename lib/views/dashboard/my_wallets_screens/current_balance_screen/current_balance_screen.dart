@@ -71,21 +71,21 @@ class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
           fontSize: Dimensions.headingTextSize1 * 1.2,
         ),
         verticalSpace(Dimensions.marginSizeVertical * .2),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TitleHeading3Widget(
-              text: "${data.name} - ",
-              opacity: .4,
-              fontSize: Dimensions.headingTextSize3 * .85,
-            ),
-            TitleHeading3Widget(
-              text: data.currencyCode,
-              color: Theme.of(context).primaryColor,
-              fontSize: Dimensions.headingTextSize3 * .85,
-            ),
-          ],
-        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     TitleHeading3Widget(
+        //       text: "${data.name} - ",
+        //       opacity: .4,
+        //       fontSize: Dimensions.headingTextSize3 * .85,
+        //     ),
+        //     TitleHeading3Widget(
+        //       text: data.currencyCode,
+        //       color: Theme.of(context).primaryColor,
+        //       fontSize: Dimensions.headingTextSize3 * .85,
+        //     ),
+        //   ],
+        // ),
         verticalSpace(Dimensions.marginSizeVertical * 1),
         Padding(
           padding: EdgeInsets.symmetric(
@@ -97,7 +97,6 @@ class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
                 name: Strings.addMoney,
                 icon: Icons.add,
                 onTap: () {
-                  // Get.toNamed(Routes.checkPinScreen,);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -117,7 +116,8 @@ class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
                 name: Strings.moneyOut,
                 icon: Icons.remove,
                 onTap: () {
-                  if (controller.profileController.profileModel.data.user.kycVerified == 0) {
+                  if (controller.profileController.profileModel.data.user.kycVerified == 0
+                      ||controller.profileController.profileModel.data.user.kycVerified == 3 ||controller.profileController.profileModel.data.user.kycVerified == 2) {
                     Get.toNamed(Routes.kycFormScreen);
                   } else {
                     // Get.toNamed(Routes.moneyOutScreen, arguments: data);

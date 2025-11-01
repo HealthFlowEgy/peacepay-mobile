@@ -26,6 +26,7 @@ mixin EscrowApiService {
     try {
       mapResponse = await ApiMethod(isBasic: false).get(
         "${ApiEndpoint.escrowIndexURL}?lang=${languageSettingsController.selectedLanguage.value}",
+        // "${ApiEndpoint.escrowIndexURL}?lang=${languageSettingsController.selectedLanguage.value}",
         code: 200,
         showResult: false,
       );

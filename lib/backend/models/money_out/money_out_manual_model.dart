@@ -1,12 +1,25 @@
 class MoneyOutManualModel {
+  final Message message;
   final Data data;
 
   MoneyOutManualModel({
+    required this.message,
     required this.data,
   });
 
   factory MoneyOutManualModel.fromJson(Map<String, dynamic> json) => MoneyOutManualModel(
+    message: Message.fromJson(json["message"]),
     data: Data.fromJson(json["data"]),
+  );
+}
+
+class Message {
+  final List<String> success;
+
+  Message({required this.success});
+
+  factory Message.fromJson(Map<String, dynamic> json) => Message(
+    success: List<String>.from(json["success"].map((x) => x)),
   );
 }
 
@@ -49,6 +62,7 @@ class InputField {
   final String name;
   final bool required;
   final Validation validation;
+  final Map<String, String>? options;
 
   InputField({
     required this.type,
@@ -56,6 +70,7 @@ class InputField {
     required this.name,
     required this.required,
     required this.validation,
+    this.options,
   });
 
   factory InputField.fromJson(Map<String, dynamic> json) => InputField(
@@ -64,13 +79,16 @@ class InputField {
     name: json["name"],
     required: json["required"],
     validation: Validation.fromJson(json["validation"]),
+    options: json["options"] != null
+        ? Map<String, String>.from(json["options"])
+        : null,
   );
 }
 
 class Validation {
   final String max;
   final List<String> mimes;
-  final dynamic min;
+  final String min;
   final List<dynamic> options;
   final bool required;
 

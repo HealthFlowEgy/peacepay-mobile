@@ -1,7 +1,7 @@
 import 'package:peacepay/extensions/custom_extensions.dart';
 
 class ApiEndpoint {
-  static const String mainDomain = "http://stg.peacepay.me";//TEST
+  static const String mainDomain = "https://stg.peacepay.me";//TEST
   // static const String mainDomain = "http://app.peacepay.me";//Live
 
   static const String baseUrl = "$mainDomain/api/v1";

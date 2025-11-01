@@ -1,62 +1,90 @@
-import 'payment_information_model.dart';
+class AddMoneyHealthPayModel {
+  String trx;
+  String iframeUrl;
+  PaymentInformations paymentInformations;
+  String message;
 
-class AddMoneyPaypalModel {
-  final Data data;
-
-  AddMoneyPaypalModel({
-    required this.data,
-  });
-
-  factory AddMoneyPaypalModel.fromJson(Map<String, dynamic> json) => AddMoneyPaypalModel(
-    data: Data.fromJson(json["data"]),
-  );
-}
-
-class Data {
-  final String gategayType;
-  final String gatewayCurrencyName;
-  final String alias;
-  final String identify;
-  final PaymentInformations paymentInformations;
-  final List<Url> url;
-  final String method;
-
-  Data({
-    required this.gategayType,
-    required this.gatewayCurrencyName,
-    required this.alias,
-    required this.identify,
+  AddMoneyHealthPayModel({
+    required this.trx,
+    required this.iframeUrl,
     required this.paymentInformations,
-    required this.url,
-    required this.method,
+    required this.message,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    gategayType: json["gategay_type"],
-    gatewayCurrencyName: json["gateway_currency_name"],
-    alias: json["alias"],
-    identify: json["identify"],
-    paymentInformations: PaymentInformations.fromJson(json["payment_informations"]),
-    url: List<Url>.from(json["url"].map((x) => Url.fromJson(x))),
-    method: json["method"],
-  );
+  factory AddMoneyHealthPayModel.fromJson(Map<String, dynamic> json) {
+    return AddMoneyHealthPayModel(
+      trx: json['trx'] ?? '',
+      iframeUrl: json['iframeUrl'] ?? '',
+      message: json['message'] ?? '',
+      paymentInformations: json['payment_informations'] != null
+          ? PaymentInformations.fromJson(json['payment_informations'])
+          : PaymentInformations.empty(), // fallback if null
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'trx': trx,
+      'iframeUrl': iframeUrl,
+      'message': message,
+      'payment_informations': paymentInformations.toJson(),
+    };
+  }
 }
 
+class PaymentInformations {
+  String trx;
+  String gatewayCurrencyName;
+  String requestAmount;
+  String exchangeRate;
+  String totalCharge;
+  String willGet;
+  String payableAmount;
 
-class Url {
-  final String href;
-  final String rel;
-  final String method;
-
-  Url({
-    required this.href,
-    required this.rel,
-    required this.method,
+  PaymentInformations({
+    required this.trx,
+    required this.gatewayCurrencyName,
+    required this.requestAmount,
+    required this.exchangeRate,
+    required this.totalCharge,
+    required this.willGet,
+    required this.payableAmount,
   });
 
-  factory Url.fromJson(Map<String, dynamic> json) => Url(
-    href: json["href"],
-    rel: json["rel"],
-    method: json["method"],
-  );
+  factory PaymentInformations.fromJson(Map<String, dynamic> json) {
+    return PaymentInformations(
+      trx: json['trx'] ?? '',
+      gatewayCurrencyName: json['gateway_currency_name'] ?? '',
+      requestAmount: json['request_amount'] ?? '',
+      exchangeRate: json['exchange_rate'] ?? '',
+      totalCharge: json['total_charge'] ?? '',
+      willGet: json['will_get'] ?? '',
+      payableAmount: json['payable_amount'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'trx': trx,
+      'gateway_currency_name': gatewayCurrencyName,
+      'request_amount': requestAmount,
+      'exchange_rate': exchangeRate,
+      'total_charge': totalCharge,
+      'will_get': willGet,
+      'payable_amount': payableAmount,
+    };
+  }
+
+  /// Optional helper to handle null gracefully
+  factory PaymentInformations.empty() {
+    return PaymentInformations(
+      trx: '',
+      gatewayCurrencyName: '',
+      requestAmount: '',
+      exchangeRate: '',
+      totalCharge: '',
+      willGet: '',
+      payableAmount: '',
+    );
+  }
 }

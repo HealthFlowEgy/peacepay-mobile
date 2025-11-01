@@ -29,6 +29,7 @@ class Data {
   final int kycStatus;
   final List<InputField> inputFields;
   final KycStringStatus kycStringStatus;
+  final InnerData? innerData; // represents "data" object inside main "data"
 
   Data({
     required this.statusInfo,
@@ -36,15 +37,49 @@ class Data {
     required this.kycStatus,
     required this.inputFields,
     required this.kycStringStatus,
+    this.innerData,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     statusInfo: json["status_info"],
     rejectReason: json["reject_reason"],
     kycStatus: json["kyc_status"],
-    inputFields: List<InputField>.from(
-        json["input_fields"].map((x) => InputField.fromJson(x))),
-    kycStringStatus: KycStringStatus.fromJson(json["kyc_string_status"]),
+    inputFields: json["input_fields"] != null
+        ? List<InputField>.from(
+        json["input_fields"].map((x) => InputField.fromJson(x)))
+        : [],
+    kycStringStatus:
+    KycStringStatus.fromJson(json["kyc_string_status"]),
+    innerData:
+    json["data"] != null ? InnerData.fromJson(json["data"]) : null,
+  );
+}
+
+class InnerData {
+  final int id;
+  final int userId;
+  final List<InputField> data;
+  final String rejectReason;
+  final String createdAt;
+  final String updatedAt;
+
+  InnerData({
+    required this.id,
+    required this.userId,
+    required this.data,
+    required this.rejectReason,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory InnerData.fromJson(Map<String, dynamic> json) => InnerData(
+    id: json["id"],
+    userId: json["user_id"],
+    data: List<InputField>.from(
+        json["data"].map((x) => InputField.fromJson(x))),
+    rejectReason: json["reject_reason"],
+    createdAt: json["created_at"],
+    updatedAt: json["updated_at"],
   );
 }
 
@@ -54,6 +89,7 @@ class InputField {
   final String name;
   final bool required;
   final Validation validation;
+  final String? value;
 
   InputField({
     required this.type,
@@ -61,6 +97,7 @@ class InputField {
     required this.name,
     required this.required,
     required this.validation,
+    this.value,
   });
 
   factory InputField.fromJson(Map<String, dynamic> json) => InputField(
@@ -69,6 +106,7 @@ class InputField {
     name: json["name"],
     required: json["required"],
     validation: Validation.fromJson(json["validation"]),
+    value: json["value"],
   );
 }
 

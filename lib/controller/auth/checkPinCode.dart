@@ -6,6 +6,7 @@ import '../../backend/models/auth/checkPinModel.dart';
 import '../../backend/models/auth/forgot_send_otp_model.dart';
 import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
+import '../dashboard/my_wallets/add_money_controller.dart';
 import '../dashboard/profiles/update_profile_controller.dart';
 class CheckPinController extends GetxController {
   // --- State
@@ -52,23 +53,21 @@ class CheckPinController extends GetxController {
       if (value != null) {
         _checkPinModel = value;
         Get.back(result: true);
-        final msg = _checkPinModel!.firstSuccessMessage ?? "PIN verified successfully";
-        // CustomSnackBar.success(msg);
-
         if (screenIndex == 0) {
-          Get.offAllNamed(Routes.addMoneyScreen);
+          Get.toNamed(Routes.addMoneyScreen);
+          pin.value = '';
           LocalStorage.saveLastRoute(Routes.addMoneyScreen);
         } else if (screenIndex == 1) {
-          Get.offAllNamed(Routes.moneyOutScreen);
+          Get.toNamed(Routes.moneyOutScreen);
+          pin.value = '';
           LocalStorage.saveLastRoute(Routes.moneyOutScreen);
         } else if (screenIndex == 2) {
-          Get.offAllNamed(Routes.transactionsScreen);
+          Get.toNamed(Routes.transactionsScreen);
+          pin.value = '';
           LocalStorage.saveLastRoute(Routes.transactionsScreen);
         } else if (screenIndex == 3) {
-          // Get.offAllNamed(Routes.dashboardScreen);
-          // LocalStorage.saveHasPin(hasPin: true);
-          // LocalStorage.saveLastRoute(Routes.dashboardScreen);
           Get.offAllNamed(Routes.dashboardScreen);
+          pin.value = '';
           LocalStorage.saveHasPin(hasPin: true);
           LocalStorage.setFirstLoginDone(true); //
           LocalStorage.saveLastRoute(Routes.dashboardScreen);

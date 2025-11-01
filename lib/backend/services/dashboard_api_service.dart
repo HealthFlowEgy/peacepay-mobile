@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:peacepay/backend/models/common/common_success_model.dart';
 
 import '../backend_utils/api_method.dart';
@@ -37,20 +39,23 @@ mixin DashboardApiService {
     Map<String, dynamic>? mapResponse;
     try {
       mapResponse = await ApiMethod(isBasic: false).get(
-        "${ApiEndpoint.allTransactionsURL}?page=$page"
+        "${ApiEndpoint.allTransactionsURL}?page=$page",
       );
+
       if (mapResponse != null) {
+        // print(const JsonEncoder.withIndent('  ').convert(mapResponse));
         TransactionModel result = TransactionModel.fromJson(mapResponse);
-        // CustomSnackBar.success(result.message.success.first.toString());
+
         return result;
       }
     } catch (e) {
-      log.e(':ladybug::ladybug::ladybug: err from Transaction api service ==> $e :ladybug::ladybug::ladybug:');
+      log.e(':ladybug: err from Transaction api service ==> $e :ladybug::ladybug::ladybug:');
       CustomSnackBar.error('Something went Wrong!');
       return null;
     }
     return null;
   }
+
 
 
   ///* Get CachedTatum api services

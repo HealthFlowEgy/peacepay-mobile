@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 
 import '../../backend/backend_utils/custom_snackbar.dart';
 import '../../backend/backend_utils/logger.dart';
@@ -14,154 +16,170 @@ import '../../widgets/others/custom_upload_file_widget.dart';
 
 final log = logger(KYCFormController);
 
-class KYCFormController extends GetxController with KycApiService{
+/// Controller that handles:
+/// - Fetching KYC form fields dynamically
+/// - Submitting KYC form data
+/// - Managing upload files
+/// - Handling reapply/reset logic
+class KYCFormController extends GetxController with KycApiService {
+  // Global form key
   final formKey = GlobalKey<FormState>();
 
-  void onSubmitProcess(BuildContext context) {
-    if (formKey.currentState!.validate()) {
-      if(totalFile == listFieldName.length) {
-        kycSubmitApiProcess().then((value) => Navigator.push(
-          Get.context!,
-          MaterialPageRoute(
-              builder: (context) => ConfirmScreen(
-                    message: Strings.kycFormConfirmationMSG,
-                    onApproval: true,
-                    onOkayTap: (){
-                      LocalStorage.isLoginSuccess(isLoggedIn: true);
-                      Get.offAllNamed(Routes.dashboardScreen);
-                      // Get.offAllNamed(Routes.moneyOutScreen,);
-                    }
-                  ))));
-      }
-      else{
-        CustomSnackBar.error("Select File");
-      }
-    }
-  }
+  // Loading states
+  final _isLoading = false.obs;
+  final _isSubmitLoading = false.obs;
+  bool get isLoading => _isLoading.value;
+  bool get isSubmitLoading => _isSubmitLoading.value;
 
-  @override
-  void onInit() {
-    kycInfoFetch();
-    super.onInit();
-  }
+  // Track current KYC status
+  // 0 = Not verified, 1 = Pending, 2 = Approved, 3 = Rejected
+  final currentKycStatus = 0.obs;
 
+  // KYC model (data from backend)
+  late KycModel _kycModel;
+  KycModel get kycModel => _kycModel;
+  final showForm = false.obs; //
+
+  // Dynamic form fields
   List<TextEditingController> inputFieldControllers = [];
-  RxList inputFields = [].obs;
-  RxList inputFileFields = [].obs;
+  RxList<Widget> inputFields = <Widget>[].obs;
+  RxList<Widget> inputFileFields = <Widget>[].obs;
 
+  // Dropdown related fields
   final selectedIDType = "".obs;
   List<IdTypeModel> idTypeList = [];
 
+  // File tracking
   int totalFile = 0;
   List<String> listImagePath = [];
   List<String> listFieldName = [];
   RxBool hasFile = false.obs;
 
-  final _isLoading = false.obs;
-  bool get isLoading => _isLoading.value;
+  // Common success response
+  late CommonSuccessModel _commonSuccessModel;
+  CommonSuccessModel get commonSuccessModel => _commonSuccessModel;
 
-  final _isSubmitLoading = false.obs;
-  bool get isSubmitLoading => _isSubmitLoading.value;
+  /// Lifecycle
+  @override
+  void onInit() {
+    super.onInit();
+    kycInfoFetch();
+  }
 
-  late KycModel _kycModel;
-  KycModel get kycModel => _kycModel;
-
+  /// Fetch KYC form fields and set up dynamic UI
   Future<KycModel> kycInfoFetch() async {
     _isLoading.value = true;
+
+    // Reset all dynamic data
     inputFields.clear();
     inputFileFields.clear();
     listImagePath.clear();
     idTypeList.clear();
     listFieldName.clear();
     inputFieldControllers.clear();
+
     update();
 
-    await kycFieldAPi().then((value) {
-      _kycModel = value!;
+    try {
+      final value = await kycFieldAPi();
 
-      final data = _kycModel.data.inputFields;
-      _getDynamicInputField(data);
-
+      if (value != null) {
+        _kycModel = value;
+        currentKycStatus.value = _kycModel.data.kycStatus;
+        final data = _kycModel.data.inputFields;
+        _buildDynamicInputFields(data);
+      } else {
+        CustomSnackBar.error("Failed to load KYC data");
+      }
+    } catch (e) {
+      log.e('KYC info fetch error: $e');
+      CustomSnackBar.error("Error loading KYC info");
+    } finally {
+      _isLoading.value = false;
       update();
-    }).catchError((onError) {
-      log.e(onError);
-    });
-    _isLoading.value = false;
-    update();
+    }
 
     return _kycModel;
   }
 
-  void _getDynamicInputField(List<InputField> data) {
-    for (int item = 0; item < data.length; item++) {
-      // make the dynamic controller
-      var textEditingController = TextEditingController();
-      inputFieldControllers.add(textEditingController);
-      // make dynamic input widget
-      if (data[item].type.contains('select')) {
+  /// Dynamically build text, dropdown, and file inputs from backend schema
+  void _buildDynamicInputFields(List<InputField> data) {
+    totalFile = 0;
+    for (var field in data) {
+      final controller = TextEditingController();
+      inputFieldControllers.add(controller);
+
+      // Dropdown (select)
+      if (field.type.contains('select')) {
         hasFile.value = true;
-        selectedIDType.value = data[item].validation.options.first.toString();
-        inputFieldControllers[item].text = selectedIDType.value;
-        for (var element in data[item].validation.options) {
-          idTypeList.add(IdTypeModel(element, element));
-        }
+        idTypeList = field.validation.options
+            .map((e) => IdTypeModel(e, e))
+            .toList();
+        selectedIDType.value = idTypeList.first.title;
+        controller.text = selectedIDType.value;
+
         inputFields.add(
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Obx(() => CustomDropDown<IdTypeModel>(
-                  items: idTypeList,
-                  title: data[item].label,
-                  hint: selectedIDType.value.isEmpty
-                      ? Strings.selectIDType
-                      : selectedIDType.value,
-                  onChanged: (value) {
-                    selectedIDType.value = value!.title;
-                  },
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Dimensions.paddingSizeHorizontal * 0.25,
-                  ),
-                  titleTextColor:
-                      CustomColor.primaryLightTextColor.withOpacity(.2),
-                  borderEnable: true,
-                  dropDownFieldColor: Colors.transparent,
-                  dropDownIconColor:
-                      CustomColor.primaryLightTextColor.withOpacity(.2))),
+                items: idTypeList,
+                title: field.label,
+                hint: selectedIDType.value.isEmpty
+                    ? Strings.selectIDType
+                    : selectedIDType.value,
+                onChanged: (value) {
+                  selectedIDType.value = value!.title;
+                },
+                padding: EdgeInsets.symmetric(
+                  horizontal: Dimensions.paddingSizeHorizontal * 0.25,
+                ),
+                titleTextColor:
+                CustomColor.primaryLightTextColor.withOpacity(.2),
+                borderEnable: true,
+                dropDownFieldColor: Colors.transparent,
+                dropDownIconColor:
+                CustomColor.primaryLightTextColor.withOpacity(.2),
+              )),
               verticalSpace(Dimensions.marginBetweenInputBox * .8),
             ],
           ),
         );
       }
-      else if (data[item].type.contains('file')) {
+
+      // File Upload
+      else if (field.type.contains('file')) {
         totalFile++;
         hasFile.value = true;
+
         inputFileFields.add(
-            Column(
-              mainAxisAlignment: mainStart,
-              crossAxisAlignment: crossStart,
-              children: [
-                Flexible( // <-- allows child to fit without overflow
-                  fit: FlexFit.loose,
-                  child: CustomUploadFileWidget(
-                    labelText: data[item].label,
-                    hint: data[item].validation.mimes.join(","),
-                    onTap: (File value) {
-                      updateImageData(data[item].name, value.path);
-                    },
-                  ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                fit: FlexFit.loose,
+                child: CustomUploadFileWidget(
+                  labelText: field.label,
+                  hint: field.validation.mimes.join(","),
+                  onTap: (File value) {
+                    updateImageData(field.name, value.path);
+                  },
                 ),
-              ],
-            ));
+              ),
+            ],
+          ),
+        );
       }
-      else if (data[item].type.contains('text')) {
+
+      // Text Field
+      else if (field.type.contains('text')) {
         inputFields.add(
           Column(
-            mainAxisAlignment: mainStart,
-            crossAxisAlignment: crossStart,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               PrimaryTextInputWidget(
-                controller: inputFieldControllers[item],
-                labelText: data[item].label,
+                controller: controller,
+                labelText: field.label,
               ),
               verticalSpace(Dimensions.marginBetweenInputBox * .8),
             ],
@@ -171,10 +189,11 @@ class KYCFormController extends GetxController with KycApiService{
     }
   }
 
-  updateImageData(String fieldName, String imagePath) {
-    if (listFieldName.contains(fieldName)) {
-      int itemIndex = listFieldName.indexOf(fieldName);
-      listImagePath[itemIndex] = imagePath;
+  /// Update file list for API submission
+  void updateImageData(String fieldName, String imagePath) {
+    final index = listFieldName.indexOf(fieldName);
+    if (index >= 0) {
+      listImagePath[index] = imagePath;
     } else {
       listFieldName.add(fieldName);
       listImagePath.add(imagePath);
@@ -182,41 +201,80 @@ class KYCFormController extends GetxController with KycApiService{
     update();
   }
 
-  /// >>> set and get model for kyc submit
-  late CommonSuccessModel _commonSuccessModel;
-  CommonSuccessModel get commonSuccessModel => _commonSuccessModel;
+  /// Reset dynamic fields (used for reapplying KYC)
+  void clearKycFields() {
+    formKey.currentState?.reset();
+    inputFields.clear();
+    inputFileFields.clear();
+    inputFieldControllers.clear();
+    listFieldName.clear();
+    listImagePath.clear();
+  }
 
-  ///* Kyc submit api process
+  /// Submit the KYC form
   Future<CommonSuccessModel> kycSubmitApiProcess() async {
     _isSubmitLoading.value = true;
     Map<String, String> inputBody = {};
 
-    final data = kycModel.data.inputFields;
+    try {
+      final data = kycModel.data.inputFields;
 
-    for (int i = 0; i < data.length; i += 1) {
-      if (data[i].type != 'file') {
-        inputBody[data[i].name] = inputFieldControllers[i].text;
+      // Add text inputs
+      for (int i = 0; i < data.length; i++) {
+        if (data[i].type != 'file') {
+          inputBody[data[i].name] = inputFieldControllers[i].text;
+        }
       }
+
+      // Send request
+      final value = await kycSubmitProcessApi(
+        body: inputBody,
+        fieldList: listFieldName,
+        pathList: listImagePath,
+      );
+
+      if (value != null) {
+        _commonSuccessModel = value;
+        inputFields.clear();
+        listFieldName.clear();
+        listImagePath.clear();
+        inputFieldControllers.clear();
+      }
+    } catch (e) {
+      log.e('KYC submit error: $e');
+      CustomSnackBar.error('KYC submission failed');
+    } finally {
+      _isSubmitLoading.value = false;
+      update();
     }
 
-    await kycSubmitProcessApi(
-            body: inputBody, fieldList: listFieldName, pathList: listImagePath)
-        .then((value) {
-      _commonSuccessModel = value!;
-      // onConfirmProcess(
-      //     message: _commonSuccessModel.message.success.first.toString());
-      inputFields.clear();
-      listImagePath.clear();
-      listFieldName.clear();
-      inputFieldControllers.clear();
-      _isLoading.value = false;
-      update();
-    }).catchError((onError) {
-      log.e(onError);
-    });
-    _isSubmitLoading.value = false;
-    update();
     return _commonSuccessModel;
+  }
+
+  /// Validate form and handle navigation after successful submission
+  void onSubmitProcess(BuildContext context) {
+    if (!formKey.currentState!.validate()) return;
+
+    if (totalFile != listFieldName.length) {
+      CustomSnackBar.error("Select all required files");
+      return;
+    }
+
+    kycSubmitApiProcess().then((value) {
+      Navigator.push(
+        Get.context!,
+        MaterialPageRoute(
+          builder: (context) => ConfirmScreen(
+            message: Strings.kycFormConfirmationMSG,
+            onApproval: true,
+            onOkayTap: () {
+              LocalStorage.isLoginSuccess(isLoggedIn: true);
+              Get.offAllNamed(Routes.dashboardScreen);
+            },
+          ),
+        ),
+      );
+    });
   }
 }
 

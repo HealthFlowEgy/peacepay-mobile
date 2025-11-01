@@ -4,6 +4,7 @@ import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../../../controller/dashboard/my_wallets/add_money_controller.dart';
 import '../../../../widgets/list_tile/text_value_form_widget.dart';
+import '../../../../widgets/text_labels/title_heading5_widget.dart';
 
 class AddMoneyPreviewScreen extends GetView<AddMoneyController> {
   const AddMoneyPreviewScreen({super.key});
@@ -105,10 +106,12 @@ class AddMoneyPreviewScreen extends GetView<AddMoneyController> {
               prefix: Strings.addMoney,
               title: Strings.confirmPay,
               suffix:
-                  "${controller.amountController.text} ${controller.selectedCurrency.value}",
+                  " ${controller.addMoneyPaypalModel.paymentInformations.payableAmount}",
               onPressed: () => controller.onConfirmProcess(context),
             ),
-            verticalSpace(Dimensions.paddingSizeVertical * 1.5),
+            verticalSpace(Dimensions.paddingSizeVertical * 0.3),
+            TitleHeading5Widget(color: Colors.grey,text: 'You will be redirected to our secure payment partner to complete your top-up'),
+            verticalSpace(Dimensions.paddingSizeVertical * 0.75),
           ],
         ),
       ),
@@ -129,38 +132,38 @@ class AddMoneyPreviewScreen extends GetView<AddMoneyController> {
         children: [
           TextValueFormWidget(
             text: Strings.trxID,
-            value: controller.information.trx,
-          ),
-          _divider(),
-          TextValueFormWidget(
-            text: Strings.totalCharge,
-            value: controller.information.totalCharge,
+            value: controller.addMoneyPaypalModel.trx.toString(),
           ),
           _divider(),
           TextValueFormWidget(
             text: Strings.requestAmount,
-            value: controller.information.requestAmount,
-          ),
-          _divider(),
-
-          TextValueFormWidget(
-            text: Strings.willGet,
-            value: controller.information.willGet
+            value: controller.addMoneyPaypalModel.paymentInformations.requestAmount,
           ),
           _divider(),
           TextValueFormWidget(
-            text: Strings.exchangeRate,
-            currency: controller.information.exchangeRate
+            text: Strings.totalCharge,
+            value: controller.addMoneyPaypalModel.paymentInformations.totalCharge,
           ),
-          _divider(),
-          TextValueFormWidget(
-              text: Strings.payWith,
-              value: controller.information.gatewayCurrencyName
-          ),
+          // _divider(),
+          //
+          // TextValueFormWidget(
+          //   text: Strings.willGet,
+          //   value: controller.addMoneyPaypalModel.paymentInformations.willGet
+          // ),
+          // _divider(),
+          // TextValueFormWidget(
+          //   text: Strings.exchangeRate,
+          //   currency: controller.addMoneyPaypalModel.paymentInformations.exchangeRate
+          // ),
+          // _divider(),
+          // TextValueFormWidget(
+          //     text: Strings.payWith,
+          //     value: controller.addMoneyPaypalModel.paymentInformations.gatewayCurrencyName
+          // ),
           _divider(),
           TextValueFormWidget(
             text: Strings.totalPayable,
-            value: controller.information.payableAmount
+            value: controller.addMoneyPaypalModel.paymentInformations.payableAmount
           )
         ],
       ),

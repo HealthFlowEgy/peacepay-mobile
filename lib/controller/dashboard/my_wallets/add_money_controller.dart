@@ -131,7 +131,7 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
             context,
             MaterialPageRoute(
                 builder: (context) => WebViewScreen(
-                  appTitle: addMoneyPaypalModel.data.gatewayCurrencyName,
+                  appTitle: addMoneyPaypalModel.paymentInformations.gatewayCurrencyName,
                   link: webUrl,
                   onFinished: (url) {
                     debugPrint("---------------------------------");
@@ -220,28 +220,17 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
   }
 
   late String webUrl;
-  late PaymentInformations information;
-
   void addMoneyBTNClicked(BuildContext context) async {
     if (amountController.text.isNotEmpty) {
       if (selectedMethodType.value == "AUTOMATIC") {
-        if (selectedMethodAlias.value.contains("tatum")) {
-          await onTatumProcess().then((value) {
-            information = value.data.paymentInformations;
-
-            Get.toNamed(Routes.addMoneyScreenPreview);
-          });
-        } else if (selectedMethodID.value == "1") {
+          if (selectedMethodID.value == "1") {
           await onPaypalProcess().then((value) {
-            webUrl = value.data.url[1].href;
-            information = value.data.paymentInformations;
+            webUrl = value.iframeUrl;
             Get.toNamed(Routes.addMoneyScreenPreview);
           });
         } else {
-          debugPrint("working");
           await onAutomaticProcess().then((value) {
             webUrl = value.data.url;
-            information = value.data.paymentInformations;
             Get.toNamed(Routes.addMoneyScreenPreview);
           });
         }
@@ -366,10 +355,10 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
   }
 
 // add money paypal process
-  late AddMoneyPaypalModel _addMoneyPaypalModel;
-  AddMoneyPaypalModel get addMoneyPaypalModel => _addMoneyPaypalModel;
+  late AddMoneyHealthPayModel _addMoneyPaypalModel;
+  AddMoneyHealthPayModel get addMoneyPaypalModel => _addMoneyPaypalModel;
 
-  Future<AddMoneyPaypalModel> onPaypalProcess() async {
+  Future<AddMoneyHealthPayModel> onPaypalProcess() async {
     _isSubmitLoading.value = true;
     update();
 
@@ -382,7 +371,7 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     await addMoneySubmitPaypalApi(body: inputBody).then((value) async {
       _addMoneyPaypalModel = value!;
 
-      debugPrint(_addMoneyPaypalModel.data.url.toString());
+      debugPrint(_addMoneyPaypalModel.trx..toString());
 
       update();
     }).catchError((onError) {
@@ -420,7 +409,6 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
 
       final data = _addMoneyManualModel.data.inputFields;
       _getDynamicInputField(data);
-      information = value.data.paymentInformations;
       Get.toNamed(Routes.addMoneyScreenPreview);
 
       _isSubmitLoading.value = false;

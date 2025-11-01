@@ -8,7 +8,7 @@ class TextValueFormWidget extends StatelessWidget {
         this.currency = ""
       });
 
-  final String text, value, currency;
+  final dynamic text, value, currency;
 
   @override
   Widget build(BuildContext context) {

@@ -41,7 +41,7 @@ class TransactionsController extends GetxController  with DashboardApiService{
 
   int page = 1;
   RxBool hasNextPage = true.obs;
-  RxList<Transaction> historyList = <Transaction>[].obs;  /// set it first
+  RxList<DataOfTransaction> historyList = <DataOfTransaction>[].obs;  /// set it first
 
 
   ///* Get Transaction in process
@@ -60,9 +60,7 @@ class TransactionsController extends GetxController  with DashboardApiService{
       }else{
         hasNextPage.value = false;
       }
-
       historyList.addAll(_transactionModel.data.transactions.data);
-
       _isLoading.value = false;
       update();
     }).catchError((onError) {

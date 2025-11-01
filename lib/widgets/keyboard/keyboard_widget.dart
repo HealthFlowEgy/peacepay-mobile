@@ -12,11 +12,12 @@ class KeyboardScreenWidget extends StatefulWidget {
       required this.onTap,
       required this.amountController,
       this.isLoading,
-      required this.widget});
+      // required this.widget
+      });
 
   final String buttonText;
   final VoidCallback onTap;
-  final Widget widget;
+  // final Widget widget;
   final bool? isLoading;
   final TextEditingController amountController;
 
@@ -58,13 +59,13 @@ class _KeyboardScreenWidgetState extends State<KeyboardScreenWidget> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            verticalSpace(Dimensions.heightSize * 1),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                widget.widget,
-              ],
-            ),
+            // verticalSpace(Dimensions.heightSize * 1),
+            // Row(
+            //   mainAxisSize: MainAxisSize.min,
+            //   children: [
+            //     widget.widget,
+            //   ],
+            // ),
             verticalSpace(Dimensions.heightSize * 2),
             _customNumKeyBoardWidget(context),
             verticalSpace(Dimensions.marginSizeVertical * .5),

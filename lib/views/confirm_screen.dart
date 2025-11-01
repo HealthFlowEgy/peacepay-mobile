@@ -42,11 +42,13 @@ class ConfirmScreen extends StatelessWidget{
       flex: 6,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeHorizontal * .5,
-        vertical: Dimensions.paddingSizeVertical * .5),
+            vertical: Dimensions.paddingSizeVertical * .5),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Image.asset(  onApproval ? "assets/placeholder/warn.png": "assets/placeholder/confirmation.png"),
+            Icon(  onApproval ?  Icons.warning_amber: Icons.check_circle,
+              size: 250.sp,
+              color: onApproval?Colors.red :Theme.of(context).primaryColor,),
           ],
         ),
       ),
@@ -70,7 +72,7 @@ class ConfirmScreen extends StatelessWidget{
             SizedBox(
               width: MediaQuery.of(context).size.width,
               child: TitleSubTitleWidget(
-                title: Strings.preview,
+                title: 'Successful!',
                 subTitle: message,
               ),
             ),

@@ -116,7 +116,7 @@ mixin AddMoneyApiService {
     return null;
   }
 
-  Future<AddMoneyPaypalModel?> addMoneySubmitPaypalApi(
+  Future<AddMoneyHealthPayModel?> addMoneySubmitPaypalApi(
       {required Map<String, dynamic> body}) async {
     Map<String, dynamic>? mapResponse;
     try {
@@ -128,8 +128,8 @@ mixin AddMoneyApiService {
         showResult: true,
       );
       if (mapResponse != null) {
-        AddMoneyPaypalModel modelData =
-        AddMoneyPaypalModel.fromJson(mapResponse);
+        AddMoneyHealthPayModel modelData =
+        AddMoneyHealthPayModel.fromJson(mapResponse);
 
         // CustomSnackBar.success(
         //     commonSuccessModel.message!.success!.first.toString());

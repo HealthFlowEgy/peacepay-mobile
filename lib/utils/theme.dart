@@ -31,7 +31,7 @@ class Themes {
     scaffoldBackgroundColor: CustomColor.primaryLightScaffoldBackgroundColor,
     brightness: Brightness.light,
     textTheme: ThemeData.light().textTheme.apply(
-      fontFamily: GoogleFonts.inter().fontFamily,
+      fontFamily: 'Cairo',
     ),
     // add more styling if needed
   );
@@ -43,7 +43,7 @@ class Themes {
     scaffoldBackgroundColor: CustomColor.primaryLightScaffoldBackgroundColor,
     brightness: Brightness.light,
     textTheme: ThemeData.light().textTheme.apply(
-      fontFamily: GoogleFonts.inter().fontFamily,
+      fontFamily: 'Cairo',
     ),
     // add more styling if needed
   );
@@ -55,7 +55,7 @@ class Themes {
     scaffoldBackgroundColor: Colors.orange.shade50,
     brightness: Brightness.light,
     textTheme: ThemeData.light().textTheme.apply(
-      fontFamily: GoogleFonts.inter().fontFamily,
+      fontFamily: 'Cairo',
     ),
     // customize as you want
   );

@@ -39,7 +39,7 @@ class MoneyOutController extends GetxController with MoneyOutApiService{
   late RxDouble selectedMethodPCharge;
   late RxDouble selectedMethodFCharge;
   late RxDouble selectedMethodRate;
-
+  final selectedValues = <String, String>{}.obs;
   RxDouble exchangeRate = 0.0.obs;
   RxDouble min = 0.0.obs;
   RxDouble max = 0.0.obs;
@@ -189,7 +189,9 @@ class MoneyOutController extends GetxController with MoneyOutApiService{
       Get.toNamed(Routes.moneyOutManualScreen, arguments: data);
     }
   }
-
+  void updateSelectedValue(String fieldName, String value) {
+    selectedValues[fieldName] = value;
+  }
   void onManualSubmit(BuildContext context) async{
     await manualSubmitApiProcess().then((value){
       Navigator.push(
@@ -225,6 +227,7 @@ class MoneyOutController extends GetxController with MoneyOutApiService{
         // }
       }
       else if(selectedMethodType.value == "MANUAL"){
+
         await onManualProcess();
       }
 
@@ -238,7 +241,7 @@ class MoneyOutController extends GetxController with MoneyOutApiService{
 // manual money out process
   late MoneyOutManualModel _moneyOutManualModel;
   MoneyOutManualModel get moneyOutManualModel => _moneyOutManualModel;
-
+  RxBool get isSubmitLoadingRx => _isSubmitLoading;
   Future<MoneyOutManualModel> onManualProcess() async {
     inputFields.clear();
     inputFileFields.clear();
@@ -256,14 +259,15 @@ class MoneyOutController extends GetxController with MoneyOutApiService{
       'sender_currency': selectedCurrency.value,
       'gateway_currency': selectedMethodAlias.value,
     };
-
     await moneyOutSubmitManualApi(body: inputBody).then((value) async {
       _moneyOutManualModel = value!;
 
-
       final data = _moneyOutManualModel.data.inputFields;
       _getDynamicInputField(data);
+
+
       information = value.data.paymentInformations;
+
       Get.toNamed(Routes.moneyOutScreenPreview);
 
       _isSubmitLoading.value = false;
@@ -294,40 +298,17 @@ class MoneyOutController extends GetxController with MoneyOutApiService{
       var textEditingController = TextEditingController();
       inputFieldControllers.add(textEditingController);
       // make dynamic input widget
-      if (data[item].type.contains('select')) {
-        hasFile.value = true;
-        selectedIDType.value = data[item].validation.options.first.toString();
+      if (data[item].options != null && data[item].options!.isNotEmpty) {
+        selectedIDType.value = data[item].options!.values.first;
         inputFieldControllers[item].text = selectedIDType.value;
-        for (var element in data[item].validation.options) {
-          idTypeList.add(IdTypeModel(element, element));
-        }
-        inputFields.add(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Obx(() => CustomDropDown<IdTypeModel>(
-                  items: idTypeList,
-                  title: data[item].label,
-                  hint: selectedIDType.value.isEmpty
-                      ? Strings.selectIDType
-                      : selectedIDType.value,
-                  onChanged: (value) {
-                    selectedIDType.value = value!.title;
-                  },
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Dimensions.paddingSizeHorizontal * 0.25,
-                  ),
-                  titleTextColor:
-                  CustomColor.primaryLightTextColor.withOpacity(.2),
-                  borderEnable: true,
-                  dropDownFieldColor: Colors.transparent,
-                  dropDownIconColor:
-                  CustomColor.primaryLightTextColor.withOpacity(.2))),
-              verticalSpace(Dimensions.marginBetweenInputBox * .8),
-            ],
-          ),
+
+        idTypeList.addAll(
+          data[item].options!.entries
+              .map((e) => IdTypeModel(e.key, e.value))
+              .toList(),
         );
       }
+
       else if (data[item].type.contains('file')) {
         totalFile++;
         hasFile.value = true;
@@ -346,6 +327,7 @@ class MoneyOutController extends GetxController with MoneyOutApiService{
             ],
           ),
         );
+
       }
       else if (data[item].type.contains('text')) {
         inputFields.add(

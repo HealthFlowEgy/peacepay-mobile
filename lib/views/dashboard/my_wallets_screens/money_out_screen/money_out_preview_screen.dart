@@ -141,17 +141,17 @@ class MoneyOutPreviewScreen extends GetView<MoneyOutController> {
             text: Strings.requestAmount,
             value: controller.information.requestAmount,
           ),
-          _divider(),
-
-          TextValueFormWidget(
-              text: Strings.willGet,
-              value: controller.information.willGet
-          ),
-          _divider(),
-          TextValueFormWidget(
-              text: Strings.exchangeRate,
-              currency: controller.information.exchangeRate
-          ),
+          // _divider(),
+          //
+          // TextValueFormWidget(
+          //     text: Strings.willGet,
+          //     value: controller.information.willGet
+          // ),
+          // _divider(),
+          // TextValueFormWidget(
+          //     text: Strings.exchangeRate,
+          //     currency: controller.information.exchangeRate
+          // ),
           _divider(),
           TextValueFormWidget(
               text: Strings.payWith,

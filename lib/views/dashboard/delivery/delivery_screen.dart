@@ -25,6 +25,8 @@ class DeliveryAgentScreen extends GetView<HomeController> {
     final width = MediaQuery.of(context).size.width;
     return ResponsiveLayout(
       mobileScaffold: Scaffold(
+
+      backgroundColor: Colors.white,
         body: Obx(() => controller.isLoading
         ? const CustomLoadingWidget()
         :Center(
@@ -56,7 +58,7 @@ class DeliveryAgentScreen extends GetView<HomeController> {
                     // OTP Section
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.orange.shade50,
+                        // color: Colors.orange.shade50,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
@@ -282,10 +284,10 @@ class DeliveryAgentScreen extends GetView<HomeController> {
                           horizontal: Dimensions.paddingSizeHorizontal * .8,
                           vertical: Dimensions.paddingSizeVertical * .6),
                       decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Theme.of(context).dividerColor.withOpacity(.6),
-                            width: 1,
-                          ),
+                          // border: Border.all(
+                          //   color: Theme.of(context).dividerColor.withOpacity(.6),
+                          //   width: 1,
+                          // ),
                           color: Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(Dimensions.radius)),
                       child: InkWell(

@@ -72,6 +72,10 @@ flutter_icons:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo-VariableFont_slnt,wght.ttf
   assets:
     - assets/
     - assets/logo/

@@ -17,7 +17,7 @@ class Data {
   final int pendingEscrow;
   final int disputeEscrow;
   final List<UserWallet> userWallet;
-  final List<Transaction> transactions;
+  final List<DataOfTransaction> transactions;
 
   Data({
     required this.totalEscrow,
@@ -36,18 +36,17 @@ class Data {
     pendingEscrow: json["pending_escrow"],
     disputeEscrow: json["dispute_escrow"],
     userWallet: List<UserWallet>.from(json["userWallet"].map((x) => UserWallet.fromJson(x))),
-    transactions: List<Transaction>.from(json["transactions"].map((x) => Transaction.fromJson(x))),
+    transactions: List<DataOfTransaction>.from(json["transactions"].map((x) => DataOfTransaction.fromJson(x))),
   );
 }
-
-class Transaction {
+class DataOfTransaction {
   final int id;
   final String trxId;
   final String gatewayCurrency;
   final String transactionType;
-  final double senderRequestAmount;
+  final dynamic senderRequestAmount;
   final String senderCurrencyCode;
-  final String totalPayable;
+  final dynamic totalPayable;
   final String gatewayCurrencyCode;
   final double exchangeRate;
   final double fee;
@@ -55,9 +54,10 @@ class Transaction {
   final dynamic exchangeCurrency;
   final int status;
   final String stringStatus;
-  final DateTime createdAt;
+  final double balanceAfterTransaction;
+  final String createdAt;
 
-  Transaction({
+  DataOfTransaction({
     required this.id,
     required this.trxId,
     required this.gatewayCurrency,
@@ -72,27 +72,31 @@ class Transaction {
     required this.exchangeCurrency,
     required this.status,
     required this.stringStatus,
+    required this.balanceAfterTransaction,
     required this.createdAt,
   });
 
-  factory Transaction.fromJson(Map<String, dynamic> json) => Transaction(
+  factory DataOfTransaction.fromJson(Map<String, dynamic> json) => DataOfTransaction(
     id: json["id"],
     trxId: json["trx_id"],
-    gatewayCurrency: json["gateway_currency"] ?? "",
+    gatewayCurrency: json["gateway_currency"] ?? "EGP",
     transactionType: json["transaction_type"],
-    senderRequestAmount: (json["sender_request_amount"] ?? 0).toDouble(),
+    senderRequestAmount: json["sender_request_amount"] ?? "0",
     senderCurrencyCode: json["sender_currency_code"],
     totalPayable: json["total_payable"],
-    gatewayCurrencyCode: json["gateway_currency_code"] ?? "",
+    gatewayCurrencyCode: json["gateway_currency_code"] ?? "0",
     exchangeRate: (json["exchange_rate"] ?? 0).toDouble(),
     fee: (json["fee"] ?? 0).toDouble(),
     rejectionReason: json["rejection_reason"],
     exchangeCurrency: json["exchange_currency"],
     status: json["status"],
     stringStatus: json["string_status"],
-    createdAt: DateTime.parse(json["created_at"]),
+    balanceAfterTransaction:
+    (json["balance_after_transaction"] ?? 0).toDouble(),
+    createdAt: json["created_at"],
   );
 }
+
 
 class UserWallet {
   final String name;

@@ -193,7 +193,7 @@ class HomeScreen extends GetView<HomeController> {
                           horizontal: Dimensions.paddingSizeHorizontal * .8,
                           vertical: Dimensions.paddingSizeVertical * .6),
                       decoration: BoxDecoration(
-                          color: Theme.of(context).scaffoldBackgroundColor,
+                          color: Theme.of(context).primaryColor.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(Dimensions.radius)),
                       child: InkWell(
                         onTap: (){
@@ -233,7 +233,7 @@ class HomeScreen extends GetView<HomeController> {
                                 children: [
                                   TitleHeading2Widget(
                                     text:
-                                        "${data.currencySymbol} ${makeBalance(data.balance.toString(), data.currencyType == "FIAT" ? 2 : 6)}",
+                                        "${makeBalance(data.balance.toString(), data.currencyType == "FIAT" ? 2 : 6)} ${data.currencySymbol} ",
                                     fontSize: Dimensions.headingTextSize2 * .85,
                                   ),
                                   Row(
@@ -348,6 +348,7 @@ class HomeScreen extends GetView<HomeController> {
                 itemBuilder: (context, index) {
                   var data = controller.homeModel.data.transactions[index];
                   return Obx(() => TransactionTileWidget(
+
                       transaction: data,
                       onTap: () {
                         if (controller.openTileIndex.value != index) {

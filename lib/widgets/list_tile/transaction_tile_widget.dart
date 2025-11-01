@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/widgets/list_tile/text_value_form_widget.dart';
 import 'package:peacepay/widgets/others/custom_loading_widget.dart';
@@ -13,11 +14,14 @@ class TransactionTileWidget extends StatefulWidget {
       {super.key,
       this.inDashboard = true,
       this.transaction,
+      this.balance,
       required this.onTap,
-      required this.expansion});
+      required this.expansion,
+      });
 
   final bool inDashboard;
-  final Transaction? transaction;
+  final dynamic balance;
+  final DataOfTransaction? transaction;
   final bool expansion;
   final VoidCallback onTap;
 
@@ -98,7 +102,10 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
                           const Spacer(),
                           TitleHeading3Widget(
                             text:
-                                "${makeBalance(widget.transaction!.totalPayable)} ${widget.transaction!.transactionType == "MONEY-EXCHANGE" ? widget.transaction!.senderCurrencyCode : widget.transaction!.gatewayCurrencyCode}",
+                                "${makeBalance(widget.transaction!.totalPayable)}"
+                                    "${widget.transaction!.transactionType == "MONEY-EXCHANGE" ?
+                                widget.transaction!.senderCurrencyCode :
+                                widget.transaction!.gatewayCurrencyCode}",
                             color: Theme.of(context).primaryColor,
                             fontWeight: FontWeight.w700,
                             fontSize: Dimensions.headingTextSize3 * .85,
@@ -143,20 +150,23 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
                     text: Strings.transactionType,
                     value: widget.transaction!.transactionType,
                   ),
+                  // _divider(),
+                  // TextValueFormWidget(
+                  //   text: 'Balance After Transactions',
+                  //   value: widget.transaction!.balanceAfterTransaction.toString(),
+                  // ),
                   _divider(),
                   widget.transaction!.transactionType == "MONEY-EXCHANGE"
                       ? TextValueFormWidget(
-                          text: Strings.exchangeAmount,
+                          text: 'Time',
                           value: makeMultiplyBalance(
-                              widget.transaction!.senderRequestAmount
-                                  .toString(),
-                              widget.transaction!.exchangeRate.toString()),
-                          currency: widget.transaction!.exchangeCurrency,
+                              DateFormat('HH:mm').format(DateTime.parse(widget.transaction!.createdAt)),
+                              DateFormat('HH:mm').format(DateTime.parse(widget.transaction!.createdAt)),),
+                          currency: DateFormat('HH:mm').format(DateTime.parse(widget.transaction!.createdAt)),
                         )
                       : TextValueFormWidget(
-                          text: Strings.gatewayCurrency,
-                          value: widget.transaction!.gatewayCurrency,
-                        ),
+                          text: 'Time',
+                          value: formatDateTime(widget.transaction!.createdAt, twelveHour: true),),
                   _divider(),
                   TextValueFormWidget(
                     text: Strings.requestAmount,
@@ -184,10 +194,7 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
                   TextValueFormWidget(
                     text: Strings.charge,
                     value: makeBalance(widget.transaction!.fee.toString()),
-                    currency:
-                        widget.transaction!.transactionType == "MONEY-EXCHANGE"
-                            ? widget.transaction!.senderCurrencyCode
-                            : widget.transaction!.gatewayCurrencyCode,
+                    currency: widget.transaction!.senderCurrencyCode,
                   ),
                   _divider(),
                   TextValueFormWidget(
@@ -195,9 +202,18 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
                     value: makeBalance(widget.transaction!.totalPayable),
                     currency:
                         widget.transaction!.transactionType == "MONEY-EXCHANGE"
-                            ? widget.transaction!.senderCurrencyCode
-                            : widget.transaction!.gatewayCurrencyCode,
+                            ? widget.transaction!.gatewayCurrency
+                            : widget.transaction!.senderCurrencyCode,
                   ),
+                  // _divider(),
+                  // TextValueFormWidget(
+                  //   text: Strings.totalPayable,
+                  //   value: makeBalance(widget.transaction!.balanceAfterTransaction.toString()),
+                  //   currency:
+                  //   widget.transaction!.transactionType == "MONEY-EXCHANGE"
+                  //       ? widget.transaction!.senderCurrencyCode
+                  //       : widget.transaction!.gatewayCurrencyCode,
+                  // ),
                   _divider(),
                   TextValueFormWidget(
                       text: Strings.status,

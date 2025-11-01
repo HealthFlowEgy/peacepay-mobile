@@ -25,7 +25,7 @@ class Data {
 }
 
 class Transactions {
-  final List<Transaction> data;
+  final List<DataOfTransaction> data;
   final int lastPage;
 
   Transactions({
@@ -34,7 +34,7 @@ class Transactions {
   });
 
   factory Transactions.fromJson(Map<String, dynamic> json) => Transactions(
-    data: List<Transaction>.from(json["data"].map((x) => Transaction.fromJson(x))),
+    data: List<DataOfTransaction>.from(json["data"].map((x) => DataOfTransaction.fromJson(x))),
     lastPage: json["last_page"],
   );
 }

@@ -17,7 +17,8 @@ class AddMoneyTatumScreen extends StatelessWidget {
         mobileScaffold: Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: PrimaryAppBar(
-            title: controller.information.gatewayCurrencyName,
+            // title: controller.information.gatewayCurrencyName,
+            title: Strings.appName,
           ),
           body: _bottomBodyWidget(context),
         ),

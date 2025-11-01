@@ -77,7 +77,6 @@ class CheckPinScreen extends StatelessWidget {
               ),
               onPressed: () async {
                 await controller.checkPinProcess(screenIndex:index!);
-
               },
               child: Text('Verify PIN',style: TextStyle(
                 fontSize: 16.sp
