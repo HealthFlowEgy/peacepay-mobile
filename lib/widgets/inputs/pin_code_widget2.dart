@@ -1,55 +1,79 @@
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../utils/basic_widget_imports.dart';
+import 'package:flutter/material.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 class PinCodeWidget extends StatelessWidget {
-  const PinCodeWidget({super.key, required this.textController, this.mobileController});
+  const PinCodeWidget({
+    super.key,
+    required this.textController,   // parent-owned controller
+    this.mobileController,
+    this.length = 4,
+  });
 
   final TextEditingController textController;
   final String? mobileController;
+  final int length;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
-        padding: const EdgeInsets.all(0),
-        child: Center(
-            child: PinCodeTextField(
-              textStyle: CustomStyle.darkHeading4TextStyle.copyWith(
-                  color: Theme.of(context).primaryColor,
-                  fontSize: Dimensions.headingTextSize2 * .8
-              ),
-          controller: textController,
+      padding: EdgeInsets.zero,
+      child: Center(
+        child: PinCodeTextField(
           appContext: context,
-          cursorColor: Theme.of(context).primaryColor,
+          controller: textController,
+          autoDisposeControllers: false,   // you pass a parent-owned controller
+          length: 4,
           keyboardType: TextInputType.number,
-          length:4,
-          onChanged: (value) {
-            // Handle PIN code changes
-          },
-          onCompleted: (value) {
-            // Handle PIN code entry completion
-            // If the text length is 4, close the keyboard
-            if (value.length == 4) {
-              FocusManager.instance.primaryFocus?.unfocus();
-            }
-          },
+          cursorColor: theme.primaryColor,
+
+          // ✅ SHOW NUMBERS
+          obscureText: false,              // make sure this is false
+
+          // ✅ CONTRASTING DIGIT COLOR (white over primary fill)
+          textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 2,
+          ),
+
+          enableActiveFill: true,
+          animationType: AnimationType.fade,
+          animationDuration: const Duration(milliseconds: 120),
+
           pinTheme: PinTheme(
             shape: PinCodeFieldShape.box,
-            borderRadius: BorderRadius.circular(5),
             fieldHeight: 45,
             fieldWidth: 40,
-            selectedColor: Theme.of(context).primaryColor.withOpacity(1),
-            activeFillColor: Theme.of(context).primaryColor.withOpacity(1),
-            activeColor: Theme.of(context).primaryColor.withOpacity(1),
-            inactiveColor: Theme.of(context).primaryColor.withOpacity(.3),
-            inactiveFillColor: Theme.of(context).primaryColor.withOpacity(.3),
-            errorBorderColor: Theme.of(context).primaryColor.withOpacity(.3),
-            disabledColor: Theme.of(context).primaryColor.withOpacity(.3),
-            selectedFillColor: Theme.of(context).primaryColor.withOpacity(1),
-            selectedBorderWidth: 1,
-            activeBorderWidth: 1,
+            borderRadius: BorderRadius.circular(5),
+
+            // borders
             borderWidth: 1,
+            activeBorderWidth: 1,
+            selectedBorderWidth: 1,
+            inactiveColor: theme.primaryColor.withOpacity(.6),
+            selectedColor: theme.primaryColor,
+            errorBorderColor: theme.primaryColor.withOpacity(.7),
+            disabledColor: theme.primaryColor.withOpacity(.7),
+            activeColor: theme.primaryColor, // border when active
+
+            // fills
+            activeFillColor: theme.primaryColor,      // filled box when active
+            selectedFillColor: theme.primaryColor,    // filled when selected
+            inactiveFillColor: theme.primaryColor.withOpacity(.3), // lighter when inactive
           ),
-        )));
+
+          onChanged: (v) {},
+          onCompleted: (v) {
+            if (v.length == 4) FocusManager.instance.primaryFocus?.unfocus();
+          },
+        )
+        ,
+      ),
+    );
   }
 }

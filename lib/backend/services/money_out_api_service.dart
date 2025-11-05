@@ -75,6 +75,7 @@ mixin MoneyOutApiService {
         pathList: pathList,
       );
       if (mapResponse != null) {
+
         CommonSuccessModel result = CommonSuccessModel.fromJson(mapResponse);
 
         return result;

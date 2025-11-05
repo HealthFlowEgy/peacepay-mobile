@@ -176,7 +176,7 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
               if (amount <= 0) {
                 CustomSnackBar.error("Please enter a valid amount");
               } else if (!hasMethod) {
-                CustomSnackBar.error("Please select a payment method first");
+                CustomSnackBar.error("Please select a cash out method first");
               } else {
                 controller.moneyOutBTNClicked(context);
               }
@@ -222,7 +222,7 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
         ),
         child: InputDecorator(
           decoration: InputDecoration(
-            labelText: 'Payout Method',
+            labelText: 'cash-out method Method',
             border: OutlineInputBorder(
               borderSide: BorderSide(color: Theme.of(context).primaryColor),
             ),
@@ -237,7 +237,7 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
           child: DropdownButtonFormField<GatewayCurrency>(
             isExpanded: true,
             value: selectedOrNull, // ← null initially → shows hint
-            hint: const Text('Select your payment method'),
+            hint: const Text('Select your cash-out method'),
             iconEnabledColor: Theme.of(context).primaryColor,
             decoration: const InputDecoration.collapsed(hintText: ''),
             items: methods.map((m) {

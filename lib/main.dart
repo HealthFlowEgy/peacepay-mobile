@@ -10,234 +10,117 @@ import 'package:get_storage/get_storage.dart';
 import 'Translation/fallback_translation.dart';
 import 'backend/backend_utils/network_check/dependency_injection.dart';
 import 'backend/utils/maintenance/maintenance_dialog.dart';
+import 'controller/before_auth/basic_settings_controller.dart';
 import 'language/english.dart';
 import 'language/language_controller.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await ScreenUtil.ensureScreenSize();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-  await GetStorage.init();
-  //   Language controller before runApp
-  Get.put(LanguageSettingController(), permanent: true);
-  Get.put(SystemMaintenanceController(), permanent: true);
-
-  InternetCheckDependencyInjection.init();
-
-  final savedTheme = Themes().savedUserTheme;
-  runApp(MyApp(savedTheme: savedTheme));
-}
-
-// This widget is the root of your application.
-class MyApp extends StatelessWidget {
-  final String savedTheme;
-  const MyApp({super.key, required this.savedTheme});
-
-
-  @override
-  Widget build(BuildContext context) {
-    ThemeData initialTheme;
-    if (savedTheme == 'buyer') {
-      initialTheme = Themes.buyer;
-    } else if (savedTheme == 'seller') {
-      initialTheme = Themes.seller;
-    } else {
-      initialTheme = Themes.delivery;
-    }
-    return ScreenUtilInit(
-      designSize: const Size(414, 896),
-      builder: (_, child) => GetMaterialApp(
-
-        title: Strings.appName,
-        debugShowCheckedModeBanner: false,
-        theme: initialTheme,
-        // darkTheme: Themes.dark,
-        // themeMode:  themes.themeMode,
-        navigatorKey: Get.key,
-        initialRoute: Routes.splashScreen,
-        getPages: Routes.list,
-        // translations: LocalString(),
-        locale: languageSettingsController.currentLocale,/// Advice from Eng: A.Adel
-        // locale: const Locale('en'),
-        translations: FallbackTranslation(),
-        fallbackLocale: const Locale('en'),
-        initialBinding: BindingsBuilder(
-              () {
-                Get.put(SystemMaintenanceController(), permanent: true);
-            Get.put(LanguageSettingController(),permanent: true);
-          },
-        ),
-        builder: (context, widget) {
-          ScreenUtil.init(context);
-          return Obx(() => MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
-            child: Directionality(
-              textDirection: Get.find<LanguageSettingController>().isLoading
-                  ? TextDirection.ltr
-                  // : TextDirection.ltr,
-                  : Get.find<LanguageSettingController>().languageDirection,
-              child: widget!,
-            ),
-          ));
-        },
-      ),
-    );
-  }
-}
-/*
 Future<void> main() async {
+  // Ensure Flutter engine is initialized before any async / platform calls
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ScreenUtil needs the size early (prevents first-frame layout jumps)
   await ScreenUtil.ensureScreenSize();
 
-  // Lock to portrait (optional)
+  // Lock the app to portrait (UX consistency; revise if you later add tablet/landscape)
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
+  // Key–value storage for lightweight persistence (language, theme, flags…)
   await GetStorage.init();
 
-  // Network monitors, etc.
-  InternetCheckDependencyInjection.init();
+  // Register global controllers ONCE here. Avoid re-putting the same controllers elsewhere.
+  Get.put(LanguageSettingController(), permanent: true);
+  Get.put(SystemMaintenanceController(), permanent: true);
 
-  // Read saved theme before runApp
+  // Initialize your app-wide DI / services here (single entry point)
+  // InternetCheckDependencyInjection.init();
+
+  // Read theme preference BEFORE runApp to avoid theme flicker
   final savedTheme = Themes().savedUserTheme;
+  Get.put(BasicSettingsController(), permanent: true);
 
   runApp(MyApp(savedTheme: savedTheme));
 }
 
+/// Root widget.
+/// Keeps GetMaterialApp **inside an Obx** so locale & direction are reactive.
+/// NOTE: We do not use `initialBinding` to avoid accidental double `Get.put(...)`.
 class MyApp extends StatelessWidget {
   final String savedTheme;
   const MyApp({super.key, required this.savedTheme});
 
-  ThemeData _resolveInitialTheme() {
-    if (savedTheme == 'buyer') return Themes.buyer;
-    if (savedTheme == 'seller') return Themes.seller;
-    return Themes.delivery;
-  }
-
-  Locale _initialLocaleSafely() {
-    // In case initialBinding hasn't registered the controller yet,
-    // fall back to English to avoid a crash.
-    try {
-      return Get.find<LanguageSettingController>().currentLocale;
-    } catch (_) {
-      return const Locale('en');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final initialTheme = _resolveInitialTheme();
+    // Resolve initial theme once (switch/case is clearer than nested ifs)
+    final ThemeData initialTheme = switch (savedTheme) {
+      'buyer'  => Themes.buyer,
+      'seller' => Themes.seller,
+      _        => Themes.delivery,
+    };
 
+    // Provide your target design size (Figma/Sketch reference frame)
     return ScreenUtilInit(
       designSize: const Size(414, 896),
-      builder: (_, __) => GetMaterialApp(
-        title: Strings.appName,
-        debugShowCheckedModeBanner: false,
-        theme: initialTheme,
-        navigatorKey: Get.key,
-        initialRoute: Routes.splashScreen,
-        getPages: Routes.list,
+      builder: (_, __) {
+        // Pull the language controller once.
+        // Wrapping GetMaterialApp in Obx will rebuild when language changes.
+        final lang = Get.find<LanguageSettingController>();
 
-        // Locale & i18n
-        locale: _initialLocaleSafely(),
-        translations: FallbackTranslation(), // TODO: ensure this exists
-        fallbackLocale: const Locale('en'),
+        return Obx(() => GetMaterialApp(
+          title: Strings.appName,
+          debugShowCheckedModeBanner: false,
 
-        // Prefer binding here (remove duplicate Get.put in main)
-        initialBinding: BindingsBuilder(() {
-          Get.put(SystemMaintenanceController(), permanent: true);
-          Get.put(LanguageSettingController(), permanent: true);
-        }),
+          // Theme setup
+          theme: initialTheme,
+          // darkTheme: Themes.dark,
+          // themeMode: ThemeMode.system, // Optional: if you support system dark mode
 
-        // Global wrapper → auto-lock + input hooks + preserves your Obx/RTL/MediaQuery
-        builder: (context, widget) {
-          ScreenUtil.init(context);
+          // GetX navigator key (single navigator for the whole app)
+          navigatorKey: Get.key,
 
-          final content = Obx(() => MediaQuery(
-            data: MediaQuery.of(context).copyWith(
+          // Routing
+          initialRoute: Routes.splashScreen,
+          getPages: Routes.list,
+
+          // i18n using GetX
+          translations: FallbackTranslation(),      // your translations mapper
+          fallbackLocale: const Locale('en'),       // safe default
+          locale: lang.currentLocale,               // <-- REACTIVE (Obx above)
+
+          // IMPORTANT:
+          // - Do NOT re-put controllers in initialBinding (it causes random “white screens”)
+          // - Keep single registration in `main()` only.
+          // initialBinding: BindingsBuilder(() {}),
+
+          // Builder wraps every page to:
+          // 1) Lock text scale factor across the app
+          // 2) Apply text direction reactively (RTL/LTR) after language loads
+          builder: (context, widget) {
+            // Re-init ScreenUtil using the real context
+            ScreenUtil.init(context);
+
+            // During language loading, default to LTR to avoid early crashes.
+            final textDir = lang.isLoading
+                ? TextDirection.ltr
+                : lang.languageDirection;
+
+            // Lock text scale factor to 1.0 to keep UI consistent
+            final mq = MediaQuery.of(context).copyWith(
               textScaler: const TextScaler.linear(1.0),
-            ),
-            child: Directionality(
-              textDirection: Get.find<LanguageSettingController>().isLoading
-                  ? TextDirection.ltr
-                  : Get.find<LanguageSettingController>().languageDirection,
-              child: widget ?? const SizedBox.shrink(),
-            ),
-          ));
+            );
 
-          return AppActivityWrapper(child: content);
-        },
-      ),
+            return MediaQuery(
+              data: mq,
+              child: Directionality(
+                textDirection: textDir,
+                child: widget!,
+              ),
+            );
+          },
+        ));
+      },
     );
   }
 }
-
-/// Wraps the whole app to:
-/// - Start/arm inactivity timer globally
-/// - Listen for lock events and push the LockScreen once
-/// - Reset timer on any pointer/keyboard activity
-class AppActivityWrapper extends StatefulWidget {
-  final Widget child;
-  const AppActivityWrapper({super.key, required this.child});
-
-  @override
-  State<AppActivityWrapper> createState() => _AppActivityWrapperState();
-}
-
-class _AppActivityWrapperState extends State<AppActivityWrapper> {
-  late final InactivityService _inactivity =
-  InactivityService()..timeout = const Duration(minutes: 50); // GLOBAL TIMEOUT
-  StreamSubscription<void>? _sub;
-  bool _lockOpen = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _inactivity.start();
-
-    _sub = _inactivity.onLock.listen((_) async {
-      if (!_inactivity.isLocked || _lockOpen) return;
-      _lockOpen = true;
-
-      // Push biometrics-only lock overlay; returns to same screen on success
-      await Get.to(
-            () => const LockScreen(),
-        fullscreenDialog: true,
-        preventDuplicates: true,
-      );
-
-      // When LockScreen pops (after successful auth), allow future locks again
-      _lockOpen = false;
-    });
-  }
-
-  @override
-  void dispose() {
-    _sub?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Capture inputs globally to reset inactivity timer
-    return Listener(
-      onPointerDown: (_) => _inactivity.reset(),
-      onPointerMove: (_) => _inactivity.reset(),
-      onPointerSignal: (_) => _inactivity.reset(),
-      child: Focus(
-        autofocus: true,
-        onKeyEvent: (_, __) {
-          _inactivity.reset();
-          return KeyEventResult.ignored;
-        },
-        child: widget.child,
-      ),
-    );
-  }
-}
-* */

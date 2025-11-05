@@ -5,133 +5,185 @@ import 'language_model.dart';
 import 'language_service.dart';
 
  final languageSettingsController = Get.find<LanguageSettingController>();
-class LanguageSettingController extends GetxController {
-  RxString selectedLanguage = "".obs; // Selected language is English
-  RxString defLangKey = "".obs; // Default language is English
 
+class LanguageSettingController extends GetxController {
+  // Reactive state
+  final RxString selectedLanguage = ''.obs; // user selection (persisted)
+  final RxString defLangKey = ''.obs;// default from backend
+  final RxList<Language> languages = <Language>[].obs;
+
+  final RxBool _isLoading = false.obs;
+
+  bool get isLoading => _isLoading.value;
+  RxBool get isLoadingRx => _isLoading;
+  static const String selectedLanguageKey = 'selectedLanguage';
+
+  // ----------------------------------------------------------------------------
+  // Lifecycle
+  // ----------------------------------------------------------------------------
   @override
   void onInit() {
-    fetchLanguages().then((value) => getDefaultKey());
     super.onInit();
+    _init();
   }
 
-  List<Language> languages = [];
-  var isLoadingValue = false.obs;
+  Future<void> _init() async {
+    // Ensure GetStorage is ready (do this once in app bootstrap ideally)
+    try { await GetStorage.init(); } catch (_) {}
+    await fetchLanguages(); // sets selectedLanguage + defLangKey safely
+  }
 
-  bool get isLoading => isLoadingValue.value;
-  static const String selectedLanguageKey = 'selectedLanguage';
+  // ----------------------------------------------------------------------------
+  // Fetch & initialization
+  // ----------------------------------------------------------------------------
   Future<void> fetchLanguages() async {
-    isLoadingValue.value = true;
+    _isLoading.value = true;
+
     try {
       final deviceLang = Get.deviceLocale?.languageCode ?? 'en';
       final languageService = LanguageService();
 
-      languages = await languageService.fetchLanguages(langCode: deviceLang);
-      debugPrint('>> Fetched $deviceLang Languages');
+      // Network fetch (add timeout to avoid hangs)
+      final fetched = await languageService
+          .fetchLanguages(langCode: deviceLang)
+          .timeout(const Duration(seconds: 15));
 
-      // 👇 Set device language as selected if available
+      languages.assignAll(fetched ?? <Language>[]);
+
+      // Determine backend default (status == true), else first, else 'en'
+      final defaultFromBackend = _safePickDefaultLanguageCode(languages);
+      defLangKey.value = defaultFromBackend;
+
+      // Read persisted selection; fall back to default/backend/device/en
       final box = GetStorage();
-      final savedLang = box.read(selectedLanguageKey);
-
-      if (savedLang != null && savedLang.isNotEmpty) {
-        selectedLanguage.value = savedLang; // use cached selection
-      } else {
-        // Check if device language exists in list
-        final deviceLangExists = languages.any((lang) => lang.code == deviceLang);
-        selectedLanguage.value = deviceLangExists ? deviceLang : 'en';
-        box.write(selectedLanguageKey, selectedLanguage.value);
-      }
-      getDefaultKey(); // fallback + sync with defaults
+      final savedLang = box.read(selectedLanguageKey) as String?;
+      final resolved = _resolveSelectedCode(
+        saved: savedLang,
+        backendDefault: defLangKey.value,
+        device: deviceLang,
+        have: languages,
+      );
+      selectedLanguage.value = resolved;
+      box.write(selectedLanguageKey, resolved);
     } catch (e) {
       debugPrint('Error fetching language data: $e');
+
+      // Fail-safe: empty list → use device or 'en'
+      if (languages.isEmpty) {
+        final deviceLang = Get.deviceLocale?.languageCode ?? 'en';
+        defLangKey.value = deviceLang;
+        selectedLanguage.value = deviceLang;
+        GetStorage().write(selectedLanguageKey, selectedLanguage.value);
+      }
     } finally {
-      isLoadingValue.value = false;
+      _isLoading.value = false;
     }
   }
 
-  // >> get default language key
-  String getDefaultKey() {
-    isLoadingValue.value = true;
-    if (languages.isEmpty) {
-      // fallback to system
-      final systemLang = Get.deviceLocale?.languageCode ?? 'en';
-      defLangKey.value = systemLang;
-      selectedLanguage.value = systemLang;
-      isLoadingValue.value = false;
-      return systemLang;
-    }
-
-    final selectedLang = languages.firstWhere(
-          (lang) => lang.status == true,
-      orElse: () => languages.first,
-    );
-
-    defLangKey.value = selectedLang.code;
-
-    final box = GetStorage();
-    selectedLanguage.value = box.read(selectedLanguageKey) ?? defLangKey.value;
-    isLoadingValue.value = false;
-    return defLangKey.value;
-  }
+  // ----------------------------------------------------------------------------
+  // Public API
+  // ----------------------------------------------------------------------------
   void changeLanguage(String newLanguage) {
+    // only accept codes that exist (or allow any and fallback in getters)
     selectedLanguage.value = newLanguage;
-    final box = GetStorage();
-    box.write(selectedLanguageKey, newLanguage);
-    // LocalStorages.saveRtl(type: languageDirection == 'rtl' ? true : false);
-    update();
+    GetStorage().write(selectedLanguageKey, newLanguage);
+    // If you use GetX localization system, also:
+    // Get.updateLocale(Locale(newLanguage));
+    update(); // notify classic GetBuilders, not required for Obx
   }
 
+  /// Safe translation lookup with multi-level fallback
   String getTranslation(String key) {
-    final selectedLang = languages.firstWhere(
-      (lang) => lang.code == selectedLanguage.value,
-      orElse: () => languages.firstWhere(
-        (lang) => lang.code == defLangKey.value,
-      ),
-    );
+    if (key.isEmpty) return '';
 
-    final defaultLanguage = languages.firstWhere(
-      (lang) => lang.code == 'en',
-      orElse: () => languages.firstWhere(
-        (lang) => lang.code == 'en',
-      ),
-    );
+    // 0) nothing loaded → return key
+    if (languages.isEmpty) return key;
 
-    String value;
-    if (selectedLang.translateKeyValues[key] == '' ||
-        selectedLang.translateKeyValues[key] == null) {
-      value = defaultLanguage.translateKeyValues[key] ?? key;
-    } else {
-      value = selectedLang.translateKeyValues[key] ?? key;
+    // 1) try selected language
+    final langSel = _findByCode(languages, selectedLanguage.value);
+    final vSel = langSel?.translateKeyValues[key];
+    if (_isNonEmpty(vSel)) return vSel!;
+
+    // 2) try backend default
+    final langDef = _findByCode(languages, defLangKey.value);
+    final vDef = langDef?.translateKeyValues[key];
+    if (_isNonEmpty(vDef)) return vDef!;
+
+    // 3) try 'en' if present
+    final langEn = _findByCode(languages, 'en');
+    final vEn = langEn?.translateKeyValues[key];
+    if (_isNonEmpty(vEn)) return vEn!;
+
+    // 4) last resort: first language that has the key
+    for (final l in languages) {
+      final vv = l.translateKeyValues[key];
+      if (_isNonEmpty(vv)) return vv!;
     }
 
-    return value;
+    // 5) ultimate fallback
+    return key;
   }
+
+  /// Locale for GetMaterialApp.locale
   Locale get currentLocale {
     final code = selectedLanguage.value.isNotEmpty
         ? selectedLanguage.value
-        : defLangKey.value.isNotEmpty
-        ? defLangKey.value
-        : Get.deviceLocale?.languageCode ?? 'en';
+        : (defLangKey.value.isNotEmpty ? defLangKey.value : (Get.deviceLocale?.languageCode ?? 'en'));
 
     return Locale(code);
   }
 
-  /// Get text direction [ when selected language null return default direction ]
+  /// UI text direction (no side effects; no updates here)
   TextDirection get languageDirection {
-    isLoadingValue.value = true;
+    final sel = _findByCode(languages, selectedLanguage.value) ??
+        _findByCode(languages, defLangKey.value) ??
+        _findByCode(languages, 'en');
+
+    final dir = sel?.dir ?? 'ltr';
+    return dir.toLowerCase() == 'rtl' ? TextDirection.rtl : TextDirection.ltr;
+  }
+
+  // ----------------------------------------------------------------------------
+  // Helpers (pure, no side effects)
+  // ----------------------------------------------------------------------------
+  Language? _findByCode(List<Language> list, String code) {
+    if (code.isEmpty || list.isEmpty) return null;
     try {
-      final selectedLang = languages.firstWhere(
-        (lang) => lang.code == selectedLanguage.value,
-        orElse: () => languages.firstWhere(
-          (lang) => lang.code == defLangKey.value,
-        ),
-      );
-      isLoadingValue.value = false;
-      // LocalStorages.saveRtl(type: selectedLang.dir == 'rtl' ? true : false);
-      update();
-      return selectedLang.dir == 'rtl' ? TextDirection.rtl : TextDirection.ltr;
-    } catch (e) {
-      return TextDirection.ltr; // Fallback to left-to-right (LTR)
+      return list.firstWhere((l) => l.code == code);
+    } catch (_) {
+      return null;
     }
   }
+
+  String _safePickDefaultLanguageCode(List<Language> list) {
+    if (list.isEmpty) return 'en';
+    // prefer status==true
+    final withStatus = list.where((l) => l.status == true).toList();
+    if (withStatus.isNotEmpty) return withStatus.first.code;
+
+    // else prefer 'en' if present
+    final en = _findByCode(list, 'en');
+    if (en != null) return en.code;
+
+    // else first item
+    return list.first.code;
+  }
+
+  String _resolveSelectedCode({
+    required String? saved,
+    required String backendDefault,
+    required String device,
+    required List<Language> have,
+  }) {
+    String pick = (saved ?? '').trim();
+    bool exists(String c) => _findByCode(have, c) != null;
+
+    if (exists(pick)) return pick;
+    if (exists(backendDefault)) return backendDefault;
+    if (exists(device)) return device;
+    if (exists('en')) return 'en';
+    return have.isNotEmpty ? have.first.code : 'en';
+  }
+
+  bool _isNonEmpty(String? v) => v != null && v.trim().isNotEmpty;
 }

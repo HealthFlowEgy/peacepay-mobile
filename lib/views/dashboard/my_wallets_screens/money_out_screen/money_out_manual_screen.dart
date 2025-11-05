@@ -135,7 +135,6 @@ class MoneyOutManualScreen extends StatelessWidget {
           children: [
             for (int i = 0; i < controller.inputFields.length; i++) ...[
               controller.inputFields[i],
-
               // If this position corresponds to account/IBAN, render the Bank dropdown after it.
               if (i < modelFields.length)
                 if (modelFields[i]

@@ -127,19 +127,20 @@ class MoneyOutPreviewScreen extends GetView<MoneyOutController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          // TextValueFormWidget(
+          //   text: Strings.trxID,
+          //   value: controller.information.trx,
+          // ),
+          //
+          // _divider(),
           TextValueFormWidget(
-            text: Strings.trxID,
-            value: controller.information.trx,
+            text: Strings.requestAmount,
+            value: controller.information.requestAmount,
           ),
           _divider(),
           TextValueFormWidget(
             text: Strings.totalCharge,
             value: controller.information.totalCharge,
-          ),
-          _divider(),
-          TextValueFormWidget(
-            text: Strings.requestAmount,
-            value: controller.information.requestAmount,
           ),
           // _divider(),
           //

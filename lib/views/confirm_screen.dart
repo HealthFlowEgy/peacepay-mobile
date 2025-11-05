@@ -46,9 +46,9 @@ class ConfirmScreen extends StatelessWidget{
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Icon(  onApproval ?  Icons.warning_amber: Icons.check_circle,
+            Icon(  onApproval ?  Icons.check_circle: Icons.warning_amber,
               size: 250.sp,
-              color: onApproval?Colors.red :Theme.of(context).primaryColor,),
+              color: onApproval?Theme.of(context).primaryColor :Colors.red ,),
           ],
         ),
       ),

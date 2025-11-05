@@ -130,11 +130,11 @@ class AddMoneyPreviewScreen extends GetView<AddMoneyController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          TextValueFormWidget(
-            text: Strings.trxID,
-            value: controller.addMoneyPaypalModel.trx.toString(),
-          ),
-          _divider(),
+          // TextValueFormWidget(
+          //   text: Strings.trxID,
+          //   value: controller.addMoneyPaypalModel.trx.toString(),
+          // ),
+          // _divider(),
           TextValueFormWidget(
             text: Strings.requestAmount,
             value: controller.addMoneyPaypalModel.paymentInformations.requestAmount,
