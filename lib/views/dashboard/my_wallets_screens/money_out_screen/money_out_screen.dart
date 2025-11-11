@@ -236,7 +236,8 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
           ),
           child: DropdownButtonFormField<GatewayCurrency>(
             isExpanded: true,
-            value: selectedOrNull, // ← null initially → shows hint
+            // value: selectedOrNull,
+            // ← null initially → shows hint
             hint: const Text('Select your cash-out method'),
             iconEnabledColor: Theme.of(context).primaryColor,
             decoration: const InputDecoration.collapsed(hintText: ''),
@@ -249,7 +250,7 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
                       Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: Image.network(
-                          m.img!,
+                          m.img,
                           width: 24,
                           height: 24,
                           errorBuilder: (_, __, ___) => const SizedBox.shrink(),
@@ -257,7 +258,7 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
                       ),
                     Expanded(
                       child: Text(
-                        m.title ?? 'Unknown',
+                        m.title ,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Theme.of(context).primaryColor,
@@ -272,7 +273,6 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
             onChanged: (val) {
               // Guard against null (keeps hint visible)
               if (val == null) return;
-
               // Update reactive state
               controller.selectedMethodID.value = val.id ;
               controller.selectedMethod.value = val.title ?? '';

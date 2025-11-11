@@ -1,26 +1,21 @@
-import 'home_model.dart';
+import 'data_of_transaction.dart';
+import 'package:peacepay/backend/models/dashboard/data_of_transaction.dart';
 
 class TransactionModel {
-  final Data data;
-
-  TransactionModel({
-    required this.data,
-  });
+  final TransactionPage data;
+  TransactionModel({required this.data});
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) => TransactionModel(
-    data: Data.fromJson(json["data"]),
+    data: TransactionPage.fromJson(json['data'] ?? const {}),
   );
 }
 
-class Data {
+class TransactionPage {
   final Transactions transactions;
+  TransactionPage({required this.transactions});
 
-  Data({
-    required this.transactions,
-  });
-
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    transactions: Transactions.fromJson(json["transactions"]),
+  factory TransactionPage.fromJson(Map<String, dynamic> json) => TransactionPage(
+    transactions: Transactions.fromJson(json['transactions'] ?? const {}),
   );
 }
 
@@ -34,7 +29,9 @@ class Transactions {
   });
 
   factory Transactions.fromJson(Map<String, dynamic> json) => Transactions(
-    data: List<DataOfTransaction>.from(json["data"].map((x) => DataOfTransaction.fromJson(x))),
-    lastPage: json["last_page"],
+    data: (json['data'] as List? ?? [])
+        .map((x) => DataOfTransaction.fromJson(x as Map<String, dynamic>))
+        .toList(),
+    lastPage: (json['last_page'] ?? 1) as int,
   );
 }

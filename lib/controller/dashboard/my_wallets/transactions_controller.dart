@@ -1,6 +1,7 @@
 import 'package:peacepay/utils/basic_screen_imports.dart';
 
 
+import '../../../backend/models/dashboard/data_of_transaction.dart';
 import '../../../backend/services/dashboard_api_service.dart';
 import '../../../backend/models/dashboard/home_model.dart';
 import '../../../backend/models/dashboard/transaction_model.dart';
@@ -54,7 +55,6 @@ class TransactionsController extends GetxController  with DashboardApiService{
     update();
     await transactionProcessApi(page.toString()).then((value) {
       _transactionModel = value!;
-
       if(_transactionModel.data.transactions.lastPage > 1){
         hasNextPage.value = true;
       }else{

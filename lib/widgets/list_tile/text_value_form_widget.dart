@@ -4,11 +4,12 @@ class TextValueFormWidget extends StatelessWidget {
   const TextValueFormWidget(
       {super.key,
       required this.text,
+       this.color,
         this.value = "",
         this.currency = ""
       });
 
-  final dynamic text, value, currency;
+  final dynamic text, value, currency,color;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +21,7 @@ class TextValueFormWidget extends StatelessWidget {
           text: text,
           fontSize: Dimensions.headingTextSize4 * .85,
           fontWeight: FontWeight.w500,
+          color: color,
         ),
         horizontalSpace(Dimensions.paddingSizeHorizontal * .5),
         Expanded(
@@ -49,7 +51,7 @@ class TextValueFormWidget extends StatelessWidget {
                   fontSize: Dimensions.headingTextSize3 * .85,
                   textAlign: TextAlign.end,
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).primaryColor,
+                  color: color
                 ),
               ),
             ],

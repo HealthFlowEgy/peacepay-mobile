@@ -105,7 +105,7 @@ class MoneyOutPreviewScreen extends GetView<MoneyOutController> {
               prefix: Strings.moneyOut,
               title: Strings.confirmPay,
               suffix:
-              "${controller.amountController.text} ${controller.selectedCurrency.value}",
+              controller.information.payable.toString(),
               onPressed: () => controller.onConfirmProcess(context),
             ),
             verticalSpace(Dimensions.paddingSizeVertical * 1.5),

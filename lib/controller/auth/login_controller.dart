@@ -56,7 +56,6 @@ class LoginController extends GetxController{
     try {
       final mobile = emailController.text.trim();
 
-      // 👉 Local validation
       if (!mobile.startsWith("01")) {
         _errorMessage.value = "Mobile number must start with 01";
         return null;

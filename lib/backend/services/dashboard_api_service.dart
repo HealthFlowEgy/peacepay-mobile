@@ -43,9 +43,7 @@ mixin DashboardApiService {
       );
 
       if (mapResponse != null) {
-        // print(const JsonEncoder.withIndent('  ').convert(mapResponse));
         TransactionModel result = TransactionModel.fromJson(mapResponse);
-
         return result;
       }
     } catch (e) {

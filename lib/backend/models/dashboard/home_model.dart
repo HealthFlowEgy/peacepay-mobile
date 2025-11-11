@@ -1,16 +1,17 @@
-class HomeModel {
-  final Data data;
 
-  HomeModel({
-    required this.data,
-  });
+
+import 'data_of_transaction.dart';
+
+class HomeModel {
+  final HomeData data;
+  HomeModel({required this.data});
 
   factory HomeModel.fromJson(Map<String, dynamic> json) => HomeModel(
-    data: Data.fromJson(json["data"]),
+    data: HomeData.fromJson(json['data'] ?? const {}),
   );
 }
 
-class Data {
+class HomeData {
   final int totalEscrow;
   final int userId;
   final int completedEscrow;
@@ -19,7 +20,7 @@ class Data {
   final List<UserWallet> userWallet;
   final List<DataOfTransaction> transactions;
 
-  Data({
+  HomeData({
     required this.totalEscrow,
     required this.userId,
     required this.completedEscrow,
@@ -29,74 +30,20 @@ class Data {
     required this.transactions,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    totalEscrow: json["total_escrow"],
-    userId: json["user_id"],
-    completedEscrow: json["compledted_escrow"],
-    pendingEscrow: json["pending_escrow"],
-    disputeEscrow: json["dispute_escrow"],
-    userWallet: List<UserWallet>.from(json["userWallet"].map((x) => UserWallet.fromJson(x))),
-    transactions: List<DataOfTransaction>.from(json["transactions"].map((x) => DataOfTransaction.fromJson(x))),
+  factory HomeData.fromJson(Map<String, dynamic> json) => HomeData(
+    totalEscrow: (json['total_escrow'] ?? 0) as int,
+    userId: (json['user_id'] ?? 0) as int,
+    completedEscrow: (json['compledted_escrow'] ?? json['completed_escrow'] ?? 0) as int,
+    pendingEscrow: (json['pending_escrow'] ?? 0) as int,
+    disputeEscrow: (json['dispute_escrow'] ?? 0) as int,
+    userWallet: (json['userWallet'] as List? ?? [])
+        .map((x) => UserWallet.fromJson(x as Map<String, dynamic>))
+        .toList(),
+    transactions: (json['transactions'] as List? ?? [])
+        .map((x) => DataOfTransaction.fromJson(x as Map<String, dynamic>))
+        .toList(),
   );
 }
-class DataOfTransaction {
-  final int id;
-  final String trxId;
-  final String gatewayCurrency;
-  final String transactionType;
-  final dynamic senderRequestAmount;
-  final String senderCurrencyCode;
-  final dynamic totalPayable;
-  final String gatewayCurrencyCode;
-  final double exchangeRate;
-  final double fee;
-  final dynamic rejectionReason;
-  final dynamic exchangeCurrency;
-  final int status;
-  final String stringStatus;
-  final double balanceAfterTransaction;
-  final String createdAt;
-
-  DataOfTransaction({
-    required this.id,
-    required this.trxId,
-    required this.gatewayCurrency,
-    required this.transactionType,
-    required this.senderRequestAmount,
-    required this.senderCurrencyCode,
-    required this.totalPayable,
-    required this.gatewayCurrencyCode,
-    required this.exchangeRate,
-    required this.fee,
-    required this.rejectionReason,
-    required this.exchangeCurrency,
-    required this.status,
-    required this.stringStatus,
-    required this.balanceAfterTransaction,
-    required this.createdAt,
-  });
-
-  factory DataOfTransaction.fromJson(Map<String, dynamic> json) => DataOfTransaction(
-    id: json["id"],
-    trxId: json["trx_id"],
-    gatewayCurrency: json["gateway_currency"] ?? "EGP",
-    transactionType: json["transaction_type"],
-    senderRequestAmount: json["sender_request_amount"] ?? "0",
-    senderCurrencyCode: json["sender_currency_code"],
-    totalPayable: json["total_payable"],
-    gatewayCurrencyCode: json["gateway_currency_code"] ?? "0",
-    exchangeRate: (json["exchange_rate"] ?? 0).toDouble(),
-    fee: (json["fee"] ?? 0).toDouble(),
-    rejectionReason: json["rejection_reason"],
-    exchangeCurrency: json["exchange_currency"],
-    status: json["status"],
-    stringStatus: json["string_status"],
-    balanceAfterTransaction:
-    (json["balance_after_transaction"] ?? 0).toDouble(),
-    createdAt: json["created_at"],
-  );
-}
-
 
 class UserWallet {
   final String name;
@@ -119,14 +66,21 @@ class UserWallet {
     required this.imagePath,
   });
 
+  static double _toDouble(dynamic v, {double fallback = 0.0}) {
+    if (v == null) return fallback;
+    if (v is num) return v.toDouble();
+    if (v is String) return double.tryParse(v) ?? fallback;
+    return fallback;
+  }
+
   factory UserWallet.fromJson(Map<String, dynamic> json) => UserWallet(
-    name: json["name"],
-    balance: (json["balance"] ?? 0).toDouble(),
-    currencyCode: json["currency_code"],
-    currencySymbol: json["currency_symbol"],
-    currencyType: json["currency_type"],
-    rate: (json["rate"] ?? 0).toDouble(),
-    flag: json["flag"] ?? "",
-    imagePath: json["image_path"],
+    name: (json['name'] ?? '') as String,
+    balance: _toDouble(json['balance']),
+    currencyCode: (json['currency_code'] ?? '') as String,
+    currencySymbol: (json['currency_symbol'] ?? '') as String,
+    currencyType: (json['currency_type'] ?? '') as String,
+    rate: _toDouble(json['rate']),
+    flag: (json['flag'] ?? '') as String,
+    imagePath: (json['image_path'] ?? '') as String,
   );
 }

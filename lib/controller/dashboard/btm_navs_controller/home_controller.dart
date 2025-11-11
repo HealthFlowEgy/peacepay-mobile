@@ -1,4 +1,5 @@
 import 'package:peacepay/utils/basic_screen_imports.dart';
+import 'package:peacepay/views/dashboard/my_wallets_screens/add_money_screen/add_money_confirm_screen.dart';
 
 import '../../../backend/backend_utils/logger.dart';
 import '../../../backend/local_storage/local_storage.dart';
@@ -155,7 +156,7 @@ class HomeController extends GetxController with DashboardApiService{
       Navigator.push(
           Get.context!,
           MaterialPageRoute(
-              builder: (context) => ConfirmScreen(
+              builder: (context) => AddMoneyConfirmScreen(
                 message: Strings.addMoneyConfirmationMSG,
                 onApproval: true,
                 onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),

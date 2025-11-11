@@ -8,12 +8,14 @@ import '../../../backend/services/api_endpoint.dart';
 import '../../../controller/before_auth/basic_settings_controller.dart';
 import '../../../controller/dashboard/btm_navs_controller/profile_controller.dart';
 import '../../../controller/dashboard/profiles/update_profile_controller.dart';
+import '../../../routes/routes.dart';
 import '../../../widgets/dialog_helper.dart';
 import '../../../widgets/list_tile/drawer_tile_button_widget.dart';
 import '../../../widgets/list_tile/profile_tile_button_widget.dart';
 import '../../../widgets/others/profile_image_widget.dart';
 import '../../../widgets/buttons/switch_button_widget.dart';
 import '../../web_view/web_view_screen.dart';
+import '../profiles_screens/support_ticket_screen.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -131,17 +133,24 @@ class ProfileScreen extends GetView<ProfileController> {
                   //   icon: Icons.help_outline_rounded,
                   // ),
                   DrawerTileButtonWidget(
+                      onTap: () {
+                        Get.toNamed(Routes.supportTicket);
+                          },
+                    text: 'Contact Support',
+                    icon: Icons.support_agent,
+                  ),
+                  DrawerTileButtonWidget(
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const WebViewScreen(
                                 appTitle: 'Support Center',
-                                link: "https://peacepay.me/support-center",
+                                link: "https://peacepay.me/tutorials",
                               )));
                     },
-                    text: 'Support Center',
-                    icon: Icons.support_agent,
+                    text: 'Tutorials',
+                    icon: Icons.help_outline,
                   ),
                   DrawerTileButtonWidget(
                     onTap: () {
@@ -169,7 +178,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     text: Strings.termsOfUse,
                     icon: Icons.info_outline,
                   ),
-                  Obx(() => controller.isLoading
+                  Obx(() => controller.isLoading.value
                       ? const CustomLoadingWidget()
                       : DrawerTileButtonWidget(
                     onTap: () {
@@ -183,7 +192,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     text: Strings.logout,
                     icon: Icons.power_settings_new_outlined,
                   )),
-                  Obx(() => controller.isLoading
+                  Obx(() => controller.isLoading.value
                       ? const CustomLoadingWidget()
                       : ProfileTileButtonWidget(
                           onTap: () {

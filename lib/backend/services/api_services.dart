@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:peacepay/backend/models/auth/createPinModel.dart';
 import 'package:peacepay/backend/models/common/common_success_model.dart';
@@ -268,8 +272,40 @@ class ApiServices {
     }
     return null;
   }
+  static Future<CommonSuccessModel?> supportTicketProcessApi({
+    required Map<String, String> body,        // { 'subject': '...', 'description': '...' }
+    required List<String> pathList,           // ['/tmp/a.png', '/tmp/b.pdf', ...]
+    required List<String> fieldList,          // ['attachments', 'attachments', ...] same length as pathList
+  }) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      // (optional) sanity check
+      if (pathList.length != fieldList.length) {
+        throw ArgumentError('pathList and fieldList must have same length');
+      }
 
-  ///   -------
+      mapResponse = await ApiMethod(isBasic: false).multipartMultiFile(
+        "${ApiEndpoint.supportTicket}?lang=${languageSettingsController.selectedLanguage.value}",
+        body,
+        code: 201,
+        fieldList: fieldList,
+        pathList: pathList,
+      );
+
+      if (mapResponse != null) {
+        final result = CommonSuccessModel.fromJson(mapResponse);
+        // Optional toast:
+        // CustomSnackBar.success(result.message?.success?.first ?? 'Ticket submitted');
+        return result;
+      }
+    } catch (e) {
+      log.e('🐞 support ticket api service error ==> $e');
+      CustomSnackBar.error('Something went Wrong!');
+      return null;
+    }
+    return null;
+  }
+
   //email verification Api method
   static Future<CommonSuccessModel?> emailVerificationApi(
       {required Map<String, dynamic> body}) async {

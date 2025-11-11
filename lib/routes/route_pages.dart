@@ -16,6 +16,7 @@ import '../bindings/login_screen_binding.dart';
 import '../bindings/onboard_screen_binding.dart';
 import '../bindings/register_screen_binding.dart';
 import '../bindings/splash_screen_binding.dart';
+import '../bindings/support_ticket_binding.dart';
 import '../bindings/welcome_screen_binding.dart';
 import '../views/auth/PIN/pINCheckScreen.dart';
 import '../views/auth/forgot_password_otp_screen/forgot_password_otp_screen.dart';
@@ -51,6 +52,7 @@ import '../views/dashboard/my_wallets_screens/transactions_screen/transactions_s
 import '../views/dashboard/notification_screen/notification_screen.dart';
 import '../views/dashboard/profiles_screens/change_pass_screen/change_pass_screen.dart';
 import '../views/dashboard/profiles_screens/fa_security_screen/fa_security_screen.dart';
+import '../views/dashboard/profiles_screens/support_ticket_screen.dart';
 import '../views/dashboard/profiles_screens/update_profile_screen/update_profile_screen.dart';
 
 
@@ -77,6 +79,11 @@ class RoutePageList {
       name: Routes.welcomeScreen,
       page: () => WelcomeScreen(),
       binding: WelcomeBinding(),
+    ),
+    GetPage(
+      name: Routes.supportTicket,
+      page: () => SupportTicketScreen(),
+      binding: SupportTicketBinding(),
     ),
 
     GetPage(

@@ -72,6 +72,6 @@ class ApiEndpoint {
   static String disputeURL = '/user/api-escrow-action/dispute-payment'.addBaseURl();
   static String releasePaymentURL = '/user/api-escrow-action/release-payment'.addBaseURl();
   static String requestPaymentURL = '/user/api-escrow-action/release-payment'.addBaseURl();
-
+  static String supportTicket = '/user/support-ticket/store'.addBaseURl();
   static String allTransactionsURL = '/user/all-transactions'.addBaseURl();
 }

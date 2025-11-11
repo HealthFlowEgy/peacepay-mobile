@@ -203,7 +203,7 @@ class MoneyOutManualScreen extends StatelessWidget {
                           "${dropdownField.label?.isNotEmpty == true ? dropdownField.label : 'Bank'} *",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
-                              Dimensions.radius * 1.2,
+                              Dimensions.radius * 1.3,
                             ),
                           ),
                         ),
@@ -242,4 +242,5 @@ class MoneyOutManualScreen extends StatelessWidget {
       ),
     );
   }
+
 }

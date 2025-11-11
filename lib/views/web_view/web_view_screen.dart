@@ -4,6 +4,7 @@ import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../routes/routes.dart';
 import '../confirm_screen.dart';
+import '../dashboard/my_wallets_screens/add_money_screen/add_money_confirm_screen.dart';
 
 class WebViewScreen extends StatefulWidget {
   final String link, appTitle;
@@ -68,7 +69,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ConfirmScreen(
+                              builder: (context) => AddMoneyConfirmScreen(
                                 message:
                                 Strings.addMoneyConfirmationMSG,
                                 // onApproval: true,

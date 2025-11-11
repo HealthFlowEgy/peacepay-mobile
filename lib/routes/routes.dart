@@ -9,6 +9,7 @@ class Routes {
   static const String splashScreen = '/splashScreen';
   static const String onboardScreen = '/onboardScreen';
   static const String welcomeScreen = '/welcomeScreen';
+  static const String supportTicket = '/supportTicket';
 
   static const String loginScreen = '/loginScreen';
   static const String faVerifyScreen = '/faVerifyScreen';

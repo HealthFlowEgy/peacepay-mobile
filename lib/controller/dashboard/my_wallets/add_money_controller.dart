@@ -17,6 +17,7 @@ import '../../../backend/models/common/common_success_model.dart';
 import '../../../backend/services/add_money_api_service.dart';
 import '../../../routes/routes.dart';
 import '../../../views/confirm_screen.dart';
+import '../../../views/dashboard/my_wallets_screens/add_money_screen/add_money_confirm_screen.dart';
 import '../../../views/web_view/web_view_screen.dart';
 import '../../../widgets/custom_dropdown_widget/custom_dropdown_widget.dart';
 import '../../../widgets/others/custom_upload_file_widget.dart';
@@ -141,7 +142,8 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ConfirmScreen(
+                              builder: (context) => AddMoneyConfirmScreen(
+                                onApproval: true,
                                 message:
                                 Strings.addMoneyConfirmationMSG,
                                 // onApproval: true,
@@ -175,7 +177,8 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ConfirmScreen(
+                              builder: (context) => AddMoneyConfirmScreen(
+                                onApproval: true,
                                 message:
                                 Strings.addMoneyConfirmationMSG,
                                 // onApproval: true,
@@ -183,8 +186,6 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
                                     Routes.dashboardScreen),
                               )));
                     }
-
-                    debugPrint("Confirmed");
                   },
                 )));
       }
@@ -198,7 +199,7 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
       Navigator.push(
           Get.context!,
           MaterialPageRoute(
-              builder: (context) => ConfirmScreen(
+              builder: (context) => AddMoneyConfirmScreen(
                 message: Strings.addMoneyConfirmationMSG,
                 onApproval: true,
                 onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
@@ -211,7 +212,7 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
       Navigator.push(
           Get.context!,
           MaterialPageRoute(
-              builder: (context) => ConfirmScreen(
+              builder: (context) => AddMoneyConfirmScreen(
                 message: Strings.addMoneyConfirmationMSG,
                 onApproval: true,
                 onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
