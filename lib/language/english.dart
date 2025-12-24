@@ -177,15 +177,25 @@ class Strings {
   static const String validUser = "validUser";
   static const String invalidUser = "invalidUser";
   static const String exchangeMSG = "exchangeMsg";
-  static const String changePasswordConfirmationMSG = "changePasswordConfirmationMsg";
+  static const String changePasswordConfirmationMSG =
+      "changePasswordConfirmationMsg";
   static const String exchangeConfirmationMSG = "exchangeConfirmationMsg";
   static const String moneyOutConfirmationMSG = "moneyOutConfirmationMsg";
   static const String addMoneyConfirmationMSG = "addMoneyConfirmationMsg";
-  static const String addNewEscrowConfirmationMSG = "addNewEscrowConfirmationMsg";
+  static const String addNewEscrowConfirmationMSG =
+      "addNewEscrowConfirmationMsg";
   static const String limitMSG = "limitMsg";
   static const String kycFormConfirmationMSG = "kycFormConfirmationMsg";
-  static const String resetPasswordConfirmationMSG = "resetPasswordConfirmationMsg";
+  static const String resetPasswordConfirmationMSG =
+      "resetPasswordConfirmationMsg";
 
   static const String message = "message";
   static const String paymentWaiting = "paymentwaiting";
+
+  static const String cancelOrderPayment = "Cancel Order Payment";
+  static const String cancelOrderPaymentMsg =
+      "If you cancel this payment, the shipping fee will be deducted, and the rest of the amount will be refunded. Do you want to continue?";
+  static const String goBack = "Go Back";
+  static const String cancelOrderSuccess =
+      "Cancellation successful. Your refund is on the way.";
 }

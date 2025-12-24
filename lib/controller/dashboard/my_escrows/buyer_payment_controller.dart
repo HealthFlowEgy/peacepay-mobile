@@ -7,7 +7,6 @@ import '../../../backend/backend_utils/logger.dart';
 import '../../../backend/models/tatum/tatum_model.dart' as tatum;
 import '../../../backend/models/escrow/buyer_payment_index_model.dart';
 import '../../../backend/models/escrow/escrow_automatic_payment_model.dart';
-import '../../../backend/models/escrow/escrow_create_model.dart';
 import '../../../backend/models/escrow/escrow_manual_payment_model.dart';
 import '../../../backend/models/escrow/escrow_paypal_payment_model.dart';
 import '../../../backend/services/buyer_payment_api_service.dart';
@@ -31,7 +30,6 @@ class BuyerPaymentController extends GetxController
   final selectedPaymentMethodId = "".obs;
   final selectedPaymentMethodTypeId = "".obs;
   final selectedPaymentMethodType = "".obs;
-  List<GatewayCurrency> selectedPaymentList = [];
 
   ///  ---------------- fetch and submit and confirm apis
   @override
@@ -58,26 +56,6 @@ class BuyerPaymentController extends GetxController
             Get.find<MyEscrowController>().escrowData.id.toString())
         .then((value) {
       _buyerPaymentIndexModel = value!;
-
-      selectedPaymentList.add(GatewayCurrency(
-          mId: -1,
-          paymentGatewayId: -1,
-          mType: "",
-          name: "",
-          alias: "",
-          mCurrencyCode: "",
-          mCurrencySymbol: "",
-          image: "",
-          minLimit: -1,
-          maxLimit: -1,
-          percentCharge: -1,
-          fixedCharge: -1,
-          mRate: -1));
-
-      for (var element in _buyerPaymentIndexModel.data.gatewayCurrencies) {
-        selectedPaymentList.add(element);
-      }
-
       update();
     }).catchError((onError) {
       log.e(onError);
@@ -143,7 +121,8 @@ class BuyerPaymentController extends GetxController
                         url.toString().contains(
                             'escrow-payment-api/callback?razorpay_order_id') ||
                         url.toString().contains('payment/confirmed') ||
-                        url.toString().contains('paystack/escrow-payment-approval?gateway=paystack') ||
+                        url.toString().contains(
+                            'paystack/escrow-payment-approval?gateway=paystack') ||
                         url.toString().contains('payment/success')) {
                       Navigator.push(
                           context,
@@ -164,20 +143,20 @@ class BuyerPaymentController extends GetxController
   late CommonSuccessModel _commonSuccessModel;
   CommonSuccessModel get commonSuccessModel => _commonSuccessModel;
 
-  late EscrowPaypalPaymentModel _buyerPaymentPaypalPaymentModel;
-  EscrowPaypalPaymentModel get buyerPaymentPaypalPaymentModel =>
+  EscrowPaypalPaymentModel? _buyerPaymentPaypalPaymentModel;
+  EscrowPaypalPaymentModel? get buyerPaymentPaypalPaymentModel =>
       _buyerPaymentPaypalPaymentModel;
 
-  late EscrowAutomaticPaymentModel _buyerPaymentAutomaticPaymentModel;
-  EscrowAutomaticPaymentModel get buyerPaymentAutomaticPaymentModel =>
+  EscrowAutomaticPaymentModel? _buyerPaymentAutomaticPaymentModel;
+  EscrowAutomaticPaymentModel? get buyerPaymentAutomaticPaymentModel =>
       _buyerPaymentAutomaticPaymentModel;
 
-  late tatum.TatumModel _buyerPaymentTatumPaymentModel;
-  tatum.TatumModel get buyerPaymentTatumPaymentModel =>
+  tatum.TatumModel? _buyerPaymentTatumPaymentModel;
+  tatum.TatumModel? get buyerPaymentTatumPaymentModel =>
       _buyerPaymentTatumPaymentModel;
 
-  late EscrowManualPaymentModel _buyerPaymentManualPaymentModel;
-  EscrowManualPaymentModel get buyerPaymentManualPaymentModel =>
+  EscrowManualPaymentModel? _buyerPaymentManualPaymentModel;
+  EscrowManualPaymentModel? get buyerPaymentManualPaymentModel =>
       _buyerPaymentManualPaymentModel;
 
   Future<CommonSuccessModel> buyerPaymentConfirm() async {
@@ -215,13 +194,15 @@ class BuyerPaymentController extends GetxController
             buyerPaymentIndexModel.data.escrowInformation.id.toString(),
             body: inputBody)
         .then((value) {
-      _buyerPaymentPaypalPaymentModel = value!;
+      if (value != null) {
+        _buyerPaymentPaypalPaymentModel = value;
 
-      _webPayment(Get.context!,
-          webUrl: _buyerPaymentPaypalPaymentModel.data.url[1].href,
-          title: selectedPaymentMethod.value);
-      _isSubmitLoading.value = false;
-      update();
+        _webPayment(Get.context!,
+            webUrl: _buyerPaymentPaypalPaymentModel!.data.url[1].href,
+            title: selectedPaymentMethod.value);
+        _isSubmitLoading.value = false;
+        update();
+      }
     }).catchError((onError) {
       log.e(onError);
     });
@@ -244,12 +225,14 @@ class BuyerPaymentController extends GetxController
             buyerPaymentIndexModel.data.escrowInformation.id.toString(),
             body: inputBody)
         .then((value) {
-      _buyerPaymentAutomaticPaymentModel = value!;
-      _webPayment(Get.context!,
-          webUrl: _buyerPaymentAutomaticPaymentModel.data.url,
-          title: selectedPaymentMethod.value);
-      _isSubmitLoading.value = false;
-      update();
+      if (value != null) {
+        _buyerPaymentAutomaticPaymentModel = value;
+        _webPayment(Get.context!,
+            webUrl: _buyerPaymentAutomaticPaymentModel!.data.url,
+            title: selectedPaymentMethod.value);
+        _isSubmitLoading.value = false;
+        update();
+      }
     }).catchError((onError) {
       log.e(onError);
     });
@@ -273,38 +256,39 @@ class BuyerPaymentController extends GetxController
     };
 
     await buyerPaymentTatumApi(
-        buyerPaymentIndexModel.data.escrowInformation.id.toString(),
-        body: inputBody)
+            buyerPaymentIndexModel.data.escrowInformation.id.toString(),
+            body: inputBody)
         .then((value) {
-      _buyerPaymentTatumPaymentModel = value!;
-      var data = _buyerPaymentTatumPaymentModel.data.addressInfo.inputFields;
+      if (value != null) {
+        _buyerPaymentTatumPaymentModel = value;
+        var data = _buyerPaymentTatumPaymentModel!.data.addressInfo.inputFields;
 
-      for (int item = 0; item < data.length; item++) {
-        // make the dynamic controller
-        var textEditingController = TextEditingController();
-        inputFieldControllers.add(textEditingController);
+        for (int item = 0; item < data.length; item++) {
+          // make the dynamic controller
+          var textEditingController = TextEditingController();
+          inputFieldControllers.add(textEditingController);
 
-        if (data[item].type.contains('text')) {
-          inputFields.add(
-            Column(
-              mainAxisAlignment: mainStart,
-              crossAxisAlignment: crossStart,
-              children: [
-                PrimaryTextInputWidget(
-                  controller: inputFieldControllers[item],
-                  labelText: data[item].label,
-                ),
-                verticalSpace(Dimensions.marginBetweenInputBox * .8),
-              ],
-            ),
-          );
+          if (data[item].type.contains('text')) {
+            inputFields.add(
+              Column(
+                mainAxisAlignment: mainStart,
+                crossAxisAlignment: crossStart,
+                children: [
+                  PrimaryTextInputWidget(
+                    controller: inputFieldControllers[item],
+                    labelText: data[item].label,
+                  ),
+                  verticalSpace(Dimensions.marginBetweenInputBox * .8),
+                ],
+              ),
+            );
+          }
         }
+
+        Get.toNamed(Routes.buyerPaymentTatumScreen);
+        _isSubmitLoading.value = false;
+        update();
       }
-
-
-      Get.toNamed(Routes.buyerPaymentTatumScreen);
-      _isSubmitLoading.value = false;
-      update();
     }).catchError((onError) {
       log.e(onError);
     });
@@ -313,7 +297,6 @@ class BuyerPaymentController extends GetxController
     update();
     return _buyerPaymentTatumPaymentModel;
   }
-
 
   /// for manual payment
   Future<EscrowManualPaymentModel?> buyerPaymentManualPayment() async {
@@ -336,12 +319,15 @@ class BuyerPaymentController extends GetxController
             buyerPaymentIndexModel.data.escrowInformation.id.toString(),
             body: inputBody)
         .then((value) {
-      _buyerPaymentManualPaymentModel = value!;
-      _getDynamicInputField(_buyerPaymentManualPaymentModel.data.inputFields);
+      if (value != null) {
+        _buyerPaymentManualPaymentModel = value;
+        _getDynamicInputField(
+            _buyerPaymentManualPaymentModel!.data.inputFields);
 
-      Get.toNamed(Routes.buyerPaymentManualScreen);
-      _isSubmitLoading.value = false;
-      update();
+        Get.toNamed(Routes.buyerPaymentManualScreen);
+        _isSubmitLoading.value = false;
+        update();
+      }
     }).catchError((onError) {
       log.e(onError);
     });
@@ -455,10 +441,10 @@ class BuyerPaymentController extends GetxController
   Future<CommonSuccessModel> manualSubmitApiProcess() async {
     _isLoading.value = true;
     Map<String, String> inputBody = {
-      "trx": _buyerPaymentManualPaymentModel.data.paymentInformations.trx,
+      "trx": _buyerPaymentManualPaymentModel!.data.paymentInformations.trx,
     };
 
-    final data = _buyerPaymentManualPaymentModel.data.inputFields;
+    final data = _buyerPaymentManualPaymentModel!.data.inputFields;
 
     for (int i = 0; i < data.length; i += 1) {
       if (data[i].type != 'file') {
@@ -501,20 +487,20 @@ class BuyerPaymentController extends GetxController
     }
   }
 
-
   ///* tatum submit api process
   Future<CommonSuccessModel> tatumSubmitApiProcess() async {
     _isLoading.value = true;
     Map<String, String> inputBody = {};
 
-    final data = _buyerPaymentTatumPaymentModel.data.addressInfo.inputFields;
+    final data = _buyerPaymentTatumPaymentModel!.data.addressInfo.inputFields;
 
     for (int i = 0; i < data.length; i += 1) {
-        inputBody[data[i].name] = inputFieldControllers[i].text;
+      inputBody[data[i].name] = inputFieldControllers[i].text;
     }
 
     await buyerPaymentTatumSubmitApi(
-        body: inputBody, url: _buyerPaymentTatumPaymentModel.data.addressInfo.submitUrl)
+            body: inputBody,
+            url: _buyerPaymentTatumPaymentModel!.data.addressInfo.submitUrl)
         .then((value) {
       _commonSuccessModel = value!;
 

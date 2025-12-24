@@ -11,8 +11,8 @@ class CustomCachedNetworkImage extends StatelessWidget {
     this.placeHolder,
     this.height,
     this.width,
-    this.isCircle = false, this.radius,
-    // this.placeHolder
+    this.isCircle = false,
+    this.radius,
   });
 
   final String imageUrl;
@@ -28,23 +28,32 @@ class CustomCachedNetworkImage extends StatelessWidget {
       height: height ?? double.infinity,
       width: width ?? double.infinity,
       imageUrl: imageUrl,
-      imageBuilder: (context, url) => Container(
+      // Performance optimization: Add memory cache configuration
+      memCacheHeight: height != null ? (height! * 2).toInt() : null,
+      memCacheWidth: width != null ? (width! * 2).toInt() : null,
+      maxHeightDiskCache: 1000,
+      maxWidthDiskCache: 1000,
+      imageBuilder: (context, imageProvider) => Container(
         height: height ?? double.infinity,
         width: width ?? double.infinity,
         decoration: BoxDecoration(
-            shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
-            borderRadius: isCircle
-                ? null
-                : BorderRadius.circular(Dimensions.radius * (radius ?? 1.2) ),
-            image: DecorationImage(
-            image: NetworkImage(imageUrl),
-            fit: BoxFit.fill
-          )
+          shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
+          borderRadius: isCircle
+              ? null
+              : BorderRadius.circular(Dimensions.radius * (radius ?? 1.2)),
+          image: DecorationImage(
+            image: imageProvider,
+            fit: BoxFit
+                .cover, // Changed from fill to cover for better performance
+          ),
         ),
       ),
-      // fit: BoxFit.fitWidth,
       placeholder: (context, url) => placeHolder ?? const CustomLoadingWidget(),
-      errorWidget: (context, url, error) => placeHolder ?? const CustomLoadingWidget(),
+      errorWidget: (context, url, error) =>
+          placeHolder ?? const Icon(Icons.error),
+      // Performance: Fade in animation
+      fadeInDuration: const Duration(milliseconds: 200),
+      fadeOutDuration: const Duration(milliseconds: 100),
     );
   }
 }

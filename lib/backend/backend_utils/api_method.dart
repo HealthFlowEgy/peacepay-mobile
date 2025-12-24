@@ -31,6 +31,7 @@ Future<Map<String, String>> bearerHeaderInfo() async {
     HttpHeaders.authorizationHeader: "Bearer $accessToken",
   };
 }
+
 Future<Map<String, String>> bearerHeaderInfoForPutMethod() async {
   String accessToken = LocalStorage.getToken()!;
 
@@ -40,6 +41,7 @@ Future<Map<String, String>> bearerHeaderInfoForPutMethod() async {
     HttpHeaders.authorizationHeader: "Bearer $accessToken",
   };
 }
+
 class ApiMethod {
   ApiMethod({required this.isBasic});
 
@@ -49,12 +51,11 @@ class ApiMethod {
   Future<Map<String, dynamic>?> get(
     String url, {
     int code = 200,
-    int duration = 15,
+    int duration = 60,
     bool showResult = false,
-        bool stream = false,
-
+    bool stream = false,
   }) async {
-    if(!stream) {
+    if (!stream) {
       log.i(
           '|📍📍📍|----------------- [[ GET ]] method details start -----------------|📍📍📍|');
       log.i(url);
@@ -149,30 +150,36 @@ class ApiMethod {
 // PUT Method
 
   Future<Map<String, dynamic>?> put(
-      String url,
-      Map<String, dynamic> body, {
-        int code = 200,
-        int duration = 30,
-        bool showResult = false,
-      }) async {
+    String url,
+    Map<String, dynamic> body, {
+    int code = 200,
+    int duration = 60,
+    bool showResult = false,
+  }) async {
     try {
-      log.i('|📍📍📍|-----------------[[ PUT ]] method details start -----------------|📍📍📍|');
+      log.i(
+          '|📍📍📍|-----------------[[ PUT ]] method details start -----------------|📍📍📍|');
       log.i(url);
       log.i(body);
-      log.i('|📍📍📍|-----------------[[ PUT ]] method details end -------------------|📍📍📍|');
+      log.i(
+          '|📍📍📍|-----------------[[ PUT ]] method details end -------------------|📍📍📍|');
 
       final response = await http
           .put(
-        Uri.parse(url),
-        body: jsonEncode(body),
-        headers: isBasic ? basicHeaderInfo() : await bearerHeaderInfoForPutMethod(),
-      )
+            Uri.parse(url),
+            body: jsonEncode(body),
+            headers: isBasic
+                ? basicHeaderInfo()
+                : await bearerHeaderInfoForPutMethod(),
+          )
           .timeout(Duration(seconds: duration));
 
-      log.i('|📒📒📒|-----------------[[ PUT ]] method response start ------------------|📒📒📒|');
+      log.i(
+          '|📒📒📒|-----------------[[ PUT ]] method response start ------------------|📒📒📒|');
       if (showResult) log.i(response.body);
       log.i(response.statusCode);
-      log.i('|📒📒📒|-----------------[[ PUT ]] method response end --------------------|📒📒📒|');
+      log.i(
+          '|📒📒📒|-----------------[[ PUT ]] method response end --------------------|📒📒📒|');
 
       final isMaintenance = response.statusCode == 503;
       _maintenanceCheck(isMaintenance, response.body);
@@ -251,7 +258,8 @@ class ApiMethod {
     final trimmed = body.trim();
     if (trimmed.isEmpty) return fallbackStatus();
 
-    final isJson = (contentType ?? '').toLowerCase().contains('application/json');
+    final isJson =
+        (contentType ?? '').toLowerCase().contains('application/json');
 
     if (!isJson) {
       return trimmed;
@@ -272,7 +280,10 @@ class ApiMethod {
           parts.add(v.trim());
         } else if (v is List) {
           parts.addAll(
-            v.whereType<String>().map((e) => e.trim()).where((e) => e.isNotEmpty),
+            v
+                .whereType<String>()
+                .map((e) => e.trim())
+                .where((e) => e.isNotEmpty),
           );
         }
       });
@@ -287,7 +298,10 @@ class ApiMethod {
           parts.add(v.trim());
         } else if (v is List) {
           parts.addAll(
-            v.whereType<String>().map((e) => e.trim()).where((e) => e.isNotEmpty),
+            v
+                .whereType<String>()
+                .map((e) => e.trim())
+                .where((e) => e.isNotEmpty),
           );
         }
       });
@@ -303,6 +317,7 @@ class ApiMethod {
 
     return trimmed.isNotEmpty ? trimmed : fallbackStatus();
   }
+
   String? _extractInfoTextFromErrorBody(dynamic raw) {
     try {
       if (raw is Map &&
@@ -322,34 +337,39 @@ class ApiMethod {
     }
     return null;
   }
+
   // Post Method
   Future<Map<String, dynamic>?> post(
-      String url,
-      Map<String, dynamic> body, {
-        int code = 201,
-        int duration = 30,
-        bool showResult = false,
-      }) async {
+    String url,
+    Map<String, dynamic> body, {
+    int code = 201,
+    int duration = 60,
+    bool showResult = false,
+  }) async {
     try {
-      log.i('|📍📍📍|-----------------[[ POST ]] method details start -----------------|📍📍📍|');
+      log.i(
+          '|📍📍📍|-----------------[[ POST ]] method details start -----------------|📍📍📍|');
       log.i(url);
       log.i(body);
-      log.i('|📍📍📍|-----------------[[ POST ]] method details end ------------|📍📍📍|');
+      log.i(
+          '|📍📍📍|-----------------[[ POST ]] method details end ------------|📍📍📍|');
 
       final response = await http
           .post(
-        Uri.parse(url),
-        body: jsonEncode(body),
-        headers: isBasic ? basicHeaderInfo() : await bearerHeaderInfo(),
-      )
+            Uri.parse(url),
+            body: jsonEncode(body),
+            headers: isBasic ? basicHeaderInfo() : await bearerHeaderInfo(),
+          )
           .timeout(Duration(seconds: duration));
 
-      log.i('|📒📒📒|-----------------[[ POST ]] method response start ------------------|📒📒📒|');
+      log.i(
+          '|📒📒📒|-----------------[[ POST ]] method response start ------------------|📒📒📒|');
       if (showResult) {
         log.i(response.body.toString());
       }
       log.i(response.statusCode);
-      log.i('|📒📒📒|-----------------[[ POST ]] method response end --------------------|📒📒📒|');
+      log.i(
+          '|📒📒📒|-----------------[[ POST ]] method response end --------------------|📒📒📒|');
 
       // Check Unauthorized
       if (response.statusCode == 401) {
@@ -380,7 +400,7 @@ class ApiMethod {
 
       // 👇 Handle Laravel-style validation error like:
       // {"message":{"error":["The mobile format is invalid."]}}
-      if (parsed?['message']?['error'] != null) {
+      if (parsed?['message'] is Map && parsed?['message']?['error'] != null) {
         final errors = parsed?['message']?['error'] as List?;
         if (errors != null && errors.isNotEmpty) {
           CustomSnackBar.error(errors.first.toString());
@@ -477,7 +497,9 @@ class ApiMethod {
 
         ErrorResponse res = ErrorResponse.fromJson(jsonDecode(jsonData.body));
 
-        if (!isMaintenance) CustomSnackBar.error(res.message!.error!.toString());
+        if (!isMaintenance) {
+          CustomSnackBar.error(res.message!.error!.toString());
+        }
 
         return null;
       }
@@ -634,8 +656,6 @@ class ApiMethod {
     }
   }
 
-
-
   // Post Method for conversation
   Future<Map<String, dynamic>?> multipart2(
       String url, Map<String, String> body, String filepath, String filedName,
@@ -685,9 +705,11 @@ class ApiMethod {
             'unknown error hitted in status code ${jsonDecode(jsonData.body)}');
 
         debugPrint("---------------");
-        debugPrint(jsonDecode(jsonData.body)["message"]["error"]["files.0"].first);
+        debugPrint(
+            jsonDecode(jsonData.body)["message"]["error"]["files.0"].first);
         //
-        CustomSnackBar.error(jsonDecode(jsonData.body)["message"]["error"]["files.0"].first);
+        CustomSnackBar.error(
+            jsonDecode(jsonData.body)["message"]["error"]["files.0"].first);
 
         return null;
       }
@@ -726,4 +748,3 @@ class ApiMethod {
     }
   }
 }
-

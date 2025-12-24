@@ -7,30 +7,23 @@ import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
 import '../../views/dashboard/btm_screens/home_screen.dart';
 import '../../views/dashboard/btm_screens/my_escrow_screen.dart';
-import '../../views/dashboard/btm_screens/my_wallet_screen.dart';
 import '../../views/dashboard/btm_screens/profile_screen.dart';
-import 'btm_navs_controller/my_wallet_controller.dart';
-import 'my_wallets/add_money_controller.dart';
 
 final log = logger(DashboardController);
 
-class DashboardController extends GetxController with DownloadFile{
-
+class DashboardController extends GetxController with DownloadFile {
   @override
   void onInit() {
     ensureCameraPermissionIfNeeded();
     super.onInit();
   }
 
-
-
-
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   final selectedIndex = 0.obs;
 
   List body = [
-          HomeScreen(),
+    HomeScreen(),
     const MyEscrowScreen(),
     // const MyWalletScreen(),
     const ProfileScreen()
@@ -43,23 +36,19 @@ class DashboardController extends GetxController with DownloadFile{
     Strings.profile
   ];
 
+  void notificationRoute() => Get.toNamed(Routes.notificationScreen);
 
-  void notificationRoute()=> Get.toNamed(Routes.notificationScreen);
-
-  void addNewEscrowRoute()=> Get.toNamed(Routes.addNewEscrowScreen);
+  void addNewEscrowRoute() => Get.toNamed(Routes.addNewEscrowScreen);
 
   final _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
 
-
-
-  logOutProcess() async{
-
+  logOutProcess() async {
     _isLoading.value = true;
     update();
 
     await ApiServices.logOutApi().then((value) {
-      if(value != null) {
+      if (value != null) {
         LocalStorage.logout();
         Get.offAllNamed(Routes.loginScreen);
       }
@@ -70,6 +59,5 @@ class DashboardController extends GetxController with DownloadFile{
 
     _isLoading.value = false;
     update();
-
   }
 }

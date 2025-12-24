@@ -1,10 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
 import '../../controller/dashboard/profiles/update_profile_controller.dart';
-import '../../language/language_controller.dart';
 import '../../utils/basic_widget_imports.dart';
 import '../../utils/theme.dart';
+
 class SwitchButtonWidget extends StatefulWidget {
   const SwitchButtonWidget({
     super.key,
@@ -54,7 +51,6 @@ class _SwitchButtonWidgetState extends State<SwitchButtonWidget> {
           // Optional callback
           widget.onTap?.call(themeKey);
           Get.find<UpdateProfileController>().setUserType(themeKey);
-
         });
       },
       child: Container(
@@ -66,8 +62,8 @@ class _SwitchButtonWidgetState extends State<SwitchButtonWidget> {
           color: isSelected
               ? Theme.of(context).primaryColor
               : widget.isScaffold
-              ? Theme.of(context).scaffoldBackgroundColor
-              : CustomColor.whiteColor,
+                  ? Theme.of(context).scaffoldBackgroundColor
+                  : CustomColor.whiteColor,
           borderRadius: BorderRadius.circular(Dimensions.radius),
           border: Border.all(
             color: isSelected

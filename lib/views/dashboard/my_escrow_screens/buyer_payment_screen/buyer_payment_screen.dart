@@ -2,9 +2,7 @@ import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
 
 import '../../../../backend/models/escrow/buyer_payment_index_model.dart';
-import '../../../../backend/models/escrow/escrow_create_model.dart';
 import '../../../../controller/dashboard/my_escrows/buyer_payment_controller.dart';
-import '../../../../widgets/custom_dropdown_widget/custom_dropdown_widget.dart';
 import '../../../../widgets/list_tile/text_value_form_widget.dart';
 import '../../../../widgets/others/custom_loading_widget.dart';
 
@@ -22,7 +20,9 @@ class BuyerPaymentScreen extends GetView<BuyerPaymentController> {
             appBar: const PrimaryAppBar(
               title: Strings.preview,
             ),
-            body: Obx(() => controller.isLoading ? const CustomLoadingWidget(): _bodyWidget(context))),
+            body: Obx(() => controller.isLoading
+                ? const CustomLoadingWidget()
+                : _bodyWidget(context))),
       ),
     );
   }
@@ -51,13 +51,12 @@ class BuyerPaymentScreen extends GetView<BuyerPaymentController> {
           ),
           verticalSpace(Dimensions.marginSizeVertical * .5),
           _previewEscrowDetailsWidget(context),
-
-          // verticalSpace(Dimensions.marginSizeVertical * 1),
-          // TitleHeading2Widget(
-          //   text: Strings.paymentDetails,
-          //   fontWeight: FontWeight.w600,
-          //   fontSize: Dimensions.headingTextSize2 * .85,
-          // ),
+          verticalSpace(Dimensions.marginSizeVertical * 1),
+          TitleHeading2Widget(
+            text: Strings.paymentDetails,
+            fontWeight: FontWeight.w600,
+            fontSize: Dimensions.headingTextSize2 * .85,
+          ),
           // verticalSpace(Dimensions.marginSizeVertical * .5),
           // // _previewPaymentDetailsWidget(context),
 
@@ -67,12 +66,12 @@ class BuyerPaymentScreen extends GetView<BuyerPaymentController> {
 
           verticalSpace(Dimensions.marginSizeVertical * .5),
 
-      Obx(() => controller.isSubmitLoading
-          ? const CustomLoadingWidget()
-          : PrimaryButton(
-            title: Strings.confirm,
-            onPressed: ()=> controller.onConfirmProcess(context),
-          )),
+          Obx(() => controller.isSubmitLoading
+              ? const CustomLoadingWidget()
+              : PrimaryButton(
+                  title: Strings.confirm,
+                  onPressed: () => controller.onConfirmProcess(context),
+                )),
           verticalSpace(Dimensions.paddingSizeVertical * 1.5),
         ],
       ),
@@ -80,12 +79,13 @@ class BuyerPaymentScreen extends GetView<BuyerPaymentController> {
   }
 
   _previewEscrowDetailsWidget(BuildContext context) {
-    EscrowInformation data = controller.buyerPaymentIndexModel.data.escrowInformation;
+    EscrowInformation data =
+        controller.buyerPaymentIndexModel.data.escrowInformation;
     return Container(
       padding: EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeHorizontal * .7,
-                vertical: Dimensions.paddingSizeVertical * .7,
-            ),
+        horizontal: Dimensions.paddingSizeHorizontal * .7,
+        vertical: Dimensions.paddingSizeVertical * .7,
+      ),
       decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(Dimensions.radius * 1.5)),
@@ -97,31 +97,26 @@ class BuyerPaymentScreen extends GetView<BuyerPaymentController> {
             value: data.title,
           ),
           _divider(),
-
           TextValueFormWidget(
             text: Strings.myRole,
             value: data.role,
           ),
           _divider(),
-
           TextValueFormWidget(
             text: Strings.category,
             value: data.category,
           ),
           _divider(),
-
           TextValueFormWidget(
             text: Strings.amount,
             value: data.amount,
           ),
           _divider(),
-
           TextValueFormWidget(
             text: Strings.chargePayer,
             currency: data.chargePayer,
           ),
           _divider(),
-
           TextValueFormWidget(
             text: Strings.totalCharge,
             value: data.totalCharge,
@@ -198,38 +193,41 @@ class BuyerPaymentScreen extends GetView<BuyerPaymentController> {
   //   );
   // }
 
-
   _payWithDropDown(BuildContext context) {
-    return CustomDropDown<GatewayCurrency>(
-      items: controller.selectedPaymentList,
-      title: Strings.payWith,
-      customTitle:
-      "My Wallet: ${controller.buyerPaymentIndexModel.data.userWallet.amount}",
-      hint: controller.selectedPaymentMethod.value.isEmpty
-          ? "My Wallet: ${controller.buyerPaymentIndexModel.data.userWallet.amount}"
-          : controller.selectedPaymentMethod.value,
-      onChanged: (value) {
-        controller.selectedPaymentMethod.value = value!.title;
-        controller.selectedPaymentMethodAlias.value = value.alias;
-        controller.selectedPaymentMethodId.value = value.id;
-        controller.selectedPaymentMethodTypeId.value = value.mcode;
-        controller.selectedPaymentMethodType.value = value.type;
-      },
+    return Container(
+      width: double.infinity,
       padding: EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeHorizontal * 0.25,
+        horizontal: Dimensions.paddingSizeHorizontal * 0.5,
+        vertical: Dimensions.paddingSizeVertical * 0.5,
       ),
-      titleTextColor: Theme.of(context).primaryColor,
-      dropDownColor: Theme.of(context).scaffoldBackgroundColor,
-      borderEnable: true,
-      dropDownFieldColor: Colors.transparent,
-      dropDownIconColor: Theme.of(context).primaryColor,
-      border: Border.all(
-        color: Theme.of(context).primaryColor.withOpacity(.2),
-        width: 1.5,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withOpacity(.2),
+          width: 1.5,
+        ),
+        borderRadius: BorderRadius.circular(Dimensions.radius * 0.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            Strings.payWith,
+            style: Get.textTheme.titleSmall?.copyWith(
+              color: Theme.of(context).primaryColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          verticalSpace(Dimensions.marginSizeVertical * .2),
+          Text(
+            "My Wallet: ${controller.buyerPaymentIndexModel.data.userWallet.amount}",
+            style: Get.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }
-
 
   _divider() {
     return Divider(

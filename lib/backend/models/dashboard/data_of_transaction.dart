@@ -1,16 +1,17 @@
 class DataOfTransaction {
   final int id;
   final dynamic trxId;
-  final dynamic gatewayCurrency;      // e.g. "EGP"
-  final dynamic transactionType;      // e.g. "ADD-MONEY"
-  final dynamic senderRequestAmount;  // normalized to double
+  final dynamic gatewayCurrency; // e.g. "EGP"
+  final dynamic transactionType; // e.g. "ADD-MONEY"
+  final dynamic senderRequestAmount; // normalized to double
   final dynamic senderCurrencyCode;
-  final String totalPayable;         // normalized to double
-  final dynamic gatewayCurrencyCode;  // keep as String (API sometimes uses codes like "EGP")
+  final String totalPayable; // normalized to double
+  final dynamic
+      gatewayCurrencyCode; // keep as String (API sometimes uses codes like "EGP")
   final dynamic exchangeRate;
   final dynamic fee;
-  final dynamic? rejectionReason;
-  final dynamic? exchangeCurrency;
+  final dynamic rejectionReason;
+  final dynamic exchangeCurrency;
   final dynamic status;
   final dynamic stringStatus;
   final dynamic balanceAfterTransaction;
@@ -58,22 +59,23 @@ class DataOfTransaction {
     return 0.0;
   }
 
-  factory DataOfTransaction.fromJson(Map<String, dynamic> json) => DataOfTransaction(
-    id: (json['id'] ?? 0) as int,
-    trxId: (json['trx_id'] ?? '') as String,
-    gatewayCurrency: (json['gateway_currency'] ?? 'EGP') as String,
-    transactionType: (json['transaction_type'] ?? '') as String,
-    senderRequestAmount: _toDouble(json['sender_request_amount']),
-    senderCurrencyCode: (json['sender_currency_code'] ?? '') as String,
-    totalPayable: json['total_payable'],
-    gatewayCurrencyCode: (json['gateway_currency_code'] ?? 'EGP') as String,
-    exchangeRate: _toDouble(json['exchange_rate']),
-    fee: _toDouble(json['fee']),
-    rejectionReason: json['rejection_reason']?.toString(),
-    exchangeCurrency: json['exchange_currency']?.toString(),
-    status: (json['status'] ?? 0) as int,
-    stringStatus: (json['string_status'] ?? '') as String,
-    balanceAfterTransaction: _pickBalanceAfterTx(json),
-    createdAt: (json['created_at'] ?? '') as String,
-  );
+  factory DataOfTransaction.fromJson(Map<String, dynamic> json) =>
+      DataOfTransaction(
+        id: (json['id'] ?? 0) as int,
+        trxId: (json['trx_id'] ?? '') as String,
+        gatewayCurrency: (json['gateway_currency'] ?? 'EGP') as String,
+        transactionType: (json['transaction_type'] ?? '') as String,
+        senderRequestAmount: _toDouble(json['sender_request_amount']),
+        senderCurrencyCode: (json['sender_currency_code'] ?? '') as String,
+        totalPayable: json['total_payable'],
+        gatewayCurrencyCode: (json['gateway_currency_code'] ?? 'EGP') as String,
+        exchangeRate: _toDouble(json['exchange_rate']),
+        fee: _toDouble(json['fee']),
+        rejectionReason: json['rejection_reason']?.toString(),
+        exchangeCurrency: json['exchange_currency']?.toString(),
+        status: (json['status'] ?? 0) as int,
+        stringStatus: (json['string_status'] ?? '') as String,
+        balanceAfterTransaction: _pickBalanceAfterTx(json),
+        createdAt: (json['created_at'] ?? '') as String,
+      );
 }

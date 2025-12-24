@@ -1,12 +1,10 @@
 import 'package:peacepay/utils/basic_screen_imports.dart';
 
-
 import '../../../backend/models/dashboard/data_of_transaction.dart';
 import '../../../backend/services/dashboard_api_service.dart';
-import '../../../backend/models/dashboard/home_model.dart';
 import '../../../backend/models/dashboard/transaction_model.dart';
 
-class TransactionsController extends GetxController  with DashboardApiService{
+class TransactionsController extends GetxController with DashboardApiService {
   RxInt openTileIndex = (-1).obs;
   late ScrollController scrollController;
 
@@ -18,7 +16,8 @@ class TransactionsController extends GetxController  with DashboardApiService{
   }
 
   void scrollListener() {
-    if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
       debugPrint('Scrolled to the bottom');
       transactionMoreProcess();
     }
@@ -42,8 +41,9 @@ class TransactionsController extends GetxController  with DashboardApiService{
 
   int page = 1;
   RxBool hasNextPage = true.obs;
-  RxList<DataOfTransaction> historyList = <DataOfTransaction>[].obs;  /// set it first
+  RxList<DataOfTransaction> historyList = <DataOfTransaction>[].obs;
 
+  /// set it first
 
   ///* Get Transaction in process
   Future<TransactionModel> transactionProcess() async {
@@ -55,9 +55,9 @@ class TransactionsController extends GetxController  with DashboardApiService{
     update();
     await transactionProcessApi(page.toString()).then((value) {
       _transactionModel = value!;
-      if(_transactionModel.data.transactions.lastPage > 1){
+      if (_transactionModel.data.transactions.lastPage > 1) {
         hasNextPage.value = true;
-      }else{
+      } else {
         hasNextPage.value = false;
       }
       historyList.addAll(_transactionModel.data.transactions.data);
@@ -71,14 +71,11 @@ class TransactionsController extends GetxController  with DashboardApiService{
     return _transactionModel;
   }
 
-
-
   ///* Get Transaction in process
   Future<TransactionModel> transactionMoreProcess() async {
-    page ++;
+    page++;
 
-    if(hasNextPage.value && !_isMoreLoading.value){
-
+    if (hasNextPage.value && !_isMoreLoading.value) {
       _isMoreLoading.value = true;
       update();
       await transactionProcessApi(page.toString()).then((value) {
@@ -86,7 +83,7 @@ class TransactionsController extends GetxController  with DashboardApiService{
 
         var data = _transactionModel.data.transactions.lastPage;
         historyList.addAll(_transactionModel.data.transactions.data);
-        if(page >= data){
+        if (page >= data) {
           hasNextPage.value = false;
         }
 
@@ -99,9 +96,7 @@ class TransactionsController extends GetxController  with DashboardApiService{
 
       _isMoreLoading.value = false;
       update();
-
     }
     return _transactionModel;
   }
-
 }

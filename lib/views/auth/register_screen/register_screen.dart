@@ -1,14 +1,11 @@
 import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
-import 'package:peacepay/widgets/inputs/password_input_widget.dart';
 import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../../controller/auth/register_controller.dart';
 import '../../../widgets/buttons/secondary_button.dart';
-import '../../../widgets/buttons/switch_button_basic.dart';
 import '../../../widgets/others/app_icon_widget.dart';
 import '../../../widgets/text_labels/title_heading5_widget.dart';
-import '../../../widgets/text_labels/title_sub_title_widget.dart';
 import 'agree_with_widget.dart';
 
 class RegisterScreen extends GetView<RegisterController> {
@@ -65,12 +62,14 @@ class RegisterScreen extends GetView<RegisterController> {
 
             // primary button
             Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeHorizontal * .5),
-              child: Obx(() => controller.isLoading ? const CustomLoadingWidget(): PrimaryButton(
-                title: Strings.register,
-                onPressed: controller.onRegisterProcess,
-              )),
+              padding: EdgeInsets.symmetric(
+                  horizontal: Dimensions.paddingSizeHorizontal * .5),
+              child: Obx(() => controller.isLoading
+                  ? const CustomLoadingWidget()
+                  : PrimaryButton(
+                      title: Strings.register,
+                      onPressed: controller.onRegisterProcess,
+                    )),
             ),
 
             verticalSpace(Dimensions.paddingSizeVertical * 1.5),
@@ -100,13 +99,13 @@ class RegisterScreen extends GetView<RegisterController> {
   _inputWidget(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeHorizontal * .7,
-                vertical: Dimensions.paddingSizeVertical * .7,
-            ),
+        horizontal: Dimensions.paddingSizeHorizontal * .7,
+        vertical: Dimensions.paddingSizeVertical * .7,
+      ),
       margin: EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeHorizontal * .7,
-                vertical: Dimensions.paddingSizeVertical * .7,
-            ),
+        horizontal: Dimensions.paddingSizeHorizontal * .7,
+        vertical: Dimensions.paddingSizeVertical * .7,
+      ),
       decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(Dimensions.radius * 1.5)),
@@ -123,9 +122,7 @@ class RegisterScreen extends GetView<RegisterController> {
                     labelText: Strings.firstName,
                   ),
                 ),
-
                 horizontalSpace(Dimensions.marginSizeHorizontal * .5),
-
                 Expanded(
                   child: PrimaryTextInputWidget(
                     controller: controller.lastNameController,

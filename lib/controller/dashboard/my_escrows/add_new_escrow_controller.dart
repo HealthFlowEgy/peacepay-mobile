@@ -31,7 +31,8 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
   final amountController = TextEditingController();
   final remarksController = TextEditingController();
   final policyController = TextEditingController();
-  final  fieldDeliveryFeeAmount  = TextEditingController();
+  final fieldDeliveryFeeAmount = TextEditingController();
+  final merchantWalletController = TextEditingController();
 
   final selectedCategory = "".obs;
   final selectedCategoryId = "".obs;
@@ -69,6 +70,7 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
     amountController.dispose();
     remarksController.dispose();
     policyController.dispose();
+    merchantWalletController.dispose();
 
     super.dispose();
   }
@@ -77,6 +79,7 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
   @override
   void onInit() {
     escrowIndexFetch();
+    fetchUserPolicy();
     super.onInit();
   }
 
@@ -86,16 +89,28 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
   final _isSubmitLoading = false.obs;
   bool get isSubmitLoading => _isSubmitLoading.value;
 
+  final isError = false.obs;
+
   // fetch info
   late EscrowCreateModel _escrowIndexModel;
   EscrowCreateModel get escrowIndexModel => _escrowIndexModel;
 
-  Future<EscrowCreateModel> escrowIndexFetch() async {
+  Future<EscrowCreateModel?> escrowIndexFetch() async {
     _isLoading.value = true;
+    isError.value = false;
     update();
 
     await escrowCreateAPi().then((value) {
-      _escrowIndexModel = value!;
+      if (value == null ||
+          value.data.escrowCategories.isEmpty ||
+          value.data.userWallet.isEmpty) {
+        isError.value = true;
+        _isLoading.value = false;
+        update();
+        return;
+      }
+
+      _escrowIndexModel = value;
       selectedCategory.value =
           _escrowIndexModel.data.escrowCategories.first.name;
       selectedCategoryId.value =
@@ -136,12 +151,13 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
       update();
     }).catchError((onError) {
       log.e(onError);
+      isError.value = true;
     });
 
     _isLoading.value = false;
     update();
 
-    return _escrowIndexModel;
+    return isError.value ? null : _escrowIndexModel;
   }
 
   // check user info
@@ -171,6 +187,7 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
 
     return _userCheckModel;
   }
+
   //get policy
   List<PolicyData> get userPolicy => userPolicyData;
 
@@ -187,9 +204,6 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
     }
     update(); // if using GetX
   }
-
-
-
 
   RxString selectedFilePath = "".obs;
   late EscrowSubmitModel _escrowSubmitModel;
@@ -218,26 +232,27 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
       "who_will_pay_options": selectedPayBy.value.isEmpty
           ? (selectedOppositeRole.value == "Buyer" ? "buyer" : "seller")
           : selectedPayBy.value == "50% - 50%"
-          ? "half"
-          : "me",
+              ? "half"
+              : "me",
       "escrow_currency": selectedCurrency.value,
       "policy_id": selectedPolicyId.value.toString(),
       "payment_gateway": selectedPaymentMethod.value.isEmpty
           ? "myWallet"
           : selectedPaymentMethodId.value,
-
-      // ✅ NESTED field object
       "field": {
         "delivery_fee_amount": fieldDeliveryFeeAmount.text,
-        "advanced_payment_amount": policyController.text,
+        if (selectedPolicy.value?.fields?.hasAdvancedPayment == "1")
+          "advanced_payment_amount": policyController.text,
+        // "merchant_wallet": merchantWalletController.text,
       }
     };
 
     await escrowSubmitWithoutFileApi(body: inputBody).then((value) {
-      _escrowSubmitModel = value!;
-      // isValidUser.value = _userCheckModel.data.userCheck;
-      Get.toNamed(Routes.addNewEscrowPreviewScreen);
-      update();
+      if (value != null) {
+        _escrowSubmitModel = value;
+        Get.toNamed(Routes.addNewEscrowPreviewScreen);
+        update();
+      }
     }).catchError((onError) {
       log.e(onError);
     });
@@ -267,15 +282,21 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
       "payment_gateway": selectedPaymentMethod.value.isEmpty
           ? "myWallet"
           : selectedPaymentMethodId.value,
+      "policy_id": selectedPolicyId.value.toString(),
+      "field[delivery_fee_amount]": fieldDeliveryFeeAmount.text,
+      if (selectedPolicy.value?.fields?.hasAdvancedPayment == "1")
+        "field[advanced_payment_amount]": policyController.text,
+      // "field[merchant_wallet]": merchantWalletController.text,
     };
 
     await escrowSubmitWithFileApi(
             body: inputBody, filePath: selectedFilePath.value)
         .then((value) {
-      _escrowSubmitModel = value!;
-      isValidUser.value = _userCheckModel.data.userCheck;
-      Get.toNamed(Routes.addNewEscrowPreviewScreen);
-      update();
+      if (value != null) {
+        _escrowSubmitModel = value;
+        Get.toNamed(Routes.addNewEscrowPreviewScreen);
+        update();
+      }
     }).catchError((onError) {
       log.e(onError);
     });
@@ -383,8 +404,7 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
       _escrowManualPaymentModel;
 
   late tatum.TatumModel _escrowTatumPaymentModel;
-  tatum.TatumModel get escrowTatumPaymentModel =>
-      _escrowTatumPaymentModel;
+  tatum.TatumModel get escrowTatumPaymentModel => _escrowTatumPaymentModel;
 
   Future<CommonSuccessModel> escrowConfirm() async {
     _isSubmitLoading.value = true;
@@ -419,8 +439,7 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
       _escrowPaypalPaymentModel = value!;
 
       _webPayment(Get.context!,
-          webUrl: value.data.url[1].href,
-          title: selectedPaymentMethod.value);
+          webUrl: value.data.url[1].href, title: selectedPaymentMethod.value);
 
       _isSubmitLoading.value = false;
       update();
@@ -433,7 +452,8 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
     return _escrowPaypalPaymentModel;
   }
 
-  Future<EscrowAutomaticPaymentModel?> escrowAutomatic(BuildContext context) async {
+  Future<EscrowAutomaticPaymentModel?> escrowAutomatic(
+      BuildContext context) async {
     _isSubmitLoading.value = true;
     update();
 
@@ -788,6 +808,25 @@ class EscrowStaticModel implements DropdownModel {
   double get pCharge => throw UnimplementedError();
 
   @override
+  IconData? get icon => null;
+
+  @override
   // TODO: implement rate
   double get rate => throw UnimplementedError();
+}
+
+class CreatePolicyItem extends PolicyData {
+  CreatePolicyItem()
+      : super(
+          mId: -1,
+          name: "Create Policy",
+          description: "",
+          fields: null,
+          userId: -1,
+          createdAt: "",
+          updatedAt: "",
+        );
+
+  @override
+  IconData? get icon => Icons.add;
 }

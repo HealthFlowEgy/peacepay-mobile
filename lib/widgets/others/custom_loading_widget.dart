@@ -9,9 +9,7 @@ class CustomLoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: SpinKitSpinningLines(
-          color: CustomColor.primaryLightColor
-      ),
+      child: SpinKitSpinningLines(color: CustomColor.primaryLightColor),
     );
   }
 }

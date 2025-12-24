@@ -4,7 +4,6 @@ import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 
 import '../../../../controller/dashboard/my_escrows/add_new_escrow_controller.dart';
 
-
 class EscrowManualScreen extends StatelessWidget {
   EscrowManualScreen({super.key});
 
@@ -47,10 +46,9 @@ class EscrowManualScreen extends StatelessWidget {
             child: Obx(() => controller.isLoading
                 ? const CustomLoadingWidget()
                 : PrimaryButton(
-              title: Strings.submit,
-              onPressed: () =>
-                  controller.onManualSubmit(context),
-            )),
+                    title: Strings.submit,
+                    onPressed: () => controller.onManualSubmit(context),
+                  )),
           ),
           verticalSpace(Dimensions.paddingSizeVertical * 1.5)
         ],
@@ -79,7 +77,6 @@ class EscrowManualScreen extends StatelessWidget {
             ...controller.inputFields.map((element) {
               return element;
             }),
-            // verticalSpace(Dimensions.marginBetweenInputBox),
             Visibility(
               visible: controller.inputFileFields.isNotEmpty,
               child: GridView.builder(

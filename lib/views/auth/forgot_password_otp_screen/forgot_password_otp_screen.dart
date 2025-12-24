@@ -1,9 +1,7 @@
 import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
 
-import '../../../controller/auth/checkPinCode.dart';
 import '../../../controller/auth/forgot_otp_controller.dart';
-import '../../../controller/dashboard/profiles/change_password_controller.dart';
 import '../../../widgets/buttons/secondary_button.dart';
 import '../../../widgets/inputs/pin_code_widget2.dart';
 import '../../../widgets/others/app_icon_widget.dart';
@@ -11,9 +9,8 @@ import '../../../widgets/others/custom_loading_widget.dart';
 import '../../../widgets/text_labels/title_sub_title_widget.dart';
 
 class ForgotPasswordOTPScreen extends GetView<ForgotOTPController> {
-  String  currentPage;
-   ForgotPasswordOTPScreen({super.key,required this.currentPage});
-
+  String currentPage;
+  ForgotPasswordOTPScreen({super.key, required this.currentPage});
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +90,10 @@ class ForgotPasswordOTPScreen extends GetView<ForgotOTPController> {
                   ? const CustomLoadingWidget()
                   : PrimaryButton(
                       title: Strings.submit,
-                      onPressed: (){
-                       currentPage=="beforeLogin"?controller.onOTPSubmitProcessBeforePin(): controller.onOTPSubmitProcess();
+                      onPressed: () {
+                        currentPage == "beforeLogin"
+                            ? controller.onOTPSubmitProcessBeforePin()
+                            : controller.onOTPSubmitProcess();
                       },
                     )),
             ),

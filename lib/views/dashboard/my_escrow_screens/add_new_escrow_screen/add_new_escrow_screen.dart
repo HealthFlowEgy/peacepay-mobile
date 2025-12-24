@@ -7,8 +7,8 @@ import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import '../../../../backend/models/escrow/escrow_create_model.dart';
 import '../../../../backend/models/escrow/userPolicyModel.dart';
 import '../../../../controller/dashboard/my_escrows/add_new_escrow_controller.dart';
-import '../../../../controller/dashboard/profiles/update_profile_controller.dart';
-import '../../../../language/language_controller.dart';
+import '../../../../routes/routes.dart';
+
 import '../../../../widgets/custom_dropdown_widget/custom_dropdown_widget.dart';
 import '../../../../widgets/others/custom_upload_file_widget.dart';
 import '../../../../widgets/text_labels/title_heading5_widget.dart';
@@ -25,9 +25,29 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
           appBar: const PrimaryAppBar(
             title: Strings.addNewEscrow,
           ),
-          body: Obx(() => controller.isLoading
-              ? const CustomLoadingWidget()
-              : _bodyWidget(context)),
+          body: Obx(() {
+            if (controller.isLoading) {
+              return const CustomLoadingWidget();
+            }
+            if (controller.isError.value) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Something went wrong!"),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        controller.escrowIndexFetch();
+                      },
+                      child: const Text("Retry"),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return _bodyWidget(context);
+          }),
         ),
       ),
     );
@@ -67,9 +87,9 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
                 Obx(() => controller.isSubmitLoading
                     ? const CustomLoadingWidget()
                     : PrimaryButton(
-                  title: Strings.addNewEscrow,
-                  onPressed: controller.onAddNewEscrowProcess,
-                )),
+                        title: Strings.addNewEscrow,
+                        onPressed: controller.onAddNewEscrowProcess,
+                      )),
                 verticalSpace(Dimensions.paddingSizeVertical * 1.5),
               ],
             ),
@@ -105,8 +125,7 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
             verticalSpace(Dimensions.paddingSizeVertical * 0.8),
             Obx(() {
               final policy = controller.selectedPolicy.value;
-              if (policy != null &&
-                  policy.fields?.hasAdvancedPayment == "1") {
+              if (policy != null && policy.fields?.hasAdvancedPayment == "1") {
                 return PrimaryTextInputWidget(
                   controller: controller.policyController,
                   labelText: "Advanced Payment amount",
@@ -123,37 +142,36 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
                 await controller.escrowUserCheck(value);
               },
               suffixIcon: Obx(() => Visibility(
-                visible: controller.user.value.isNotEmpty,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: Dimensions.inputBoxHeight * .77,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: controller.isValidUser.value
-                            ? Theme.of(context)
-                            .primaryColor
-                            .withOpacity(.3)
-                            : Colors.red.withOpacity(.3),
-                        borderRadius: BorderRadius.circular(Dimensions.radius * .5),
-                      ),
-                      child: TitleHeading5Widget(
-                        text: controller.isValidUser.value
-                            ? Strings.validUser
-                            : Strings.invalidUser,
-                        padding: EdgeInsets.symmetric(
-                            horizontal:
-                            Dimensions.paddingSizeHorizontal * .35),
-                        color: controller.isValidUser.value
-                            ? Theme.of(context).primaryColor
-                            : Colors.red,
-                      ),
+                    visible: controller.user.value.isNotEmpty,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          height: Dimensions.inputBoxHeight * .77,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: controller.isValidUser.value
+                                ? Theme.of(context).primaryColor.withOpacity(.3)
+                                : Colors.red.withOpacity(.3),
+                            borderRadius:
+                                BorderRadius.circular(Dimensions.radius * .5),
+                          ),
+                          child: TitleHeading5Widget(
+                            text: controller.isValidUser.value
+                                ? Strings.validUser
+                                : Strings.invalidUser,
+                            padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    Dimensions.paddingSizeHorizontal * .35),
+                            color: controller.isValidUser.value
+                                ? Theme.of(context).primaryColor
+                                : Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              )),
+                  )),
             ),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
 
@@ -209,7 +227,7 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
                 controller.selectedFilePath.value = value.path;
               },
             ),
-            verticalSpace(Dimensions.marginBetweenInputBox * .8),
+            // Payment dropdown hidden - defaults to My Wallet
             _payWithDropDown(context),
           ],
         ),
@@ -219,101 +237,105 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
 
   /// ✅ FIXED: always returns a Widget now
   Widget _userPolicyDropDown(BuildContext context) {
-    final policies = controller.userPolicy;
+    return Obx(() {
+      final policies = [CreatePolicyItem(), ...controller.userPolicy];
 
-    final hasAdvancedPolicy = policies.any((policy) =>
-    policy.fields?.hasAdvancedPayment == "1");
-
-    if (policies.isEmpty || !hasAdvancedPolicy) {
-      return const SizedBox(); // Always return a widget
-    }
-
-    return Obx(() => CustomDropDown<PolicyData>(
-      items: policies,
-      title: 'Policy',
-      hint:
-      controller.selectedPolicy.value?.name ?? Strings.selectIDType,
-      onChanged: (PolicyData? value) {
-        controller.selectedPolicy.value = value;
-        controller.selectedPolicyId.value = value?.mId ?? 0;
-      },
-      // itemAsString: (PolicyData p) => p.name ?? '',
-      padding: EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeHorizontal * 0.25,
-      ),
-      titleTextColor: controller.selectedPolicy.value == null
-          ? CustomColor.primaryLightTextColor.withOpacity(.2)
-          : Theme.of(context).primaryColor,
-      dropDownColor: Theme.of(context).scaffoldBackgroundColor,
-      borderEnable: true,
-      dropDownFieldColor: Colors.transparent,
-      dropDownIconColor: controller.selectedPolicy.value == null
-          ? CustomColor.primaryLightTextColor.withOpacity(.2)
-          : Theme.of(context).primaryColor,
-      border: Border.all(
-        color: Theme.of(context).primaryColor.withOpacity(.2),
-        width: 1.5,
-      ),
-    ));
-  }
-
-  Widget _payWithDropDown(BuildContext context) {
-
-    return Obx(() => Visibility(
-      // visible: controller.selectedMyRole.value == "Buyer",
-      visible: Get.find<UpdateProfileController>().selectedUserType.value == "Buyer",
-      child: CustomDropDown<GatewayCurrency>(
-        margin: const EdgeInsets.symmetric(horizontal: 0),
-        items: controller.selectedPaymentList,
-        title: Strings.payWith,
-        customTitle:
-        "My Wallet: ${controller.selectedCurrencyBalance} ${controller.selectedCurrency}",
-        hint: controller.selectedPaymentMethod.value.isEmpty
-            ? "My Wallet: ${controller.selectedCurrencyBalance} ${controller.selectedCurrency}"
-            : controller.selectedPaymentMethod.value,
-        onChanged: (value) {
-          controller.selectedPaymentMethod.value = value!.title;
-          controller.selectedPaymentMethodAlias.value = value.alias;
-          controller.selectedPaymentMethodId.value = value.id;
-          controller.selectedPaymentMethodTypeId.value = value.mcode;
-          controller.selectedPaymentMethodType.value = value.type;
+      return CustomDropDown<PolicyData>(
+        items: policies,
+        title: 'Policy',
+        hint: controller.selectedPolicy.value?.name ?? "Select Policy",
+        onChanged: (PolicyData? value) async {
+          if (value is CreatePolicyItem) {
+            // Don't set CreatePolicyItem as selected value
+            // Navigate to create policy screen immediately
+            final result = await Get.toNamed(Routes.createPolicyScreen);
+            // If policy was created successfully, refresh the policies
+            if (result == true) {
+              await controller.fetchUserPolicy();
+              controller.update();
+            }
+            // Don't change the selected policy value
+            return;
+          } else {
+            controller.selectedPolicy.value = value;
+            controller.selectedPolicyId.value = value?.mId ?? 0;
+          }
         },
-        padding: const EdgeInsets.symmetric(horizontal: 0),
-        titleTextColor: Theme.of(context).primaryColor,
+        padding: EdgeInsets.symmetric(
+          horizontal: Dimensions.paddingSizeHorizontal * 0.25,
+        ),
+        titleTextColor: controller.selectedPolicy.value == null
+            ? CustomColor.primaryLightTextColor.withOpacity(.2)
+            : Theme.of(context).primaryColor,
         dropDownColor: Theme.of(context).scaffoldBackgroundColor,
         borderEnable: true,
         dropDownFieldColor: Colors.transparent,
-        dropDownIconColor: Theme.of(context).primaryColor,
+        dropDownIconColor: controller.selectedPolicy.value == null
+            ? CustomColor.primaryLightTextColor.withOpacity(.2)
+            : Theme.of(context).primaryColor,
         border: Border.all(
           color: Theme.of(context).primaryColor.withOpacity(.2),
           width: 1.5,
         ),
-      ),
-    ));
+      );
+    });
+  }
+
+  Widget _payWithDropDown(BuildContext context) {
+    return Obx(() => Visibility(
+          // Hidden - always use My Wallet as default payment method
+          visible: false,
+          child: CustomDropDown<GatewayCurrency>(
+            margin: const EdgeInsets.symmetric(horizontal: 0),
+            items: controller.selectedPaymentList,
+            title: Strings.payWith,
+            customTitle:
+                "My Wallet: ${controller.selectedCurrencyBalance} ${controller.selectedCurrency}",
+            hint: controller.selectedPaymentMethod.value.isEmpty
+                ? "My Wallet: ${controller.selectedCurrencyBalance} ${controller.selectedCurrency}"
+                : controller.selectedPaymentMethod.value,
+            onChanged: (value) {
+              controller.selectedPaymentMethod.value = value!.title;
+              controller.selectedPaymentMethodAlias.value = value.alias;
+              controller.selectedPaymentMethodId.value = value.id;
+              controller.selectedPaymentMethodTypeId.value = value.mcode;
+              controller.selectedPaymentMethodType.value = value.type;
+            },
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+            titleTextColor: Theme.of(context).primaryColor,
+            dropDownColor: Theme.of(context).scaffoldBackgroundColor,
+            borderEnable: true,
+            dropDownFieldColor: Colors.transparent,
+            dropDownIconColor: Theme.of(context).primaryColor,
+            border: Border.all(
+              color: Theme.of(context).primaryColor.withOpacity(.2),
+              width: 1.5,
+            ),
+          ),
+        ));
   }
 
   Widget _currencyDropDown(BuildContext context) {
     return Obx(() => CustomDropDown<UserWallet>(
-      items: controller.escrowIndexModel.data.userWallet,
-      hint: controller.selectedCurrency.value,
-      onChanged: (value) {
-        controller.selectedCurrency.value = value!.title;
-        controller.selectedCurrencyType.value = value.type;
-        controller.selectedCurrencyBalance.value =
-            value.max.toStringAsFixed(
-                value.type == "FIAT" ? 2 : 6);
-      },
-      margin: EdgeInsets.zero,
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-      isCurrencyDropDown: true,
-      titleTextColor: CustomColor.whiteColor,
-      dropDownColor: Theme.of(context).primaryColor,
-      borderEnable: true,
-      dropDownFieldColor: Theme.of(context).primaryColor,
-      dropDownIconColor: CustomColor.whiteColor,
-      border: Border.all(
-        color: Theme.of(context).primaryColor,
-      ),
-    ));
+          items: controller.escrowIndexModel.data.userWallet,
+          hint: controller.selectedCurrency.value,
+          onChanged: (value) {
+            controller.selectedCurrency.value = value!.title;
+            controller.selectedCurrencyType.value = value.type;
+            controller.selectedCurrencyBalance.value =
+                value.max.toStringAsFixed(value.type == "FIAT" ? 2 : 6);
+          },
+          margin: EdgeInsets.zero,
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+          isCurrencyDropDown: true,
+          titleTextColor: CustomColor.whiteColor,
+          dropDownColor: Theme.of(context).primaryColor,
+          borderEnable: true,
+          dropDownFieldColor: Theme.of(context).primaryColor,
+          dropDownIconColor: CustomColor.whiteColor,
+          border: Border.all(
+            color: Theme.of(context).primaryColor,
+          ),
+        ));
   }
 }

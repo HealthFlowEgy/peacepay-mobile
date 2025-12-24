@@ -4,12 +4,12 @@ import '../../utils/basic_screen_imports.dart';
 import 'language_model.dart';
 import 'language_service.dart';
 
- final languageSettingsController = Get.find<LanguageSettingController>();
+final languageSettingsController = Get.find<LanguageSettingController>();
 
 class LanguageSettingController extends GetxController {
   // Reactive state
   final RxString selectedLanguage = ''.obs; // user selection (persisted)
-  final RxString defLangKey = ''.obs;// default from backend
+  final RxString defLangKey = ''.obs; // default from backend
   final RxList<Language> languages = <Language>[].obs;
 
   final RxBool _isLoading = false.obs;
@@ -29,7 +29,9 @@ class LanguageSettingController extends GetxController {
 
   Future<void> _init() async {
     // Ensure GetStorage is ready (do this once in app bootstrap ideally)
-    try { await GetStorage.init(); } catch (_) {}
+    try {
+      await GetStorage.init();
+    } catch (_) {}
     await fetchLanguages(); // sets selectedLanguage + defLangKey safely
   }
 
@@ -37,26 +39,39 @@ class LanguageSettingController extends GetxController {
   // Fetch & initialization
   // ----------------------------------------------------------------------------
   Future<void> fetchLanguages() async {
+    print('🔄 [LanguageController] Starting fetchLanguages...');
     _isLoading.value = true;
 
     try {
       final deviceLang = Get.deviceLocale?.languageCode ?? 'en';
+      print('📱 [LanguageController] Device language: $deviceLang');
+
       final languageService = LanguageService();
 
       // Network fetch (add timeout to avoid hangs)
+      print('⏳ [LanguageController] Fetching languages with 15s timeout...');
       final fetched = await languageService
           .fetchLanguages(langCode: deviceLang)
           .timeout(const Duration(seconds: 15));
 
+      print(
+          '📦 [LanguageController] Received ${fetched.length ?? 0} languages');
       languages.assignAll(fetched ?? <Language>[]);
+      print(
+          '📦 [LanguageController] Languages list now has ${languages.length} items');
 
       // Determine backend default (status == true), else first, else 'en'
       final defaultFromBackend = _safePickDefaultLanguageCode(languages);
       defLangKey.value = defaultFromBackend;
+      print(
+          '🎯 [LanguageController] Default language from backend: $defaultFromBackend');
 
       // Read persisted selection; fall back to default/backend/device/en
       final box = GetStorage();
       final savedLang = box.read(selectedLanguageKey) as String?;
+      print(
+          '💾 [LanguageController] Saved language preference: ${savedLang ?? "none"}');
+
       final resolved = _resolveSelectedCode(
         saved: savedLang,
         backendDefault: defLangKey.value,
@@ -65,18 +80,30 @@ class LanguageSettingController extends GetxController {
       );
       selectedLanguage.value = resolved;
       box.write(selectedLanguageKey, resolved);
-    } catch (e) {
-      debugPrint('Error fetching language data: $e');
+
+      print('✅ [LanguageController] Selected language: $resolved');
+      print('✅ [LanguageController] Language initialization complete!');
+    } catch (e, stackTrace) {
+      print('❌ [LanguageController] Error fetching language data: $e');
+      print('❌ [LanguageController] Stack trace: $stackTrace');
 
       // Fail-safe: empty list → use device or 'en'
       if (languages.isEmpty) {
+        print(
+            '⚠️ [LanguageController] Languages list is empty, using fallback');
         final deviceLang = Get.deviceLocale?.languageCode ?? 'en';
         defLangKey.value = deviceLang;
         selectedLanguage.value = deviceLang;
         GetStorage().write(selectedLanguageKey, selectedLanguage.value);
+        print('⚠️ [LanguageController] Fallback language set to: $deviceLang');
+      } else {
+        print(
+            '⚠️ [LanguageController] Error occurred but languages list has ${languages.length} items');
       }
     } finally {
       _isLoading.value = false;
+      print(
+          '🏁 [LanguageController] fetchLanguages completed. isLoading = false');
     }
   }
 
@@ -97,7 +124,17 @@ class LanguageSettingController extends GetxController {
     if (key.isEmpty) return '';
 
     // 0) nothing loaded → return key
-    if (languages.isEmpty) return key;
+    if (languages.isEmpty) {
+      if (key == 'Something Went Wrong! Try again') {
+        return 'Something Went Wrong! Try again';
+      }
+      print('⚠️ [Translation] No languages loaded, returning key: $key');
+      return key;
+    }
+
+    if (key == 'Something Went Wrong! Try again') {
+      return 'Something Went Wrong! Try again';
+    }
 
     // 1) try selected language
     final langSel = _findByCode(languages, selectedLanguage.value);
@@ -120,7 +157,6 @@ class LanguageSettingController extends GetxController {
       if (_isNonEmpty(vv)) return vv!;
     }
 
-    // 5) ultimate fallback
     return key;
   }
 
@@ -128,7 +164,9 @@ class LanguageSettingController extends GetxController {
   Locale get currentLocale {
     final code = selectedLanguage.value.isNotEmpty
         ? selectedLanguage.value
-        : (defLangKey.value.isNotEmpty ? defLangKey.value : (Get.deviceLocale?.languageCode ?? 'en'));
+        : (defLangKey.value.isNotEmpty
+            ? defLangKey.value
+            : (Get.deviceLocale?.languageCode ?? 'en'));
 
     return Locale(code);
   }

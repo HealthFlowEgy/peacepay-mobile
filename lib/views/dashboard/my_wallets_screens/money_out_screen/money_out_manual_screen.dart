@@ -64,8 +64,8 @@ class MoneyOutManualScreen extends StatelessWidget {
 
                   // Prefer a 'select' whose label/name indicates "bank"
                   final bankDropdownField = modelFields.firstWhereOrNull(
-                        (f) =>
-                    f.type == 'select' &&
+                    (f) =>
+                        f.type == 'select' &&
                         f.options != null &&
                         (((f.label ?? '').toLowerCase().contains('bank')) ||
                             ((f.name ?? '').toLowerCase().contains('bank'))),
@@ -74,7 +74,8 @@ class MoneyOutManualScreen extends StatelessWidget {
                   final bankKey = bankDropdownField?.name;
                   final bankChosen = bankKey == null
                       ? true // if there's no bank dropdown in the model, don't block
-                      : (controller.selectedValues[bankKey]?.isNotEmpty == true);
+                      : (controller.selectedValues[bankKey]?.isNotEmpty ==
+                          true);
 
                   final disabled = controller.isLoading || !bankChosen;
 
@@ -85,20 +86,19 @@ class MoneyOutManualScreen extends StatelessWidget {
                       child: controller.isLoading
                           ? const CustomLoadingWidget()
                           : PrimaryButton(
-                        title: Strings.submit,
-                        onPressed: () {
-                          if (disabled) return;
+                              title: Strings.submit,
+                              onPressed: () {
+                                if (disabled) return;
 
-                          // Run full form validation (dropdown validator included)
-                          final ok = controller
-                              .formKey.currentState
-                              ?.validate() ==
-                              true;
-                          if (!ok) return;
+                                // Run full form validation (dropdown validator included)
+                                final ok = controller.formKey.currentState
+                                        ?.validate() ==
+                                    true;
+                                if (!ok) return;
 
-                          controller.onManualSubmit(context);
-                        },
-                      ),
+                                controller.onManualSubmit(context);
+                              },
+                            ),
                     ),
                   );
                 }),
@@ -138,9 +138,9 @@ class MoneyOutManualScreen extends StatelessWidget {
               // If this position corresponds to account/IBAN, render the Bank dropdown after it.
               if (i < modelFields.length)
                 if (modelFields[i]
-                    .label
-                    .toLowerCase()
-                    .contains('bank account') ||
+                        .label
+                        .toLowerCase()
+                        .contains('bank account') ||
                     modelFields[i].label.toLowerCase().contains('iban'))
                   Padding(
                     padding: EdgeInsets.only(
@@ -150,12 +150,10 @@ class MoneyOutManualScreen extends StatelessWidget {
                     child: Obx(() {
                       // Prefer a dropdown whose label/name indicates "Bank"
                       final bankField = modelFields.firstWhereOrNull(
-                            (f) =>
-                        f.type == 'select' &&
+                        (f) =>
+                            f.type == 'select' &&
                             f.options != null &&
-                            (((f.label ?? '')
-                                .toLowerCase()
-                                .contains('bank')) ||
+                            (((f.label ?? '').toLowerCase().contains('bank')) ||
                                 ((f.name ?? '')
                                     .toLowerCase()
                                     .contains('bank'))),
@@ -164,7 +162,7 @@ class MoneyOutManualScreen extends StatelessWidget {
                       // Fallback: first select field if no explicit bank field exists
                       final dropdownField = bankField ??
                           modelFields.firstWhereOrNull(
-                                (f) => f.type == 'select' && f.options != null,
+                            (f) => f.type == 'select' && f.options != null,
                           );
 
                       if (dropdownField == null) return const SizedBox();
@@ -174,10 +172,9 @@ class MoneyOutManualScreen extends StatelessWidget {
                           .putIfAbsent(dropdownField.name, () => '');
 
                       return DropdownButtonFormField<String>(
-                        value: controller
-                            .selectedValues[dropdownField.name]
-                            ?.isEmpty ==
-                            true
+                        value: controller.selectedValues[dropdownField.name]
+                                    ?.isEmpty ==
+                                true
                             ? null
                             : controller.selectedValues[dropdownField.name],
 
@@ -200,7 +197,7 @@ class MoneyOutManualScreen extends StatelessWidget {
                         // Label & border
                         decoration: InputDecoration(
                           labelText:
-                          "${dropdownField.label?.isNotEmpty == true ? dropdownField.label : 'Bank'} *",
+                              "${dropdownField.label.isNotEmpty == true ? dropdownField.label : 'Bank'} *",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
                               Dimensions.radius * 1.3,
@@ -211,7 +208,7 @@ class MoneyOutManualScreen extends StatelessWidget {
                         // REQUIRED: user must pick a bank (or whichever select field is used)
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please select ${dropdownField.label?.toLowerCase() ?? 'bank'}';
+                            return 'Please select ${dropdownField.label.toLowerCase() ?? 'bank'}';
                           }
                           return null;
                         },
@@ -225,8 +222,7 @@ class MoneyOutManualScreen extends StatelessWidget {
               GridView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 10.0,
                   mainAxisSpacing: 10.0,
@@ -242,5 +238,4 @@ class MoneyOutManualScreen extends StatelessWidget {
       ),
     );
   }
-
 }

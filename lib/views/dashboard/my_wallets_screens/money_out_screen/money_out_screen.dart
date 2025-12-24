@@ -8,9 +8,7 @@ import '../../../../backend/models/money_out/money_out_index_model.dart';
 import '../../../../controller/dashboard/my_wallets/money_out_controller.dart';
 import '../../../../routes/routes.dart';
 import '../../../../widgets/appbar/back_button.dart';
-import '../../../../widgets/custom_dropdown_widget/wallet_dropdown_widget.dart';
 import '../../../../widgets/keyboard/keyboard_widget.dart';
-
 
 class MoneyOutScreen extends GetView<MoneyOutController> {
   const MoneyOutScreen({super.key});
@@ -39,15 +37,15 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
               ),
             ),
             body: Obx(
-                  () => controller.isLoading
+              () => controller.isLoading
                   ? const CustomLoadingWidget()
                   : Column(
-                children: [
-                  _walletWidget(context),
-                  _paymentMethodDropDownWidget(context),
-                  _keyboardMoneyOutWidget(context),
-                ],
-              ),
+                      children: [
+                        _walletWidget(context),
+                        _paymentMethodDropDownWidget(context),
+                        _keyboardMoneyOutWidget(context),
+                      ],
+                    ),
             ),
           ),
         ),
@@ -64,7 +62,7 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
     return Expanded(
       flex: 5,
       child: Obx(
-            () => Column(
+        () => Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -78,15 +76,15 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
                       textAlign: TextAlign.right,
                       style: Get.isDarkMode
                           ? CustomStyle.darkHeading2TextStyle.copyWith(
-                        fontSize: Dimensions.headingTextSize3 * 2,
-                      )
+                              fontSize: Dimensions.headingTextSize3 * 2,
+                            )
                           : CustomStyle.lightHeading2TextStyle.copyWith(
-                        fontSize: Dimensions.headingTextSize3 * 2,
-                      ),
+                              fontSize: Dimensions.headingTextSize3 * 2,
+                            ),
                       readOnly: true,
                       controller: controller.amountController,
                       keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                          const TextInputType.numberWithOptions(decimal: true),
                       // NOTE: Max length & input formatters protect UI from overflow.
                       // If you need larger amounts, adjust both (and business rules).
                       maxLength: 6,
@@ -111,14 +109,14 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
               context,
               name: Strings.charge,
               value:
-              "${controller.selectedMethodFCharge.value.toStringAsFixed(2)} ${controller.selectedMethodCurrencyCode.value} + ${controller.selectedMethodPCharge.value.toStringAsFixed(2)}%",
+                  "${controller.selectedMethodFCharge.value.toStringAsFixed(2)} ${controller.selectedMethodCurrencyCode.value} + ${controller.selectedMethodPCharge.value.toStringAsFixed(2)}%",
             ),
             verticalSpace(Dimensions.marginSizeVertical * .2),
             _infoTextWidget(
               context,
               name: Strings.limit,
               value:
-              "${controller.min.value.toStringAsFixed(controller.selectedCurrencyType.value == 'FIAT' ? 2 : 6)} ${controller.selectedCurrency.value} - ${controller.max.value.toStringAsFixed(controller.selectedCurrencyType.value == 'FIAT' ? 2 : 6)} ${controller.selectedCurrency.value}",
+                  "${controller.min.value.toStringAsFixed(controller.selectedCurrencyType.value == 'FIAT' ? 2 : 6)} ${controller.selectedCurrency.value} - ${controller.max.value.toStringAsFixed(controller.selectedCurrencyType.value == 'FIAT' ? 2 : 6)} ${controller.selectedCurrency.value}",
             ),
             verticalSpace(Dimensions.marginSizeVertical * .5),
           ],
@@ -128,10 +126,10 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
   }
 
   Widget _infoTextWidget(
-      BuildContext context, {
-        required String name,
-        required String value,
-      }) {
+    BuildContext context, {
+    required String name,
+    required String value,
+  }) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: Dimensions.paddingSizeHorizontal * .5,
@@ -205,15 +203,16 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
   Widget _paymentMethodDropDownWidget(BuildContext context) {
     return Obx(() {
       final List<GatewayCurrency> methods =
-          controller.moneyOutIndexModel.data.gatewayCurrencies ?? <GatewayCurrency>[];
+          controller.moneyOutIndexModel.data.gatewayCurrencies ??
+              <GatewayCurrency>[];
 
       // Resolve current selection (or null if none) to keep hint visible initially.
       final GatewayCurrency? selectedOrNull =
-      controller.selectedMethodID.value == 0
-          ? null
-          : methods.firstWhereOrNull(
-            (m) => m.id == controller.selectedMethodID.value,
-      );
+          controller.selectedMethodID.value == 0
+              ? null
+              : methods.firstWhereOrNull(
+                  (m) => m.id == controller.selectedMethodID.value,
+                );
 
       return Padding(
         padding: EdgeInsets.symmetric(
@@ -258,7 +257,7 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
                       ),
                     Expanded(
                       child: Text(
-                        m.title ,
+                        m.title,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Theme.of(context).primaryColor,
@@ -274,21 +273,20 @@ class MoneyOutScreen extends GetView<MoneyOutController> {
               // Guard against null (keeps hint visible)
               if (val == null) return;
               // Update reactive state
-              controller.selectedMethodID.value = val.id ;
+              controller.selectedMethodID.value = val.id;
               controller.selectedMethod.value = val.title ?? '';
               controller.selectedMethodCurrencyCode.value =
                   val.currencyCode ?? '';
               controller.selectedMethodImage.value = val.img ?? '';
               controller.selectedMethodType.value = val.type ?? '';
               controller.selectedMethodAlias.value = val.alias ?? '';
-              controller.selectedMethodMax.value = val.max?.toDouble() ?? 0.0;
-              controller.selectedMethodMin.value = val.min?.toDouble() ?? 0.0;
+              controller.selectedMethodMax.value = val.max.toDouble() ?? 0.0;
+              controller.selectedMethodMin.value = val.min.toDouble() ?? 0.0;
               controller.selectedMethodPCharge.value =
-                  val.pCharge?.toDouble() ?? 0.0;
+                  val.pCharge.toDouble() ?? 0.0;
               controller.selectedMethodFCharge.value =
-                  val.fCharge?.toDouble() ?? 0.0;
-              controller.selectedMethodRate.value =
-                  val.rate?.toDouble() ?? 0.0;
+                  val.fCharge.toDouble() ?? 0.0;
+              controller.selectedMethodRate.value = val.rate.toDouble() ?? 0.0;
 
               // Trigger downstream calculations (FX, fees, etc.)
               controller.exchangeCalculation();

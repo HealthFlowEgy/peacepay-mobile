@@ -1,15 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../language/language_controller.dart';
-import 'maintenance/maintenance_dialog.dart';
-
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
 import '../../language/language_controller.dart';
 import 'maintenance/maintenance_dialog.dart';
 
@@ -24,7 +15,7 @@ class NavigatorPlug {
     required VoidCallback onChanged,
   }) {
     final lang = Get.find<LanguageSettingController>();
-    final sys  = Get.find<SystemMaintenanceController>();
+    final sys = Get.find<SystemMaintenanceController>();
 
     // Listen to language loading changes
     _langSub = lang.isLoadingRx.listen((_) {
@@ -41,11 +32,11 @@ class NavigatorPlug {
   }
 
   void _checkStatus(
-      int seconds,
-      VoidCallback onChanged,
-      LanguageSettingController lang,
-      SystemMaintenanceController sys,
-      ) {
+    int seconds,
+    VoidCallback onChanged,
+    LanguageSettingController lang,
+    SystemMaintenanceController sys,
+  ) {
     final ready = !lang.isLoading && (sys.maintenanceStatus.value == false);
 
     if (!_timerStarted && ready) {
@@ -53,7 +44,8 @@ class NavigatorPlug {
 
       _timer?.cancel();
       _timer = Timer(Duration(seconds: seconds), () {
-        final stillReady = !lang.isLoading && (sys.maintenanceStatus.value == false);
+        final stillReady =
+            !lang.isLoading && (sys.maintenanceStatus.value == false);
 
         if (stillReady) {
           _langSub?.cancel();

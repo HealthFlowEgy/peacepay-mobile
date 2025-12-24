@@ -1,9 +1,7 @@
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../language/language_controller.dart';
 import '../../utils/basic_widget_imports.dart';
-import '../../utils/svg_assets.dart';
 
 class BackButtonWidget extends StatelessWidget {
   const BackButtonWidget({super.key, required this.onTap});
@@ -17,10 +15,13 @@ class BackButtonWidget extends StatelessWidget {
       icon: Animate(
           effects: const [FadeEffect(), ScaleEffect()],
           child: Transform.rotate(
-            angle: Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? 3.14 : 0,
-            child: Icon(Icons.arrow_back_ios_new_rounded)
-          )
-      ),
+              angle: Get.find<LanguageSettingController>()
+                      .selectedLanguage
+                      .value
+                      .contains("ar")
+                  ? 3.14
+                  : 0,
+              child: Icon(Icons.arrow_back_ios_new_rounded))),
     );
   }
 }

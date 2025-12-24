@@ -168,16 +168,19 @@ class MoneyExchangeScreen extends GetView<MoneyExchangeController> {
                 ],
               ),
               verticalSpace(Dimensions.marginSizeVertical * .4),
-
-
               Obx(() => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _infoTextWidget(context, name: Strings.limit, value: '${controller.min.value} - ${controller.max.value} ${controller.fromSelectedCurrency.value}'),
-                  _infoTextWidget(context, name: Strings.charge, value: '${controller.fCharge.value.toStringAsFixed(controller.fromSelectedCurrencyType.value == "FIAT" ? 2 : 6)} ${controller.fromSelectedCurrency.value} + ${controller.moneyExchangeModel.data.charges.percentCharge}% = ${controller.tCharge.value.toStringAsFixed(controller.fromSelectedCurrencyType.value == "FIAT" ? 2 : 6)} ${controller.fromSelectedCurrency.value}'),
-
-                ],
-              )),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _infoTextWidget(context,
+                          name: Strings.limit,
+                          value:
+                              '${controller.min.value} - ${controller.max.value} ${controller.fromSelectedCurrency.value}'),
+                      _infoTextWidget(context,
+                          name: Strings.charge,
+                          value:
+                              '${controller.fCharge.value.toStringAsFixed(controller.fromSelectedCurrencyType.value == "FIAT" ? 2 : 6)} ${controller.fromSelectedCurrency.value} + ${controller.moneyExchangeModel.data.charges.percentCharge}% = ${controller.tCharge.value.toStringAsFixed(controller.fromSelectedCurrencyType.value == "FIAT" ? 2 : 6)} ${controller.fromSelectedCurrency.value}'),
+                    ],
+                  )),
               verticalSpace(Dimensions.marginSizeVertical * .8),
               PrimaryButton(
                 title: Strings.exchangeCurrency,
@@ -255,10 +258,34 @@ class MoneyExchangeScreen extends GetView<MoneyExchangeController> {
               decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? 0: Dimensions.radius * .5),
-                    topLeft: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Dimensions.radius * .5: 0),
-                    bottomRight: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? 0: Dimensions.radius * .5),
-                    bottomLeft: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Dimensions.radius * .5: 0),
+                    topRight: Radius.circular(
+                        Get.find<LanguageSettingController>()
+                                .selectedLanguage
+                                .value
+                                .contains("ar")
+                            ? 0
+                            : Dimensions.radius * .5),
+                    topLeft: Radius.circular(
+                        Get.find<LanguageSettingController>()
+                                .selectedLanguage
+                                .value
+                                .contains("ar")
+                            ? Dimensions.radius * .5
+                            : 0),
+                    bottomRight: Radius.circular(
+                        Get.find<LanguageSettingController>()
+                                .selectedLanguage
+                                .value
+                                .contains("ar")
+                            ? 0
+                            : Dimensions.radius * .5),
+                    bottomLeft: Radius.circular(
+                        Get.find<LanguageSettingController>()
+                                .selectedLanguage
+                                .value
+                                .contains("ar")
+                            ? Dimensions.radius * .5
+                            : 0),
                   )),
               child: _fromCurrencyDropDown(context),
             ),
@@ -292,10 +319,34 @@ class MoneyExchangeScreen extends GetView<MoneyExchangeController> {
               decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? 0: Dimensions.radius * .5),
-                    topLeft: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Dimensions.radius * .5: 0),
-                    bottomRight: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? 0: Dimensions.radius * .5),
-                    bottomLeft: Radius.circular(Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Dimensions.radius * .5: 0),
+                    topRight: Radius.circular(
+                        Get.find<LanguageSettingController>()
+                                .selectedLanguage
+                                .value
+                                .contains("ar")
+                            ? 0
+                            : Dimensions.radius * .5),
+                    topLeft: Radius.circular(
+                        Get.find<LanguageSettingController>()
+                                .selectedLanguage
+                                .value
+                                .contains("ar")
+                            ? Dimensions.radius * .5
+                            : 0),
+                    bottomRight: Radius.circular(
+                        Get.find<LanguageSettingController>()
+                                .selectedLanguage
+                                .value
+                                .contains("ar")
+                            ? 0
+                            : Dimensions.radius * .5),
+                    bottomLeft: Radius.circular(
+                        Get.find<LanguageSettingController>()
+                                .selectedLanguage
+                                .value
+                                .contains("ar")
+                            ? Dimensions.radius * .5
+                            : 0),
                   )),
               child: _toCurrencyDropDown(context),
             ),
@@ -312,7 +363,7 @@ class MoneyExchangeScreen extends GetView<MoneyExchangeController> {
               isCurrencyDropDown: true,
               items: controller.moneyExchangeModel.data.userWallet,
               hint: controller.fromSelectedCurrency.value.isEmpty
-                  ? Strings.selectIDType
+                  ? "Select Policy"
                   : controller.fromSelectedCurrency.value,
               onChanged: (value) {
                 controller.fromSelectedCurrency.value = value!.currencyCode;

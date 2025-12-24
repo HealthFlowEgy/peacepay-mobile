@@ -1,4 +1,5 @@
 import 'package:peacepay/backend/backend_utils/no_data_widget.dart';
+import 'package:peacepay/controller/dashboard/profiles/update_profile_controller.dart';
 import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:peacepay/widgets/others/custom_loading_widget.dart';
@@ -82,9 +83,10 @@ class MyEscrowScreen extends GetView<MyEscrowController> {
                                         controller.escrowIndexModel.data
                                                 .escrowData[index].status ==
                                             9) &&
-                                    controller.escrowIndexModel.data
-                                            .escrowData[index].role ==
-                                        "buyer",
+                                    Get.find<UpdateProfileController>()
+                                            .selectedUserType
+                                            .value !=
+                                        'seller',
                                 data: controller
                                     .escrowIndexModel.data.escrowData[index],
                                 onSelected: (value) {
@@ -114,7 +116,8 @@ class MyEscrowScreen extends GetView<MyEscrowController> {
                                       if (LocalStorage.getUserId() ==
                                           controller.escrowIndexModel.data
                                               .escrowData[index].userId) {
-                                        debugPrint("MENU CLICKED -> Authenticate");
+                                        debugPrint(
+                                            "MENU CLICKED -> Authenticate");
                                         Get.find<HomeController>()
                                             .cachedTatumProcess(
                                                 id: controller
@@ -124,9 +127,9 @@ class MyEscrowScreen extends GetView<MyEscrowController> {
                                                     .escrowId,
                                                 apiUrl:
                                                     ApiEndpoint.escrowTatumURL);
-                                      }
-                                      else {
-                                        debugPrint("MENU CLICKED -> UnAuthenticate");
+                                      } else {
+                                        debugPrint(
+                                            "MENU CLICKED -> UnAuthenticate");
                                         Get.find<HomeController>()
                                             .cachedTatumProcess(
                                                 id: controller

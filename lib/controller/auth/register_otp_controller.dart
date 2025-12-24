@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:peacepay/backend/backend_utils/custom_snackbar.dart';
-import 'package:peacepay/backend/models/auth/registration_model.dart';
 import 'package:peacepay/controller/auth/login_controller.dart';
-import 'package:peacepay/controller/auth/register_controller.dart';
 
 import '../../backend/backend_utils/logger.dart';
 import '../../backend/local_storage/local_storage.dart';
@@ -18,7 +16,6 @@ final log = logger(RegisterOTPController);
 class RegisterOTPController extends GetxController {
   final pinController = TextEditingController();
   // final mobileController = TextEditingController();
-
 
   @override
   void dispose() {
@@ -68,7 +65,8 @@ class RegisterOTPController extends GetxController {
       if (value != null) {
         LocalStorage.isLoginSuccess(isLoggedIn: true);
         await LocalStorage.setMustCheckPin(true);
-        final hasPinFromServer = Get.find<LoginController>().signInModel.data.user.hasPin;
+        final hasPinFromServer =
+            Get.find<LoginController>().signInModel.data.user.hasPin;
         await LocalStorage.saveHasPin(hasPin: hasPinFromServer);
         if (hasPinFromServer == false) {
           Get.offAllNamed(Routes.createPINScreen);
@@ -93,8 +91,6 @@ class RegisterOTPController extends GetxController {
     _isLoading.value = false;
     update();
   }
-
-
 
   resendOTPProcess() async {
     // _isLoading.value = true;

@@ -15,6 +15,7 @@ abstract class DropdownModel {
   double get pCharge;
   double get fCharge;
   double get rate;
+  IconData? get icon => null;
 }
 
 class CustomDropDown<T extends DropdownModel> extends StatefulWidget {
@@ -57,7 +58,8 @@ class CustomDropDown<T extends DropdownModel> extends StatefulWidget {
     this.borderEnable = true,
     this.title = '',
     this.customBorderRadius,
-    this.isCurrencyDropDown = false, this.customTitle = "",
+    this.isCurrencyDropDown = false,
+    this.customTitle = "",
   });
 
   @override
@@ -73,19 +75,19 @@ class _CustomDropDownState<T extends DropdownModel>
   Widget build(BuildContext context) {
     return widget.title != ''
         ? Visibility(
-        visible: widget.title != '',
-        child: Column(
-          crossAxisAlignment: crossStart,
-          mainAxisSize: mainMin,
-          children: [
-            TitleHeading4Widget(
-              text: widget.title,
-              fontWeight: FontWeight.w600,
-              fontSize: Dimensions.headingTextSize3,
-            ).paddingOnly(bottom: Dimensions.marginBetweenInputTitleAndBox),
-            _dropDown()
-          ],
-        ))
+            visible: widget.title != '',
+            child: Column(
+              crossAxisAlignment: crossStart,
+              mainAxisSize: mainMin,
+              children: [
+                TitleHeading4Widget(
+                  text: widget.title,
+                  fontWeight: FontWeight.w600,
+                  fontSize: Dimensions.headingTextSize3,
+                ).paddingOnly(bottom: Dimensions.marginBetweenInputTitleAndBox),
+                _dropDown()
+              ],
+            ))
         : _dropDown();
   }
 
@@ -97,13 +99,13 @@ class _CustomDropDownState<T extends DropdownModel>
         color: widget.dropDownFieldColor,
         border: widget.borderEnable
             ? widget.border ??
-            Border.all(
-              color: widget.borderColor ??
-                  (_selectedItem != null
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).primaryColor.withOpacity(0.15)),
-              width: 1.5,
-            )
+                Border.all(
+                  color: widget.borderColor ??
+                      (_selectedItem != null
+                          ? Theme.of(context).primaryColor
+                          : Theme.of(context).primaryColor.withOpacity(0.15)),
+                  width: 1.5,
+                )
             : null,
         borderRadius: widget.customBorderRadius ??
             BorderRadius.circular(
@@ -150,25 +152,45 @@ class _CustomDropDownState<T extends DropdownModel>
           isExpanded: widget.isExpanded,
           underline: Container(),
           onChanged: (T? newValue) {
-            setState(() {
-              _selectedItem = newValue;
-              widget.onChanged(_selectedItem);
-            });
+            // Don't set CreatePolicyItem as selected value
+            // Check if the item has a negative ID (special items like CreatePolicyItem)
+            if (newValue != null && newValue.id == '-1') {
+              // Call onChanged but don't update internal state
+              widget.onChanged(newValue);
+            } else {
+              setState(() {
+                _selectedItem = newValue;
+                widget.onChanged(_selectedItem);
+              });
+            }
           },
           items: widget.items.map<DropdownMenuItem<T>>(
-                (T value) {
+            (T value) {
               return DropdownMenuItem<T>(
                 value: value,
-                child: Text(
-                  // value.title,
-                  value.title == "" ? widget.customTitle: value.title,
-                  style: CustomStyle.darkHeading3TextStyle.copyWith(
-                    fontSize: Dimensions.headingTextSize3,
-                    fontWeight: FontWeight.w500,
-                    color: widget.isCurrencyDropDown!
-                        ? CustomColor.whiteColor
-                        : CustomColor.primaryLightColor,
-                  ),
+                child: Row(
+                  children: [
+                    if (value.icon != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Icon(
+                          value.icon,
+                          color: Theme.of(context).primaryColor,
+                          size: Dimensions.heightSize * 1.5,
+                        ),
+                      ),
+                    Text(
+                      // value.title,
+                      value.title == "" ? widget.customTitle : value.title,
+                      style: CustomStyle.darkHeading3TextStyle.copyWith(
+                        fontSize: Dimensions.headingTextSize3,
+                        fontWeight: FontWeight.w500,
+                        color: widget.isCurrencyDropDown!
+                            ? CustomColor.whiteColor
+                            : CustomColor.primaryLightColor,
+                      ),
+                    ),
+                  ],
                 ),
               );
             },

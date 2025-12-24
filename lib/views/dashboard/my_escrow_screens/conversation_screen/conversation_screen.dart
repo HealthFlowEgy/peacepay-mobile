@@ -56,7 +56,6 @@ class ConversationScreen extends GetView<ConversationController> {
                     body: Column(
                       children: [
                         _escrowInfoWidget(context),
-
                         verticalSpace(Dimensions.paddingSizeVertical),
                         _stream(context),
                       ],
@@ -78,7 +77,6 @@ class ConversationScreen extends GetView<ConversationController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            verticalSpace(Dimensions.marginSizeVertical * .3),
             EscrowTileWidget(
               data: controller.escrowData,
             ),
@@ -97,22 +95,24 @@ class ConversationScreen extends GetView<ConversationController> {
                             TextButtonWithBGWidget(
                               isLoading: controller.isLoading2,
                               onTap: () => controller.disputeProcess(),
-                              text: Strings.disputed,
+                              // text: Strings.disputed,
+                              text: "Cancel PeaceLink",
+                              colorCode: 4,
                             ),
-                            controller.escrowData.role == "buyer"
-                                ? TextButtonWithBGWidget(
-                                    isLoading: controller.isLoading,
-                                    onTap: () =>
-                                        controller.releasePaymentProcess(),
-                                    text: Strings.releasePayment,
-                                    colorCode: 2,
-                                  )
-                                : TextButtonWithBGWidget(
-                                    isLoading: controller.isLoading,
-                                    onTap: () =>
-                                        controller.requestPaymentProcess(),
-                                    text: Strings.requestPayment,
-                                    colorCode: 3),
+                            // controller.escrowData.role == "buyer"
+                            //     ? TextButtonWithBGWidget(
+                            //         isLoading: controller.isLoading,
+                            //         onTap: () =>
+                            //             controller.releasePaymentProcess(),
+                            //         text: Strings.releasePayment,
+                            //         colorCode: 2,
+                            //       )
+                            //     : TextButtonWithBGWidget(
+                            //         isLoading: controller.isLoading,
+                            //         onTap: () =>
+                            //             controller.requestPaymentProcess(),
+                            //         text: Strings.requestPayment,
+                            //         colorCode: 3),
                           ],
                         ),
                       ),
@@ -136,7 +136,10 @@ class ConversationScreen extends GetView<ConversationController> {
                             fontSize: Dimensions.headingTextSize4 * .8,
                           ),
                         ],
-                      )
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
                     ],
                   )),
             ),
@@ -206,7 +209,12 @@ class ConversationScreen extends GetView<ConversationController> {
           Obx(() => Visibility(
               visible: controller.haveFile.value,
               child: Align(
-                alignment: Get.find<LanguageSettingController>().selectedLanguage.value.contains("ar") ? Alignment.centerRight: Alignment.centerLeft,
+                alignment: Get.find<LanguageSettingController>()
+                        .selectedLanguage
+                        .value
+                        .contains("ar")
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
                 child: Padding(
                   padding: const EdgeInsets.all(6),
                   child: isImage(File(controller.filePath.value))

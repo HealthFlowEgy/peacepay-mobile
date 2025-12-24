@@ -1,11 +1,8 @@
-
-
 import 'package:peacepay/controller/auth/register_otp_controller.dart';
 
 import '../../backend/backend_utils/logger.dart';
 import '../../backend/local_storage/local_storage.dart';
 import '../../backend/models/auth/registration_model.dart';
-import '../../backend/services/api_endpoint.dart';
 import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
 import '../../utils/basic_widget_imports.dart';
@@ -13,12 +10,10 @@ import '../../views/auth/register_otp_screen/register_otp_screen.dart';
 import '../../views/web_view/web_view_screen.dart';
 import '../before_auth/basic_settings_controller.dart';
 
-
 final log = logger(RegisterController);
 
-class RegisterController extends GetxController{
+class RegisterController extends GetxController {
   final formKey = GlobalKey<FormState>();
-
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -43,7 +38,7 @@ class RegisterController extends GetxController{
 
   switchValue(bool value) {
     debugPrint(value.toString());
-    if(value) {
+    if (value) {
       type = 'buyer';
     } else {
       type = 'seller';
@@ -53,16 +48,15 @@ class RegisterController extends GetxController{
   late RegistrationModel _registrationModel;
   RegistrationModel get registrationModel => _registrationModel;
 
-  onRegisterProcess() async{
-    if(formKey.currentState!.validate()){
+  onRegisterProcess() async {
+    if (formKey.currentState!.validate()) {
       await signUpProcess();
     }
   }
 
-
   final _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
- dynamic phoneNumber;
+  dynamic phoneNumber;
   Future<RegistrationModel> signUpProcess() async {
     _isLoading.value = true;
     update();
@@ -79,7 +73,7 @@ class RegisterController extends GetxController{
     await ApiServices.signUpApi(body: inputBody).then((value) {
       _registrationModel = value!;
       LocalStorage.saveToken(token: _registrationModel.data.token);
-      if(_registrationModel.data.user.smsVerified == 0){
+      if (_registrationModel.data.user.smsVerified == 0) {
         // Get.toNamed(
         //   Routes.registerOTPScreen,
         // );
@@ -87,15 +81,17 @@ class RegisterController extends GetxController{
         if (_registrationModel.data.user.smsVerified == 0) {
           Get.put(RegisterOTPController()); //  Register the controller manually
           Get.to(() => RegisterOTPScreen(
-            mobileNumber: _registrationModel.data.user.mobile,
-          ));
+                mobileNumber: _registrationModel.data.user.mobile,
+              ));
         }
-
-      }
-      else if(_registrationModel.data.user.kycVerified == 0
-          && Get.find<BasicSettingsController>().basicSettingModel.data.kycStatus == 1){
-         Get.toNamed(Routes.kycFormScreen);
-      }else{
+      } else if (_registrationModel.data.user.kycVerified == 0 &&
+          Get.find<BasicSettingsController>()
+                  .basicSettingModel
+                  .data
+                  .kycStatus ==
+              1) {
+        Get.toNamed(Routes.kycFormScreen);
+      } else {
         Get.offAllNamed(Routes.dashboardScreen);
       }
 
@@ -109,8 +105,6 @@ class RegisterController extends GetxController{
     return _registrationModel;
   }
 
-
-
   goToLoginScreen() {
     Get.offAllNamed(Routes.loginScreen);
   }
@@ -120,10 +114,9 @@ class RegisterController extends GetxController{
         context,
         MaterialPageRoute(
             builder: (context) => const WebViewScreen(
-              beforeAuth: true,
-              appTitle: Strings.privacyPolicy,
-              link:
-              "https://peacepay.me/terms-and-conditions",
-            )));
+                  beforeAuth: true,
+                  appTitle: Strings.privacyPolicy,
+                  link: "https://peacepay.me/terms-and-conditions",
+                )));
   }
 }

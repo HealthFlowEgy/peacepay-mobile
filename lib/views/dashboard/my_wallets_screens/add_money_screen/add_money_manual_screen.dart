@@ -5,7 +5,6 @@ import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import '../../../../controller/dashboard/my_wallets/add_money_controller.dart';
 import '../../../../widgets/text_labels/title_sub_title_widget.dart';
 
-
 class AddMoneyManualScreen extends StatelessWidget {
   AddMoneyManualScreen({super.key});
 
@@ -19,7 +18,7 @@ class AddMoneyManualScreen extends StatelessWidget {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: PrimaryAppBar(
             // title: controller.information.gatewayCurrencyName,
-            title:Strings.appName,
+            title: Strings.appName,
           ),
           body: _bottomBodyWidget(context),
         ),
@@ -46,7 +45,7 @@ class AddMoneyManualScreen extends StatelessWidget {
             child: TitleSubTitleWidget(
               fromStart: true,
               title: "",
-              subTitle: controller.addMoneyManualModel.data.details,
+              subTitle: controller.addMoneyManualModel!.data.details,
             ),
           ),
           Column(
@@ -59,10 +58,9 @@ class AddMoneyManualScreen extends StatelessWidget {
                 child: Obx(() => controller.isLoading
                     ? const CustomLoadingWidget()
                     : PrimaryButton(
-                  title: Strings.submit,
-                  onPressed: () =>
-                      controller.onManualSubmit(context),
-                )),
+                        title: Strings.submit,
+                        onPressed: () => controller.onManualSubmit(context),
+                      )),
               ),
               verticalSpace(Dimensions.paddingSizeVertical * 1.5),
             ],

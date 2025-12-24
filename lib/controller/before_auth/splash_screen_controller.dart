@@ -2,8 +2,9 @@ import 'package:peacepay/backend/local_storage/local_storage.dart';
 import 'package:get/get.dart';
 
 import '../../backend/local_auth/local_auth_controller.dart';
-import '../../backend/utils/navigator_plug.dart';
+import '../../language/language_controller.dart';
 import '../../routes/routes.dart';
+import 'basic_settings_controller.dart';
 //
 // class SplashController extends GetxController {
 //
@@ -35,11 +36,7 @@ import '../../routes/routes.dart';
 // }
 
 // lib/controller/splash/splash_controller.dart
-import 'package:get/get.dart';
 
-import '../../backend/local_storage/local_storage.dart';
-import '../../routes/routes.dart';
-import '../auth/login_controller.dart';
 class SplashController extends GetxController {
   @override
   void onReady() {
@@ -48,24 +45,51 @@ class SplashController extends GetxController {
   }
 
   Future<void> _boot() async {
-    // small splash pause
-    await Future.delayed(const Duration(seconds: 1));
+    print('🚀 [SplashController] Starting boot sequence...');
+
+    // Wait for basic settings to load first
+    final basicSettings = Get.find<BasicSettingsController>();
+    print('⏳ [SplashController] Waiting for basic settings...');
+
+    // Wait until basic settings are loaded
+    while (basicSettings.isLoading) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+    print('✅ [SplashController] Basic settings loaded');
+
+    // Wait for language translations to load
+    final languageController = Get.find<LanguageSettingController>();
+    print('⏳ [SplashController] Waiting for language translations...');
+
+    // Wait until language translations are loaded
+    while (languageController.isLoading) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+    print('✅ [SplashController] Language translations loaded');
+
+    // Additional small delay for smooth transition
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    print('🎯 [SplashController] All initialization complete, navigating...');
 
     // 1) Onboarding first
-    if (!LocalStorage.isOnBoardDone() ) {
+    if (!LocalStorage.isOnBoardDone()) {
+      print('📍 [SplashController] Navigating to onboard screen');
       Get.offAllNamed(Routes.onboardScreen);
       return;
     }
 
     // 2) If not logged in -> Login
     if (!LocalStorage.isLoggedIn()) {
+      print('📍 [SplashController] Navigating to login screen');
       Get.offAllNamed(Routes.loginScreen);
       return;
     }
 
     // 3) Logged in -> let BiometricController decide (Create PIN / Check PIN / Dashboard with biometrics)
-    final bio = Get.find<BiometricController>(); // make sure it's registered in main()
+    print('📍 [SplashController] User logged in, checking biometric auth...');
+    final bio =
+        Get.find<BiometricController>(); // make sure it's registered in main()
     await bio.gateIntoApp();
   }
 }
-

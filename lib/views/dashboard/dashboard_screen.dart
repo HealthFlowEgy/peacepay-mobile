@@ -2,16 +2,10 @@ import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peacepay/views/dashboard/notification_screen/notification_screen.dart';
 
 import '../../controller/dashboard/dashboard_controller.dart';
-import '../../controller/dashboard/profiles/update_profile_controller.dart';
-import '../../language/language_drop_down.dart';
-import '../../routes/routes.dart';
-import '../../utils/svg_assets.dart';
 import '../../widgets/appbar/dashboard_appbar.dart';
-import '../../widgets/drawer/drawer_widget.dart';
 import '../../widgets/others/app_icon_widget.dart';
 import 'nav_buttons_widget.dart';
 
@@ -39,25 +33,21 @@ class DashboardScreen extends GetView<DashboardController> {
           },
      */
 
-
-
     return ResponsiveLayout(
       mobileScaffold: SafeArea(
         // ignore: deprecated_member_use
         child: Obx(() => WillPopScope(
-          onWillPop: ()async{
-            debugPrint(controller.selectedIndex.value.toString());
-            if(controller.selectedIndex.value == 0){
-              debugPrint("Home");
-              SystemNavigator.pop();
-            }else{
-              debugPrint("Other");
-              controller.selectedIndex.value = 0;
-            }
-            return false;
-          },
-          child: Scaffold(
-            key: controller.scaffoldKey,
+              onWillPop: () async {
+                debugPrint(controller.selectedIndex.value.toString());
+                if (controller.selectedIndex.value == 0) {
+                  SystemNavigator.pop();
+                } else {
+                  controller.selectedIndex.value = 0;
+                }
+                return false;
+              },
+              child: Scaffold(
+                key: controller.scaffoldKey,
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 appBar: DashboardAppBar(
                   title: Container(
@@ -72,16 +62,15 @@ class DashboardScreen extends GetView<DashboardController> {
                             width: MediaQuery.sizeOf(context).width * .20,
                           )
                         : Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: TitleHeading1Widget(
-                              text:
-                                  controller.bodyText[controller.selectedIndex.value],
+                            padding: const EdgeInsets.only(top: 10),
+                            child: TitleHeading1Widget(
+                              text: controller
+                                  .bodyText[controller.selectedIndex.value],
                               textAlign: TextAlign.center,
                               fontSize: Dimensions.headingTextSize1 * .85,
                             ),
-                        ),
+                          ),
                   ),
-
                   onMenuTap: () {
                     controller.scaffoldKey.currentState!.openDrawer();
                   },
@@ -93,18 +82,21 @@ class DashboardScreen extends GetView<DashboardController> {
                       ),
                     ),
                     Visibility(
-                      visible: controller.selectedIndex.value ==0,
+                      visible: controller.selectedIndex.value == 0,
                       child: IconButton(
-                        onPressed: (){
+                        onPressed: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const NotificationScreen()));                        },
+                                  builder: (context) =>
+                                      const NotificationScreen()));
+                        },
                         icon: Animate(
                           effects: const [FadeEffect(), ScaleEffect()],
-                          child: Icon(Icons.notifications_none_sharp,
-                           size: 30.sp,
-                             ),
+                          child: Icon(
+                            Icons.notifications_none_sharp,
+                            size: 30.sp,
+                          ),
                         ),
                       ),
                     ),
@@ -117,10 +109,11 @@ class DashboardScreen extends GetView<DashboardController> {
                   ],
                 ),
                 // drawer: DrawerWidget(controller: controller),
-                body: Obx(() => controller.body[controller.selectedIndex.value]),
+                body:
+                    Obx(() => controller.body[controller.selectedIndex.value]),
                 bottomNavigationBar: _bottomNavWidget(context),
               ),
-        )),
+            )),
       ),
     );
   }

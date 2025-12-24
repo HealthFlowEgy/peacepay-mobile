@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:peacepay/backend/models/common/common_success_model.dart';
 
 import '../backend_utils/api_method.dart';
@@ -13,12 +11,11 @@ import 'api_endpoint.dart';
 final log = logger(DashboardApiService);
 
 mixin DashboardApiService {
-
   Future<NotificationModel?> notificationAPi() async {
     Map<String, dynamic>? mapResponse;
     try {
       mapResponse = await ApiMethod(isBasic: false).get(
-        ApiEndpoint.notificationURL ,
+        ApiEndpoint.notificationURL,
         code: 200,
       );
       if (mapResponse != null) {
@@ -47,17 +44,17 @@ mixin DashboardApiService {
         return result;
       }
     } catch (e) {
-      log.e(':ladybug: err from Transaction api service ==> $e :ladybug::ladybug::ladybug:');
+      log.e(
+          ':ladybug: err from Transaction api service ==> $e :ladybug::ladybug::ladybug:');
       CustomSnackBar.error('Something went Wrong!');
       return null;
     }
     return null;
   }
 
-
-
   ///* Get CachedTatum api services
-  Future<CachedTatumModel?> cachedTatumProcessApi({required String id, required String apiUrl}) async {
+  Future<CachedTatumModel?> cachedTatumProcessApi(
+      {required String id, required String apiUrl}) async {
     Map<String, dynamic>? mapResponse;
     try {
       mapResponse = await ApiMethod(isBasic: false).get(
@@ -69,13 +66,13 @@ mixin DashboardApiService {
         return result;
       }
     } catch (e) {
-      log.e(':ladybug::ladybug::ladybug: err from CachedTatum api service ==> $e :ladybug::ladybug::ladybug:');
+      log.e(
+          ':ladybug::ladybug::ladybug: err from CachedTatum api service ==> $e :ladybug::ladybug::ladybug:');
       CustomSnackBar.error('Something went Wrong!');
       return null;
     }
     return null;
   }
-
 
   ///* CachedTatumSubmit api services
   Future<CommonSuccessModel?> cachedTatumSubmitProcessApi(
@@ -92,11 +89,11 @@ mixin DashboardApiService {
         return result;
       }
     } catch (e) {
-      log.e(':ladybug::ladybug::ladybug: err from CachedTatumSubmit api service ==> $e :ladybug::ladybug::ladybug:');
+      log.e(
+          ':ladybug::ladybug::ladybug: err from CachedTatumSubmit api service ==> $e :ladybug::ladybug::ladybug:');
       CustomSnackBar.error('Something went Wrong!');
       return null;
     }
     return null;
   }
-
 }

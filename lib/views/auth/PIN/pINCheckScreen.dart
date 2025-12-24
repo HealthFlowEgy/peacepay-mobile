@@ -1,16 +1,15 @@
 import 'package:peacepay/utils/basic_screen_imports.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../controller/auth/checkPinCode.dart';
 import '../../../controller/dashboard/profiles/update_profile_controller.dart';
-import '../../../routes/routes.dart';
-
 
 class CheckPinScreen extends StatelessWidget {
   final CheckPinController controller = Get.put(CheckPinController());
   final int? index;
-  CheckPinScreen({super.key,required this.index,});
+  CheckPinScreen({
+    super.key,
+    required this.index,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,67 +25,74 @@ class CheckPinScreen extends StatelessWidget {
             Text("Enter your PIN", style: TextStyle(fontSize: 18)),
             SizedBox(height: 8),
             Obx(() => PinCodeTextField(
-              appContext: context,
-              length: 6,
-              obscureText: controller.isPinObscured.value,
-              obscuringCharacter: '●',
-              animationType: AnimationType.fade,
-              controller: pinTextController,
-              onChanged: controller.setPin,
-              keyboardType: TextInputType.number,
-              pinTheme: _buildPinTheme(),
-              animationDuration: const Duration(milliseconds: 300),
-              backgroundColor: Colors.transparent,
-            )),
+                  appContext: context,
+                  length: 6,
+                  obscureText: controller.isPinObscured.value,
+                  obscuringCharacter: '●',
+                  animationType: AnimationType.fade,
+                  controller: pinTextController,
+                  onChanged: controller.setPin,
+                  keyboardType: TextInputType.number,
+                  pinTheme: _buildPinTheme(),
+                  animationDuration: const Duration(milliseconds: 300),
+                  backgroundColor: Colors.transparent,
+                )),
             SizedBox(height: 10.h),
             Obx(() => Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: Icon(controller.isPinObscured.value
-                      ? Icons.visibility_off
-                      : Icons.visibility),
-                  onPressed: controller.togglePinVisibility,
-                ),
-              ],
-            )),
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(controller.isPinObscured.value
+                          ? Icons.visibility_off
+                          : Icons.visibility),
+                      onPressed: controller.togglePinVisibility,
+                    ),
+                  ],
+                )),
             Row(
               children: [
                 GestureDetector(
-                    onTap: ()async{
+                    onTap: () async {
                       controller.onForgotPassProcessBeforePin();
                     },
-                    child:  Text(Strings.forgotPassword,style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 14.sp,
-                    ),)),
+                    child: Text(
+                      Strings.forgotPassword,
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 14.sp,
+                      ),
+                    )),
               ],
             ),
             Obx(() => controller.error.value == null
                 ? SizedBox.shrink()
                 : Text(
-              controller.error.value!,
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-            )),
+                    controller.error.value!,
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  )),
             SizedBox(height: 24),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r)),
               ),
               onPressed: () async {
-                await controller.checkPinProcess(screenIndex:index!);
+                await controller.checkPinProcess(screenIndex: index!);
               },
-              child: Text('Verify PIN',style: TextStyle(
-                fontSize: 16.sp
-              ),),
+              child: Text(
+                'Verify PIN',
+                style: TextStyle(fontSize: 16.sp),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
   PinTheme _buildPinTheme() {
     return PinTheme(
       shape: PinCodeFieldShape.box,

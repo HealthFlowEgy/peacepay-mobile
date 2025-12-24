@@ -14,6 +14,7 @@ class PrimaryButton extends StatelessWidget {
     this.fontWeight,
     this.prefix = "",
     this.suffix = "",
+    this.buttonColor,
   });
   final String title, prefix, suffix;
   final VoidCallback onPressed;
@@ -23,6 +24,7 @@ class PrimaryButton extends StatelessWidget {
   final Widget? icon;
   final double? fontSize;
   final FontWeight? fontWeight;
+  final Color? buttonColor;
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +37,9 @@ class PrimaryButton extends StatelessWidget {
           shape: shape ??
               RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(Dimensions.radius * 1)),
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: buttonColor ?? Theme.of(context).primaryColor,
           side: BorderSide(
-            width: borderWidth,
-            color: Theme.of(context).primaryColor
-          ),
+              width: borderWidth, color: Theme.of(context).primaryColor),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -48,7 +48,7 @@ class PrimaryButton extends StatelessWidget {
             Visibility(
               visible: prefix.isNotEmpty,
               child: Text(
-                  Get.find<LanguageSettingController>().isLoading ? "": Get.find<LanguageSettingController>().getTranslation(prefix),
+                Get.find<LanguageSettingController>().getTranslation(prefix),
                 style: CustomStyle.darkHeading3TextStyle.copyWith(
                   fontSize: fontSize ?? Dimensions.headingTextSize5,
                   color: CustomColor.whiteColor,
@@ -58,7 +58,7 @@ class PrimaryButton extends StatelessWidget {
             ),
 
             Text(
-                Get.find<LanguageSettingController>().isLoading ? "": Get.find<LanguageSettingController>().getTranslation(title),
+              Get.find<LanguageSettingController>().getTranslation(title),
               style: CustomStyle.darkHeading3TextStyle.copyWith(
                 fontSize: fontSize ?? Dimensions.headingTextSize3,
                 color: CustomColor.whiteColor,
@@ -66,11 +66,10 @@ class PrimaryButton extends StatelessWidget {
               ),
             ),
 
-
             Visibility(
               visible: suffix.isNotEmpty,
               child: Text(
-                  Get.find<LanguageSettingController>().isLoading ? "": Get.find<LanguageSettingController>().getTranslation(suffix),
+                Get.find<LanguageSettingController>().getTranslation(suffix),
                 style: CustomStyle.darkHeading3TextStyle.copyWith(
                   fontSize: fontSize ?? Dimensions.headingTextSize5,
                   color: CustomColor.whiteColor,

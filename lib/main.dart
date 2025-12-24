@@ -1,6 +1,5 @@
 import 'package:peacepay/routes/routes.dart';
 import 'package:peacepay/utils/theme.dart';
-import 'package:peacepay/views/auth/PIN/create-ConfirmPinScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,11 +7,11 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'Translation/fallback_translation.dart';
-import 'backend/backend_utils/network_check/dependency_injection.dart';
 import 'backend/utils/maintenance/maintenance_dialog.dart';
 import 'controller/before_auth/basic_settings_controller.dart';
 import 'language/english.dart';
 import 'language/language_controller.dart';
+import 'widgets/others/global_error_screen.dart';
 
 Future<void> main() async {
   // Ensure Flutter engine is initialized before any async / platform calls
@@ -41,6 +40,11 @@ Future<void> main() async {
   final savedTheme = Themes().savedUserTheme;
   Get.put(BasicSettingsController(), permanent: true);
 
+  // Set global error widget
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return GlobalErrorScreen(errorDetails: details);
+  };
+
   runApp(MyApp(savedTheme: savedTheme));
 }
 
@@ -55,9 +59,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Resolve initial theme once (switch/case is clearer than nested ifs)
     final ThemeData initialTheme = switch (savedTheme) {
-      'buyer'  => Themes.buyer,
+      'buyer' => Themes.buyer,
       'seller' => Themes.seller,
-      _        => Themes.delivery,
+      _ => Themes.delivery,
     };
 
     // Provide your target design size (Figma/Sketch reference frame)
@@ -69,57 +73,56 @@ class MyApp extends StatelessWidget {
         final lang = Get.find<LanguageSettingController>();
 
         return Obx(() => GetMaterialApp(
-          title: Strings.appName,
-          debugShowCheckedModeBanner: false,
+              title: Strings.appName,
+              debugShowCheckedModeBanner: false,
 
-          // Theme setup
-          theme: initialTheme,
-          // darkTheme: Themes.dark,
-          // themeMode: ThemeMode.system, // Optional: if you support system dark mode
+              // Theme setup
+              theme: initialTheme,
+              // darkTheme: Themes.dark,
+              // themeMode: ThemeMode.system, // Optional: if you support system dark mode
 
-          // GetX navigator key (single navigator for the whole app)
-          navigatorKey: Get.key,
+              // GetX navigator key (single navigator for the whole app)
+              navigatorKey: Get.key,
 
-          // Routing
-          initialRoute: Routes.splashScreen,
-          getPages: Routes.list,
+              // Routing
+              initialRoute: Routes.splashScreen,
+              getPages: Routes.list,
 
-          // i18n using GetX
-          translations: FallbackTranslation(),      // your translations mapper
-          fallbackLocale: const Locale('en'),       // safe default
-          locale: lang.currentLocale,               // <-- REACTIVE (Obx above)
+              // i18n using GetX
+              translations: FallbackTranslation(), // your translations mapper
+              fallbackLocale: const Locale('en'), // safe default
+              locale: lang.currentLocale, // <-- REACTIVE (Obx above)
 
-          // IMPORTANT:
-          // - Do NOT re-put controllers in initialBinding (it causes random “white screens”)
-          // - Keep single registration in `main()` only.
-          // initialBinding: BindingsBuilder(() {}),
+              // IMPORTANT:
+              // - Do NOT re-put controllers in initialBinding (it causes random “white screens”)
+              // - Keep single registration in `main()` only.
+              // initialBinding: BindingsBuilder(() {}),
 
-          // Builder wraps every page to:
-          // 1) Lock text scale factor across the app
-          // 2) Apply text direction reactively (RTL/LTR) after language loads
-          builder: (context, widget) {
-            // Re-init ScreenUtil using the real context
-            ScreenUtil.init(context);
+              // Builder wraps every page to:
+              // 1) Lock text scale factor across the app
+              // 2) Apply text direction reactively (RTL/LTR) after language loads
+              builder: (context, widget) {
+                // Re-init ScreenUtil using the real context
+                ScreenUtil.init(context);
 
-            // During language loading, default to LTR to avoid early crashes.
-            final textDir = lang.isLoading
-                ? TextDirection.ltr
-                : lang.languageDirection;
+                // During language loading, default to LTR to avoid early crashes.
+                final textDir =
+                    lang.isLoading ? TextDirection.ltr : lang.languageDirection;
 
-            // Lock text scale factor to 1.0 to keep UI consistent
-            final mq = MediaQuery.of(context).copyWith(
-              textScaler: const TextScaler.linear(1.0),
-            );
+                // Lock text scale factor to 1.0 to keep UI consistent
+                final mq = MediaQuery.of(context).copyWith(
+                  textScaler: const TextScaler.linear(1.0),
+                );
 
-            return MediaQuery(
-              data: mq,
-              child: Directionality(
-                textDirection: textDir,
-                child: widget!,
-              ),
-            );
-          },
-        ));
+                return MediaQuery(
+                  data: mq,
+                  child: Directionality(
+                    textDirection: textDir,
+                    child: widget!,
+                  ),
+                );
+              },
+            ));
       },
     );
   }

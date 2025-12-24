@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:peacepay/backend/services/api_endpoint.dart';
 import 'package:peacepay/utils/basic_screen_imports.dart';
-import 'package:peacepay/views/auth/PIN/pINCheckScreen.dart';
 
 import '../../../backend/models/tatum/tatum_model.dart' as tatum;
 import '../../../backend/models/dashboard/home_model.dart' as home;
@@ -12,11 +11,9 @@ import '../../../backend/models/add_money/add_money_automatic_model.dart';
 import '../../../backend/models/add_money/add_money_index_model.dart';
 import '../../../backend/models/add_money/add_money_manual_model.dart';
 import '../../../backend/models/add_money/add_money_paypal_model.dart';
-import '../../../backend/models/add_money/payment_information_model.dart';
 import '../../../backend/models/common/common_success_model.dart';
 import '../../../backend/services/add_money_api_service.dart';
 import '../../../routes/routes.dart';
-import '../../../views/confirm_screen.dart';
 import '../../../views/dashboard/my_wallets_screens/add_money_screen/add_money_confirm_screen.dart';
 import '../../../views/web_view/web_view_screen.dart';
 import '../../../widgets/custom_dropdown_widget/custom_dropdown_widget.dart';
@@ -132,62 +129,64 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
             context,
             MaterialPageRoute(
                 builder: (context) => WebViewScreen(
-                  appTitle: addMoneyPaypalModel.paymentInformations.gatewayCurrencyName,
-                  link: webUrl,
-                  onFinished: (url) {
-                    debugPrint("---------------------------------");
-                    debugPrint("URL    --------------------------");
-                    debugPrint(url.toString());
-                    if (url.toString().contains('success/response')) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddMoneyConfirmScreen(
-                                onApproval: true,
-                                message:
-                                Strings.addMoneyConfirmationMSG,
-                                // onApproval: true,
-                                onOkayTap: () => Get.offAllNamed(
-                                    Routes.dashboardScreen),
-                              )));
-                    }
-                  },
-                )));
+                      appTitle: addMoneyPaypalModel!
+                          .paymentInformations.gatewayCurrencyName,
+                      link: webUrl,
+                      onFinished: (url) {
+                        debugPrint("---------------------------------");
+                        debugPrint("URL    --------------------------");
+                        debugPrint(url.toString());
+                        if (url.toString().contains('success/response')) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddMoneyConfirmScreen(
+                                        onApproval: true,
+                                        message:
+                                            Strings.addMoneyConfirmationMSG,
+                                        // onApproval: true,
+                                        onOkayTap: () => Get.offAllNamed(
+                                            Routes.dashboardScreen),
+                                      )));
+                        }
+                      },
+                    )));
       } else {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => WebViewScreen(
-                  appTitle: addMoneyAutomaticModel.data.gatewayCurrencyName,
-                  link: webUrl,
-                  onFinished: (url) {
-                    debugPrint("---------------------------------");
-                    debugPrint("URL    --------------------------");
-                    debugPrint(url.toString());
-                    if (url.toString().contains('success/response') ||
-                        url.toString().contains('sslcommerz/success') ||
-                        url.toString().contains('payment/callback') ||
-                        url.toString().contains('razor-pay/callback') ||
-                        url.toString().contains('api-razor/callback') ||
-                        url.toString().contains('razor-pay-api/callback') ||
-                        url.toString().contains(
-                            'escrow-payment-api/callback?razorpay_order_id') ||
-                        url.toString().contains('payment/confirmed') ||
-                        url.toString().contains('payment/success')) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddMoneyConfirmScreen(
-                                onApproval: true,
-                                message:
-                                Strings.addMoneyConfirmationMSG,
-                                // onApproval: true,
-                                onOkayTap: () => Get.offAllNamed(
-                                    Routes.dashboardScreen),
-                              )));
-                    }
-                  },
-                )));
+                      appTitle:
+                          addMoneyAutomaticModel!.data.gatewayCurrencyName,
+                      link: webUrl,
+                      onFinished: (url) {
+                        debugPrint("---------------------------------");
+                        debugPrint("URL    --------------------------");
+                        debugPrint(url.toString());
+                        if (url.toString().contains('success/response') ||
+                            url.toString().contains('sslcommerz/success') ||
+                            url.toString().contains('payment/callback') ||
+                            url.toString().contains('razor-pay/callback') ||
+                            url.toString().contains('api-razor/callback') ||
+                            url.toString().contains('razor-pay-api/callback') ||
+                            url.toString().contains(
+                                'escrow-payment-api/callback?razorpay_order_id') ||
+                            url.toString().contains('payment/confirmed') ||
+                            url.toString().contains('payment/success')) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddMoneyConfirmScreen(
+                                        onApproval: true,
+                                        message:
+                                            Strings.addMoneyConfirmationMSG,
+                                        // onApproval: true,
+                                        onOkayTap: () => Get.offAllNamed(
+                                            Routes.dashboardScreen),
+                                      )));
+                        }
+                      },
+                    )));
       }
     } else if (selectedMethodType.value == "MANUAL") {
       Get.toNamed(Routes.addMoneyManualScreen, arguments: data);
@@ -200,10 +199,10 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
           Get.context!,
           MaterialPageRoute(
               builder: (context) => AddMoneyConfirmScreen(
-                message: Strings.addMoneyConfirmationMSG,
-                onApproval: true,
-                onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
-              )));
+                    message: Strings.addMoneyConfirmationMSG,
+                    onApproval: true,
+                    onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
+                  )));
     });
   }
 
@@ -213,10 +212,10 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
           Get.context!,
           MaterialPageRoute(
               builder: (context) => AddMoneyConfirmScreen(
-                message: Strings.addMoneyConfirmationMSG,
-                onApproval: true,
-                onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
-              )));
+                    message: Strings.addMoneyConfirmationMSG,
+                    onApproval: true,
+                    onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
+                  )));
     });
   }
 
@@ -224,15 +223,19 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
   void addMoneyBTNClicked(BuildContext context) async {
     if (amountController.text.isNotEmpty) {
       if (selectedMethodType.value == "AUTOMATIC") {
-          if (selectedMethodID.value == "1") {
+        if (selectedMethodID.value == "1") {
           await onPaypalProcess().then((value) {
-            webUrl = value.iframeUrl;
-            Get.toNamed(Routes.addMoneyScreenPreview);
+            if (value != null) {
+              webUrl = value.iframeUrl;
+              Get.toNamed(Routes.addMoneyScreenPreview);
+            }
           });
         } else {
           await onAutomaticProcess().then((value) {
-            webUrl = value.data.url;
-            Get.toNamed(Routes.addMoneyScreenPreview);
+            if (value != null) {
+              webUrl = value.data.url;
+              Get.toNamed(Routes.addMoneyScreenPreview);
+            }
           });
         }
       } else if (selectedMethodType.value == "MANUAL") {
@@ -244,11 +247,11 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
   final _isSubmitLoading = false.obs;
   bool get isSubmitLoading => _isSubmitLoading.value;
 
-// add money automatic process
-  late AddMoneyAutomaticModel _addMoneyAutomaticModel;
-  AddMoneyAutomaticModel get addMoneyAutomaticModel => _addMoneyAutomaticModel;
+  // add money automatic process
+  AddMoneyAutomaticModel? _addMoneyAutomaticModel;
+  AddMoneyAutomaticModel? get addMoneyAutomaticModel => _addMoneyAutomaticModel;
 
-  Future<AddMoneyAutomaticModel> onAutomaticProcess() async {
+  Future<AddMoneyAutomaticModel?> onAutomaticProcess() async {
     _isSubmitLoading.value = true;
     update();
 
@@ -259,11 +262,13 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     };
 
     await addMoneySubmitAutomaticApi(body: inputBody).then((value) async {
-      _addMoneyAutomaticModel = value!;
-      debugPrint("Working");
-      debugPrint(_addMoneyAutomaticModel.data.url);
+      if (value != null) {
+        _addMoneyAutomaticModel = value;
+        debugPrint("Working");
+        debugPrint(_addMoneyAutomaticModel!.data.url);
 
-      update();
+        update();
+      }
     }).catchError((onError) {
       log.e(onError);
     });
@@ -273,10 +278,10 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
   }
 
 // add money automatic process
-  late tatum.TatumModel _addMoneyTatumModel;
-  tatum.TatumModel get addMoneyTatumModel => _addMoneyTatumModel;
+  tatum.TatumModel? _addMoneyTatumModel;
+  tatum.TatumModel? get addMoneyTatumModel => _addMoneyTatumModel;
 
-  Future<tatum.TatumModel> onTatumProcess() async {
+  Future<tatum.TatumModel?> onTatumProcess() async {
     inputFields.clear();
     inputFieldControllers.clear();
 
@@ -290,33 +295,35 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     };
 
     await addMoneySubmitTatumApi(body: inputBody).then((value) async {
-      _addMoneyTatumModel = value!;
+      if (value != null) {
+        _addMoneyTatumModel = value;
 
-      var data = _addMoneyTatumModel.data.addressInfo.inputFields;
-      for (int item = 0; item < data.length; item++) {
-        // make the dynamic controller
-        var textEditingController = TextEditingController();
-        inputFieldControllers.add(textEditingController);
-        if (data[item].type.contains('text')) {
-          inputFields.add(
-            Column(
-              mainAxisAlignment: mainStart,
-              crossAxisAlignment: crossStart,
-              children: [
-                PrimaryTextInputWidget(
-                  controller: inputFieldControllers[item],
-                  labelText: data[item].label,
-                ),
-                verticalSpace(Dimensions.marginBetweenInputBox * .8),
-              ],
-            ),
-          );
+        var data = _addMoneyTatumModel!.data.addressInfo.inputFields;
+        for (int item = 0; item < data.length; item++) {
+          // make the dynamic controller
+          var textEditingController = TextEditingController();
+          inputFieldControllers.add(textEditingController);
+          if (data[item].type.contains('text')) {
+            inputFields.add(
+              Column(
+                mainAxisAlignment: mainStart,
+                crossAxisAlignment: crossStart,
+                children: [
+                  PrimaryTextInputWidget(
+                    controller: inputFieldControllers[item],
+                    labelText: data[item].label,
+                  ),
+                  verticalSpace(Dimensions.marginBetweenInputBox * .8),
+                ],
+              ),
+            );
+          }
         }
-      }
-      _isSubmitLoading.value = false;
-      update();
+        _isSubmitLoading.value = false;
+        update();
 
-      update();
+        update();
+      }
     }).catchError((onError) {
       log.e(onError);
     });
@@ -330,15 +337,15 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     _isLoading.value = true;
     Map<String, String> inputBody = {};
 
-    final data = _addMoneyTatumModel.data.addressInfo.inputFields;
+    final data = _addMoneyTatumModel!.data.addressInfo.inputFields;
 
     for (int i = 0; i < data.length; i += 1) {
       inputBody[data[i].name] = inputFieldControllers[i].text;
     }
 
     await addMoneyTatumConfirmApi(
-        body: inputBody,
-        url: _addMoneyTatumModel.data.addressInfo.submitUrl)
+            body: inputBody,
+            url: _addMoneyTatumModel!.data.addressInfo.submitUrl)
         .then((value) {
       _commonSuccessModel = value!;
 
@@ -356,10 +363,10 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
   }
 
 // add money paypal process
-  late AddMoneyHealthPayModel _addMoneyPaypalModel;
-  AddMoneyHealthPayModel get addMoneyPaypalModel => _addMoneyPaypalModel;
+  AddMoneyHealthPayModel? _addMoneyPaypalModel;
+  AddMoneyHealthPayModel? get addMoneyPaypalModel => _addMoneyPaypalModel;
 
-  Future<AddMoneyHealthPayModel> onPaypalProcess() async {
+  Future<AddMoneyHealthPayModel?> onPaypalProcess() async {
     _isSubmitLoading.value = true;
     update();
 
@@ -370,11 +377,13 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     };
 
     await addMoneySubmitPaypalApi(body: inputBody).then((value) async {
-      _addMoneyPaypalModel = value!;
+      if (value != null) {
+        _addMoneyPaypalModel = value;
 
-      debugPrint(_addMoneyPaypalModel.trx..toString());
+        debugPrint(_addMoneyPaypalModel!.trx..toString());
 
-      update();
+        update();
+      }
     }).catchError((onError) {
       log.e(onError);
     });
@@ -384,10 +393,10 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
   }
 
 // manual add money process
-  late AddMoneyManualModel _addMoneyManualModel;
-  AddMoneyManualModel get addMoneyManualModel => _addMoneyManualModel;
+  AddMoneyManualModel? _addMoneyManualModel;
+  AddMoneyManualModel? get addMoneyManualModel => _addMoneyManualModel;
 
-  Future<AddMoneyManualModel> onManualProcess() async {
+  Future<AddMoneyManualModel?> onManualProcess() async {
     inputFields.clear();
     inputFileFields.clear();
     listImagePath.clear();
@@ -406,14 +415,16 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     };
 
     await addMoneySubmitManualApi(body: inputBody).then((value) async {
-      _addMoneyManualModel = value!;
+      if (value != null) {
+        _addMoneyManualModel = value;
 
-      final data = _addMoneyManualModel.data.inputFields;
-      _getDynamicInputField(data);
-      Get.toNamed(Routes.addMoneyScreenPreview);
+        final data = _addMoneyManualModel!.data.inputFields;
+        _getDynamicInputField(data);
+        Get.toNamed(Routes.addMoneyScreenPreview);
 
-      _isSubmitLoading.value = false;
-      update();
+        _isSubmitLoading.value = false;
+        update();
+      }
     }).catchError((onError) {
       log.e(onError);
     });
@@ -464,11 +475,11 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
                     horizontal: Dimensions.paddingSizeHorizontal * 0.25,
                   ),
                   titleTextColor:
-                  CustomColor.primaryLightTextColor.withOpacity(.2),
+                      CustomColor.primaryLightTextColor.withOpacity(.2),
                   borderEnable: true,
                   dropDownFieldColor: Colors.transparent,
                   dropDownIconColor:
-                  CustomColor.primaryLightTextColor.withOpacity(.2))),
+                      CustomColor.primaryLightTextColor.withOpacity(.2))),
               verticalSpace(Dimensions.marginBetweenInputBox * .8),
             ],
           ),
@@ -530,10 +541,10 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
   Future<CommonSuccessModel> manualSubmitApiProcess() async {
     _isLoading.value = true;
     Map<String, String> inputBody = {
-      "track": _addMoneyManualModel.data.paymentInformations.trx
+      "track": _addMoneyManualModel!.data.paymentInformations.trx
     };
 
-    final data = addMoneyManualModel.data.inputFields;
+    final data = addMoneyManualModel!.data.inputFields;
 
     for (int i = 0; i < data.length; i += 1) {
       if (data[i].type != 'file') {
@@ -542,7 +553,7 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     }
 
     await addMoneyManualConfirmApi(
-        body: inputBody, fieldList: listFieldName, pathList: listImagePath)
+            body: inputBody, fieldList: listFieldName, pathList: listImagePath)
         .then((value) {
       _commonSuccessModel = value!;
       // onConfirmProcess(

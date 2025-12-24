@@ -3,9 +3,6 @@ import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../../../backend/local_storage/local_storage.dart';
-import '../../../backend/services/api_endpoint.dart';
-import '../../../controller/before_auth/basic_settings_controller.dart';
 import '../../../controller/dashboard/btm_navs_controller/profile_controller.dart';
 import '../../../controller/dashboard/profiles/update_profile_controller.dart';
 import '../../../routes/routes.dart';
@@ -15,7 +12,6 @@ import '../../../widgets/list_tile/profile_tile_button_widget.dart';
 import '../../../widgets/others/profile_image_widget.dart';
 import '../../../widgets/buttons/switch_button_widget.dart';
 import '../../web_view/web_view_screen.dart';
-import '../profiles_screens/support_ticket_screen.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -38,42 +34,44 @@ class ProfileScreen extends GetView<ProfileController> {
     return Expanded(
         flex: 1,
         child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const ProfileImageWidget(
-                    isCircle: false,
-                  ),
-                  verticalSpace(Dimensions.marginSizeVertical * .7),
-                  TitleHeading3Widget(
-                    text: Get.find<UpdateProfileController>()
-                        .profileModel
-                        .data
-                        .user
-                        .mobile,
-                    fontSize: Dimensions.headingTextSize3 * .9,
-                    color: Theme.of(context).primaryColor,
-                  ).animate().fadeIn(duration: 900.ms, delay: 300.ms).move(
-                      begin: const Offset(-16, 0), curve: Curves.easeOutQuad),
-                  verticalSpace(Dimensions.marginSizeVertical * .5),
-                  SwitchButtonWidget(
-                    onTap: (selectedThemeKey,)async {
-                      // debugPrint(value.toString());
-                      await Get.find<UpdateProfileController>().profileSwitch(
-                        selectedThemeKey
-                      );
-                      // Additional logic if needed
-                    },
-                  ),
-                  // SwitchButtonWidget(
-                  //   onTap: (bool value) async{
-                  //     debugPrint(value.toString());
-                  //       await Get.find<UpdateProfileController>().profileSwitch();
-                  //   },
-                  // ),
-                  verticalSpace(Dimensions.marginSizeVertical * .8),
-                ],
-              ))
-    ;
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            const ProfileImageWidget(
+              isCircle: false,
+            ),
+            verticalSpace(Dimensions.marginSizeVertical * .7),
+            TitleHeading3Widget(
+              text: Get.find<UpdateProfileController>()
+                  .profileModel
+                  .data
+                  .user
+                  .mobile,
+              fontSize: Dimensions.headingTextSize3 * .9,
+              color: Theme.of(context).primaryColor,
+            )
+                .animate()
+                .fadeIn(duration: 900.ms, delay: 300.ms)
+                .move(begin: const Offset(-16, 0), curve: Curves.easeOutQuad),
+            verticalSpace(Dimensions.marginSizeVertical * .5),
+            SwitchButtonWidget(
+              onTap: (
+                selectedThemeKey,
+              ) async {
+                // debugPrint(value.toString());
+                await Get.find<UpdateProfileController>()
+                    .profileSwitch(selectedThemeKey);
+                // Additional logic if needed
+              },
+            ),
+            // SwitchButtonWidget(
+            //   onTap: (bool value) async{
+            //     debugPrint(value.toString());
+            //       await Get.find<UpdateProfileController>().profileSwitch();
+            //   },
+            // ),
+            verticalSpace(Dimensions.marginSizeVertical * .8),
+          ],
+        ));
   }
 
   _tilesWidget(BuildContext context) {
@@ -133,9 +131,9 @@ class ProfileScreen extends GetView<ProfileController> {
                   //   icon: Icons.help_outline_rounded,
                   // ),
                   DrawerTileButtonWidget(
-                      onTap: () {
-                        Get.toNamed(Routes.supportTicket);
-                          },
+                    onTap: () {
+                      Get.toNamed(Routes.supportTicket);
+                    },
                     text: 'Contact Support',
                     icon: Icons.support_agent,
                   ),
@@ -145,9 +143,9 @@ class ProfileScreen extends GetView<ProfileController> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const WebViewScreen(
-                                appTitle: 'Support Center',
-                                link: "https://peacepay.me/tutorials",
-                              )));
+                                    appTitle: 'Support Center',
+                                    link: "https://peacepay.me/tutorials",
+                                  )));
                     },
                     text: 'Tutorials',
                     icon: Icons.help_outline,
@@ -158,9 +156,9 @@ class ProfileScreen extends GetView<ProfileController> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const WebViewScreen(
-                                appTitle: Strings.privacyPolicy,
-                                link: "https://peacepay.me/privacy",
-                              )));
+                                    appTitle: Strings.privacyPolicy,
+                                    link: "https://peacepay.me/privacy",
+                                  )));
                     },
                     text: Strings.privacyPolicy,
                     icon: Icons.privacy_tip_outlined,
@@ -171,34 +169,51 @@ class ProfileScreen extends GetView<ProfileController> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const WebViewScreen(
-                                appTitle: Strings.termsOfUse,
-                                link: "https://peacepay.me/terms-and-conditions",
-                              )));
+                                    appTitle: Strings.termsOfUse,
+                                    link:
+                                        "https://peacepay.me/terms-and-conditions",
+                                  )));
                     },
                     text: Strings.termsOfUse,
                     icon: Icons.info_outline,
                   ),
+                  DrawerTileButtonWidget(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const WebViewScreen(
+                                    appTitle: 'Pricing and Fees',
+                                    link: "https://peacepay.me/pricing",
+                                  )));
+                    },
+                    text: 'Pricing and Fees',
+                    icon: Icons.attach_money,
+                  ),
+
                   Obx(() => controller.isLoading.value
                       ? const CustomLoadingWidget()
                       : DrawerTileButtonWidget(
-                    onTap: () {
-                      DialogHelper.showAlertDialog(context,
-                          title: Strings.logout,
-                          content: Strings.logOutContent, onTap: () async {
-                            Get.close(1);
-                            await controller.logOutProcess();
-                          });
-                    },
-                    text: Strings.logout,
-                    icon: Icons.power_settings_new_outlined,
-                  )),
+                          onTap: () {
+                            DialogHelper.showAlertDialog(context,
+                                title: Strings.logout,
+                                content: Strings.logOutContent,
+                                onTap: () async {
+                              Get.close(1);
+                              await controller.logOutProcess();
+                            });
+                          },
+                          text: Strings.logout,
+                          icon: Icons.power_settings_new_outlined,
+                        )),
                   Obx(() => controller.isLoading.value
                       ? const CustomLoadingWidget()
                       : ProfileTileButtonWidget(
                           onTap: () {
                             DialogHelper.showAlertDialog(context,
                                 title: Strings.deleteAccount,
-                                content: Strings.deleteAccountContent, onTap: () async{
+                                content: Strings.deleteAccountContent,
+                                onTap: () async {
                               Get.close(1);
                               await controller.deleteProfileProcess();
                             });

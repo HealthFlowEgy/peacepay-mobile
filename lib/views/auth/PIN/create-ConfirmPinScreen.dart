@@ -1,13 +1,6 @@
 import 'package:peacepay/utils/basic_screen_imports.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import '../../../backend/local_storage/local_storage.dart';
 import '../../../controller/auth/pin_Controller.dart';
-
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-
 
 class CreateAndConfirmPinScreen extends StatelessWidget {
   final PinController controller = Get.put(PinController());
@@ -18,7 +11,7 @@ class CreateAndConfirmPinScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final pinTextController = TextEditingController(text: controller.pin.value);
     final confirmPinTextController =
-    TextEditingController(text: controller.confirmPin.value);
+        TextEditingController(text: controller.confirmPin.value);
 
     return Scaffold(
       appBar: AppBar(
@@ -43,59 +36,65 @@ class CreateAndConfirmPinScreen extends StatelessWidget {
             SizedBox(height: 24.h),
 
             // Enter PIN Section
-            Text("Enter PIN", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
+            Text("Enter PIN",
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
             SizedBox(height: 10.h),
             Obx(() => PinCodeTextField(
-              appContext: context,
-              length: 6,
-              obscureText: controller.isPinObscured.value,
-              obscuringCharacter: '●',
-              animationType: AnimationType.fade,
-              controller: pinTextController,
-              onChanged: controller.setPin,
-              keyboardType: TextInputType.number,
-              pinTheme: _buildPinTheme(),
-              animationDuration: const Duration(milliseconds: 300),
-              backgroundColor: Colors.transparent,
-            )),
+                  appContext: context,
+                  length: 6,
+                  obscureText: controller.isPinObscured.value,
+                  obscuringCharacter: '●',
+                  animationType: AnimationType.fade,
+                  controller: pinTextController,
+                  onChanged: controller.setPin,
+                  keyboardType: TextInputType.number,
+                  pinTheme: _buildPinTheme(),
+                  animationDuration: const Duration(milliseconds: 300),
+                  backgroundColor: Colors.transparent,
+                )),
             Align(
               alignment: Alignment.centerRight,
               child: Obx(() => IconButton(
-                icon: Icon(
-                  controller.isPinObscured.value ? Icons.visibility_off : Icons.visibility,
-                  size: 20,
-                ),
-                onPressed: controller.togglePinVisibility,
-              )),
+                    icon: Icon(
+                      controller.isPinObscured.value
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      size: 20,
+                    ),
+                    onPressed: controller.togglePinVisibility,
+                  )),
             ),
 
             SizedBox(height: 24.h),
 
             // Confirm PIN Section
-            Text("Confirm PIN", style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
+            Text("Confirm PIN",
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
             SizedBox(height: 10.h),
             Obx(() => PinCodeTextField(
-              appContext: context,
-              length: 6,
-              obscureText: controller.isConfirmPinObscured.value,
-              obscuringCharacter: '●',
-              animationType: AnimationType.fade,
-              controller: confirmPinTextController,
-              onChanged: controller.setConfirmPin,
-              keyboardType: TextInputType.number,
-              pinTheme: _buildPinTheme(),
-              animationDuration: const Duration(milliseconds: 300),
-              backgroundColor: Colors.transparent,
-            )),
+                  appContext: context,
+                  length: 6,
+                  obscureText: controller.isConfirmPinObscured.value,
+                  obscuringCharacter: '●',
+                  animationType: AnimationType.fade,
+                  controller: confirmPinTextController,
+                  onChanged: controller.setConfirmPin,
+                  keyboardType: TextInputType.number,
+                  pinTheme: _buildPinTheme(),
+                  animationDuration: const Duration(milliseconds: 300),
+                  backgroundColor: Colors.transparent,
+                )),
             Align(
               alignment: Alignment.centerRight,
               child: Obx(() => IconButton(
-                icon: Icon(
-                  controller.isConfirmPinObscured.value ? Icons.visibility_off : Icons.visibility,
-                  size: 20,
-                ),
-                onPressed: controller.toggleConfirmPinVisibility,
-              )),
+                    icon: Icon(
+                      controller.isConfirmPinObscured.value
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      size: 20,
+                    ),
+                    onPressed: controller.toggleConfirmPinVisibility,
+                  )),
             ),
 
             SizedBox(height: 16.h),
@@ -104,33 +103,38 @@ class CreateAndConfirmPinScreen extends StatelessWidget {
             Obx(() => controller.error.value == null
                 ? const SizedBox.shrink()
                 : Text(
-              controller.error.value!,
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-            )),
+                    controller.error.value!,
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  )),
 
             SizedBox(height: 24.h),
 
             // Submit Button
             Obx(() => SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: controller.isLoading
-                    ? null
-                    : () async {
-                  await controller.createPinProcess();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-                ),
-                child: controller.isLoading
-                    ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
-                    : Text('Set PIN', style: TextStyle(fontSize: 16.sp),),
-
-              ),
-            )),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: controller.isLoading
+                        ? null
+                        : () async {
+                            await controller.createPinProcess();
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r)),
+                    ),
+                    child: controller.isLoading
+                        ? const CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2)
+                        : Text(
+                            'Set PIN',
+                            style: TextStyle(fontSize: 16.sp),
+                          ),
+                  ),
+                )),
           ],
         ),
       ),

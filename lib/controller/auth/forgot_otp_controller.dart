@@ -1,9 +1,7 @@
-
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:peacepay/controller/auth/reset_password_controller.dart';
-import 'package:peacepay/controller/dashboard/btm_navs_controller/profile_controller.dart';
 
 import '../../backend/backend_utils/custom_snackbar.dart';
 import '../../backend/backend_utils/logger.dart';
@@ -17,8 +15,7 @@ import 'login_controller.dart';
 
 final log = logger(ForgotOTPController);
 
-class ForgotOTPController extends GetxController{
-
+class ForgotOTPController extends GetxController {
   final pinController = TextEditingController();
 
   @override
@@ -27,7 +24,6 @@ class ForgotOTPController extends GetxController{
     timer!.cancel();
     super.dispose();
   }
-
 
   Timer? timer;
   RxInt second = 60.obs;
@@ -39,31 +35,24 @@ class ForgotOTPController extends GetxController{
     super.onInit();
   }
 
-  resendBTN() async{
-
+  resendBTN() async {
     Get.find<LoginController>().sendOTPProcess().then((value) {
-      if(value != null) {
-
+      if (value != null) {
         second.value = 59;
         enableResend.value = false;
       }
-
     });
   }
 
   timerInit() {
     timer = Timer.periodic(const Duration(seconds: 1), (_) {
-
-      if ( second.value != 0) {
+      if (second.value != 0) {
         second.value--;
       } else {
         enableResend.value = true;
       }
-
     });
   }
-
-
 
   final _isForgotLoading = false.obs;
   bool get isForgotLoading => _isForgotLoading.value;
@@ -78,14 +67,14 @@ class ForgotOTPController extends GetxController{
     Map<String, dynamic> inputBody = {
       'otp': pinController.text,
       // 'otp': '123456',
-      'token':Get.find<ChangePasswordController>().forgotModel!.data.token
+      'token': Get.find<ChangePasswordController>().forgotModel!.data.token
     };
     await ApiServices.forgotPasswordVerifyOTPApi(body: inputBody).then((value) {
-      if(value != null){
+      if (value != null) {
         _modelData = value;
         Get.put(ResetPasswordController());
         Get.toNamed(Routes.resetPassScreen);
-      }else {
+      } else {
         // Only fallback if post() didn’t send an error already
         CustomSnackBar.error("Verification Otp is Invalid");
       }
@@ -103,6 +92,7 @@ class ForgotOTPController extends GetxController{
     _isForgotLoading.value = false;
     update();
   }
+
   verifyOTPProcessBeforeLogin() async {
     _isForgotLoading.value = true;
     update();
@@ -113,11 +103,11 @@ class ForgotOTPController extends GetxController{
       'token': Get.find<CheckPinController>().forgotModel!.data.token
     };
     await ApiServices.forgotPasswordVerifyOTPApi(body: inputBody).then((value) {
-      if(value != null){
+      if (value != null) {
         _modelData = value;
         Get.put(ResetPasswordController());
         Get.toNamed(Routes.resetPassScreen);
-      }else {
+      } else {
         // Only fallback if post() didn’t send an error already
         CustomSnackBar.error("Verification Otp is Invalid");
       }
@@ -135,18 +125,20 @@ class ForgotOTPController extends GetxController{
     _isForgotLoading.value = false;
     update();
   }
-  void onOTPSubmitProcess() async{
+
+  void onOTPSubmitProcess() async {
     Get.put(CheckPinController());
-     Get.put(LoginController());
+    Get.put(LoginController());
     if (pinController.text.length == 4) {
       await verifyOTPProcess();
     } else {
       CustomSnackBar.error(Strings.enterPin);
     }
   }
-  void onOTPSubmitProcessBeforePin() async{
+
+  void onOTPSubmitProcessBeforePin() async {
     Get.put(CheckPinController());
-     Get.put(LoginController());
+    Get.put(LoginController());
     if (pinController.text.length == 4) {
       await verifyOTPProcessBeforeLogin();
     } else {

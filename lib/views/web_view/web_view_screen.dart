@@ -3,7 +3,6 @@ import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/widgets/others/custom_loading_widget.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../routes/routes.dart';
-import '../confirm_screen.dart';
 import '../dashboard/my_wallets_screens/add_money_screen/add_money_confirm_screen.dart';
 
 class WebViewScreen extends StatefulWidget {
@@ -64,18 +63,18 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
                   if (url != null) {
                     final currentUrl = url.toString();
-                    if (currentUrl.startsWith("http://stg.peacepay.me/payment/process") ||
+                    if (currentUrl.startsWith(
+                            "http://stg.peacepay.me/payment/process") ||
                         currentUrl.contains("/payment/process")) {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => AddMoneyConfirmScreen(
-                                message:
-                                Strings.addMoneyConfirmationMSG,
-                                // onApproval: true,
-                                onOkayTap: () => Get.offAllNamed(
-                                    Routes.dashboardScreen),
-                              )));
+                                    message: Strings.addMoneyConfirmationMSG,
+                                    // onApproval: true,
+                                    onOkayTap: () =>
+                                        Get.offAllNamed(Routes.dashboardScreen),
+                                  )));
                       return;
                     }
                   }

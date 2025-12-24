@@ -1,5 +1,4 @@
 import 'package:peacepay/backend/services/api_endpoint.dart';
-import 'package:peacepay/controller/auth/login_controller.dart';
 import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:peacepay/views/auth/PIN/pINCheckScreen.dart';
@@ -61,8 +60,7 @@ class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
       children: [
         verticalSpace(Dimensions.marginSizeVertical * 1),
         WalletFlagImageWidget(
-          imagePath:
-              "${ApiEndpoint.mainDomain}/${data.imagePath}/${data.flag}",
+          imagePath: "${ApiEndpoint.mainDomain}/${data.imagePath}/${data.flag}",
         ),
         verticalSpace(Dimensions.marginSizeVertical * .2),
         TitleHeading1Widget(
@@ -116,8 +114,13 @@ class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
                 name: Strings.moneyOut,
                 icon: Icons.remove,
                 onTap: () {
-                  if (controller.profileController.profileModel.data.user.kycVerified == 0
-                      ||controller.profileController.profileModel.data.user.kycVerified == 3 ||controller.profileController.profileModel.data.user.kycVerified == 2) {
+                  if (controller.profileController.profileModel.data.user.kycVerified == 0 ||
+                      controller.profileController.profileModel.data.user
+                              .kycVerified ==
+                          3 ||
+                      controller.profileController.profileModel.data.user
+                              .kycVerified ==
+                          2) {
                     Get.toNamed(Routes.kycFormScreen);
                   } else {
                     // Get.toNamed(Routes.moneyOutScreen, arguments: data);
@@ -128,7 +131,6 @@ class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
                         builder: (context) => CheckPinScreen(index: 1),
                       ),
                     );
-
                   }
                 },
               ),
@@ -183,7 +185,7 @@ class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
             fontSize: Dimensions.headingTextSize2 * .85,
           ),
           verticalSpace(Dimensions.marginSizeVertical * .5),
-          Get.find<HomeController>().homeModel.data.transactions.isEmpty
+          Get.find<HomeController>().homeModel!.data.transactions.isEmpty
               ? const Column(
                   children: [
                     NoDataWidget(),
@@ -195,25 +197,32 @@ class CurrentBalanceScreen extends GetView<CurrentBalanceController> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Obx(() => TransactionTileWidget(
-                      onTap: () {
-                        if (Get.find<HomeController>().openTileIndex.value != index) {
-                          Get.find<HomeController>().openTileIndex.value = index;
-                        } else {
-                          Get.find<HomeController>().openTileIndex.value = -1;
-                        }
-                      },
-                      expansion: Get.find<HomeController>().openTileIndex.value == index,
-                      inDashboard: true,
-                      transaction: Get.find<HomeController>()
-                          .homeModel
-                          .data
-                          .transactions[index],
-                    ));
+                          onTap: () {
+                            if (Get.find<HomeController>()
+                                    .openTileIndex
+                                    .value !=
+                                index) {
+                              Get.find<HomeController>().openTileIndex.value =
+                                  index;
+                            } else {
+                              Get.find<HomeController>().openTileIndex.value =
+                                  -1;
+                            }
+                          },
+                          expansion:
+                              Get.find<HomeController>().openTileIndex.value ==
+                                  index,
+                          inDashboard: true,
+                          transaction: Get.find<HomeController>()
+                              .homeModel!
+                              .data
+                              .transactions[index],
+                        ));
                   },
                   separatorBuilder: (context, i) =>
                       verticalSpace(Dimensions.marginSizeVertical * .3),
                   itemCount: Get.find<HomeController>()
-                      .homeModel
+                      .homeModel!
                       .data
                       .transactions
                       .length),

@@ -1,17 +1,10 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:peacepay/backend/models/auth/createPinModel.dart';
 import 'package:peacepay/backend/models/common/common_success_model.dart';
 
 import '../../language/language_controller.dart';
-import '../../utils/basic_screen_imports.dart';
 import '../backend_utils/api_method.dart';
 import '../backend_utils/custom_snackbar.dart';
 import '../backend_utils/logger.dart';
-import '../local_storage/local_storage.dart';
 import '../models/auth/checkPinModel.dart';
 import '../models/auth/forgotPinVerifyOTPModel.dart';
 import '../models/auth/forgot_send_otp_model.dart';
@@ -33,7 +26,7 @@ class ApiServices {
       mapResponse = await ApiMethod(isBasic: true).get(
         ApiEndpoint.appSettingsURL,
         code: 200,
-        duration: 25,
+        duration: 60,
         showResult: true,
       );
       if (mapResponse != null) {
@@ -51,13 +44,14 @@ class ApiServices {
   }
 
   ///Login Api method
-  static Future<LoginModel?> signInApi({required Map<String, dynamic> body}) async {
+  static Future<LoginModel?> signInApi(
+      {required Map<String, dynamic> body}) async {
     try {
       final mapResponse = await ApiMethod(isBasic: true).post(
         "${ApiEndpoint.loginURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
 
@@ -66,8 +60,9 @@ class ApiServices {
         return LoginModel.fromJson(mapResponse);
       } else if (mapResponse != null) {
         //  Handle 422 / validation error
-        final errorMessage = (mapResponse['message']?['error'] as List?)?.first ??
-            mapResponse['message'].toString();
+        final errorMessage =
+            (mapResponse['message']?['error'] as List?)?.first ??
+                mapResponse['message'].toString();
         CustomSnackBar.error(errorMessage);
         return null;
       }
@@ -88,7 +83,7 @@ class ApiServices {
         "${ApiEndpoint.forgotSendOTPURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
       if (mapResponse != null) {
@@ -113,11 +108,12 @@ class ApiServices {
         "${ApiEndpoint.forgotVerifyOTPURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
       if (mapResponse != null) {
-        ForgetPinVerifyOtpModel model = ForgetPinVerifyOtpModel.fromJson(mapResponse);
+        ForgetPinVerifyOtpModel model =
+            ForgetPinVerifyOtpModel.fromJson(mapResponse);
         // CustomSnackBar.success(loginModel.message.success.first.toString());
         return model;
       }
@@ -138,7 +134,7 @@ class ApiServices {
         "${ApiEndpoint.resetPasswordURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
       if (mapResponse != null) {
@@ -163,7 +159,7 @@ class ApiServices {
         "${ApiEndpoint.registrationURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
       if (mapResponse != null) {
@@ -178,6 +174,7 @@ class ApiServices {
     }
     return null;
   }
+
 //Crete PIN Code Api method
   static Future<CreatePinModel?> createPINApi(
       {required Map<String, dynamic> body}) async {
@@ -187,7 +184,7 @@ class ApiServices {
         "${ApiEndpoint.createPinURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
 
@@ -202,6 +199,7 @@ class ApiServices {
     }
     return null;
   }
+
   static Future<CheckPinModel?> checkPINApi({
     required Map<String, dynamic> body,
   }) async {
@@ -211,15 +209,16 @@ class ApiServices {
         "${ApiEndpoint.checkPinURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
-      print(languageSettingsController.selectedLanguage.value.toString()+"GGGGGG");
+      print("${languageSettingsController.selectedLanguage.value}GGGGGG");
       if (mapResponse != null) {
         CheckPinModel checkPinModel = CheckPinModel.fromJson(mapResponse);
 
         // API returns: { "message": { "success": ["PIN success!"] }, "data": null }
-        final msg = checkPinModel.firstSuccessMessage ?? "PIN verified successfully";
+        final msg =
+            checkPinModel.firstSuccessMessage ?? "PIN verified successfully";
         // CustomSnackBar.success(msg);
         return checkPinModel;
       }
@@ -235,7 +234,8 @@ class ApiServices {
       [bool showMessage = true]) async {
     Map<String, dynamic>? mapResponse;
     try {
-      mapResponse = await ApiMethod(isBasic: false).get("${ApiEndpoint.logOutURL}?lang=${languageSettingsController.selectedLanguage.value}");
+      mapResponse = await ApiMethod(isBasic: false).get(
+          "${ApiEndpoint.logOutURL}?lang=${languageSettingsController.selectedLanguage.value}");
       if (mapResponse != null) {
         CommonSuccessModel logoutModel =
             CommonSuccessModel.fromJson(mapResponse);
@@ -256,8 +256,9 @@ class ApiServices {
   static Future<CommonSuccessModel?> deleteApi() async {
     Map<String, dynamic>? mapResponse;
     try {
-      mapResponse =
-          await ApiMethod(isBasic: false).post("${ApiEndpoint.deleteURL}?lang=${languageSettingsController.selectedLanguage.value}", {});
+      mapResponse = await ApiMethod(isBasic: false).post(
+          "${ApiEndpoint.deleteURL}?lang=${languageSettingsController.selectedLanguage.value}",
+          {});
       if (mapResponse != null) {
         CommonSuccessModel model = CommonSuccessModel.fromJson(mapResponse);
 
@@ -272,10 +273,13 @@ class ApiServices {
     }
     return null;
   }
+
   static Future<CommonSuccessModel?> supportTicketProcessApi({
-    required Map<String, String> body,        // { 'subject': '...', 'description': '...' }
-    required List<String> pathList,           // ['/tmp/a.png', '/tmp/b.pdf', ...]
-    required List<String> fieldList,          // ['attachments', 'attachments', ...] same length as pathList
+    required Map<String, String>
+        body, // { 'subject': '...', 'description': '...' }
+    required List<String> pathList, // ['/tmp/a.png', '/tmp/b.pdf', ...]
+    required List<String>
+        fieldList, // ['attachments', 'attachments', ...] same length as pathList
   }) async {
     Map<String, dynamic>? mapResponse;
     try {
@@ -315,7 +319,7 @@ class ApiServices {
         "${ApiEndpoint.mobileVerificationURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
       if (mapResponse != null) {
@@ -339,7 +343,7 @@ class ApiServices {
         "${ApiEndpoint.signUpResendOtpURL}?lang=${languageSettingsController.selectedLanguage.value}",
         {},
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
       if (mapResponse != null) {
@@ -388,7 +392,7 @@ class ApiServices {
         "${ApiEndpoint.changePasswordURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
       if (mapResponse != null) {
@@ -405,6 +409,7 @@ class ApiServices {
     }
     return null;
   }
+
   static Future<CreatePinModel?> updatePINApi(
       {required Map<String, dynamic> body}) async {
     Map<String, dynamic>? mapResponse;
@@ -413,7 +418,7 @@ class ApiServices {
         "${ApiEndpoint.createPinURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
 
@@ -428,21 +433,21 @@ class ApiServices {
     }
     return null;
   }
+
   static Future<CommonSuccessModel?> releasePaymentApi(
       {required Map<String, dynamic> body}) async {
     Map<String, dynamic>? mapResponse;
     try {
       mapResponse = await ApiMethod(isBasic: false).post(
-        "${ApiEndpoint.releasePaymentURL}?lang=${languageSettingsController
-            .selectedLanguage.value}",
+        "${ApiEndpoint.releasePaymentURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
-        duration: 15,
+        duration: 60,
         showResult: true,
       );
       if (mapResponse != null) {
         CommonSuccessModel commonSuccessModel =
-        CommonSuccessModel.fromJson(mapResponse);
+            CommonSuccessModel.fromJson(mapResponse);
 
         // CustomSnackBar.success(
         //     commonSuccessModel.message!.success!.first.toString());

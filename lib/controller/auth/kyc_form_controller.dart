@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'package:get/get.dart';
-import 'package:flutter/material.dart';
 
 import '../../backend/backend_utils/custom_snackbar.dart';
 import '../../backend/backend_utils/logger.dart';
@@ -112,9 +110,8 @@ class KYCFormController extends GetxController with KycApiService {
       // Dropdown (select)
       if (field.type.contains('select')) {
         hasFile.value = true;
-        idTypeList = field.validation.options
-            .map((e) => IdTypeModel(e, e))
-            .toList();
+        idTypeList =
+            field.validation.options.map((e) => IdTypeModel(e, e)).toList();
         selectedIDType.value = idTypeList.first.title;
         controller.text = selectedIDType.value;
 
@@ -123,24 +120,24 @@ class KYCFormController extends GetxController with KycApiService {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Obx(() => CustomDropDown<IdTypeModel>(
-                items: idTypeList,
-                title: field.label,
-                hint: selectedIDType.value.isEmpty
-                    ? Strings.selectIDType
-                    : selectedIDType.value,
-                onChanged: (value) {
-                  selectedIDType.value = value!.title;
-                },
-                padding: EdgeInsets.symmetric(
-                  horizontal: Dimensions.paddingSizeHorizontal * 0.25,
-                ),
-                titleTextColor:
-                CustomColor.primaryLightTextColor.withOpacity(.2),
-                borderEnable: true,
-                dropDownFieldColor: Colors.transparent,
-                dropDownIconColor:
-                CustomColor.primaryLightTextColor.withOpacity(.2),
-              )),
+                    items: idTypeList,
+                    title: field.label,
+                    hint: selectedIDType.value.isEmpty
+                        ? Strings.selectIDType
+                        : selectedIDType.value,
+                    onChanged: (value) {
+                      selectedIDType.value = value!.title;
+                    },
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Dimensions.paddingSizeHorizontal * 0.25,
+                    ),
+                    titleTextColor:
+                        CustomColor.primaryLightTextColor.withOpacity(.2),
+                    borderEnable: true,
+                    dropDownFieldColor: Colors.transparent,
+                    dropDownIconColor:
+                        CustomColor.primaryLightTextColor.withOpacity(.2),
+                  )),
               verticalSpace(Dimensions.marginBetweenInputBox * .8),
             ],
           ),
@@ -304,7 +301,6 @@ class IdTypeModel implements DropdownModel {
   // TODO: implement currencySymbol
   String get currencySymbol => throw UnimplementedError();
 
-
   @override
   // TODO: implement type
   String get type => throw UnimplementedError();
@@ -328,6 +324,9 @@ class IdTypeModel implements DropdownModel {
   @override
   // TODO: implement rate
   double get rate => throw UnimplementedError();
+
+  @override
+  IconData? get icon => null;
 
   @override
   // TODO: implement id

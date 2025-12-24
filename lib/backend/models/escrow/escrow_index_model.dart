@@ -7,9 +7,10 @@ class EscrowIndexModel {
     required this.data,
   });
 
-  factory EscrowIndexModel.fromJson(Map<String, dynamic> json) => EscrowIndexModel(
-    data: Data.fromJson(json["data"]),
-  );
+  factory EscrowIndexModel.fromJson(Map<String, dynamic> json) =>
+      EscrowIndexModel(
+        data: Data.fromJson(json["data"]),
+      );
 }
 
 class Data {
@@ -22,9 +23,10 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    escrowData: List<EscrowDatum>.from(json["escrow_data"].map((x) => EscrowDatum.fromJson(x))),
-    baseUrl: json["base_url"],
-  );
+        escrowData: List<EscrowDatum>.from(
+            json["escrow_data"].map((x) => EscrowDatum.fromJson(x))),
+        baseUrl: json["base_url"],
+      );
 }
 
 class EscrowDatum {
@@ -40,6 +42,7 @@ class EscrowDatum {
   final String chargePayer;
   final dynamic remarks;
   final dynamic pin_code;
+  final String? delivery_number;
   final List<Attachment>? attachments;
   final int status;
   final DateTime createdAt;
@@ -57,26 +60,29 @@ class EscrowDatum {
     required this.chargePayer,
     required this.remarks,
     required this.pin_code,
+    this.delivery_number,
     required this.attachments,
     required this.status,
     required this.createdAt,
   });
 
   factory EscrowDatum.fromJson(Map<String, dynamic> json) => EscrowDatum(
-    id: json["id"],
-    userId: json["user_id"],
-    escrowId: json["escrow_id"],
-    title: json["title"],
-    role: json["role"],
-    amount: json["amount"],
-    escrowCurrency: json["escrow_currency"],
-    category: json["category"],
-    totalCharge: json["total_charge"],
-    chargePayer: json["charge_payer"],
-    remarks: json["remarks"] ?? "",
-    pin_code: json["pin_code"],
-    attachments: List<Attachment>.from(json["attachments"].map((x) => Attachment.fromJson(x)) ?? []),
-    status: json["status"],
-    createdAt: DateTime.parse(json["created_at"]),
-  );
+        id: json["id"],
+        userId: json["user_id"],
+        escrowId: json["escrow_id"],
+        title: json["title"],
+        role: json["role"],
+        amount: json["amount"],
+        escrowCurrency: json["escrow_currency"],
+        category: json["category"],
+        totalCharge: json["total_charge"],
+        chargePayer: json["charge_payer"],
+        remarks: json["remarks"] ?? "",
+        pin_code: json["pin_code"],
+        delivery_number: json["delivery_number"],
+        attachments: List<Attachment>.from(
+            json["attachments"].map((x) => Attachment.fromJson(x)) ?? []),
+        status: json["status"],
+        createdAt: DateTime.parse(json["created_at"]),
+      );
 }

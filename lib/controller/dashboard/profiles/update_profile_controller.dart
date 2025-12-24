@@ -6,11 +6,11 @@ import '../../../backend/models/common/common_success_model.dart';
 import '../../../backend/models/dashboard/profile_model.dart';
 import '../../../backend/services/profile_api_services.dart';
 import '../../../routes/routes.dart';
+import '../btm_navs_controller/my_escrow_controller.dart';
 
 final log = logger(UpdateProfileController);
 
-
-class UpdateProfileController extends GetxController with ProfileApiService{
+class UpdateProfileController extends GetxController with ProfileApiService {
   final formKey = GlobalKey<FormState>();
 
   final firstNameController = TextEditingController();
@@ -28,10 +28,10 @@ class UpdateProfileController extends GetxController with ProfileApiService{
   final code = "".obs;
   final country = "".obs;
 
-  void onUpdateProfileProcess() async{
-    if(filePath.isEmpty) {
+  void onUpdateProfileProcess() async {
+    if (filePath.isEmpty) {
       await withoutImageProcess();
-    }else{
+    } else {
       await withImageProcess();
     }
   }
@@ -42,24 +42,27 @@ class UpdateProfileController extends GetxController with ProfileApiService{
     selectedUserType.value = _storage.read('selectedUserType') ?? 'buyer';
     super.onInit();
   }
+
   void setUserType(String type) {
     selectedUserType.value = type;
     _storage.write('selectedUserType', type);
   }
+
   final _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
 
   late ProfileModel _profileModel;
   ProfileModel get profileModel => _profileModel;
 
-  Future<ProfileModel> profileDataFetch() async{
+  Future<ProfileModel> profileDataFetch() async {
     _isLoading.value = true;
     update();
 
     await profileApi().then((value) {
       _profileModel = value!;
 
-      typeIsBuyer.value = _profileModel.data.user.type == "buyer" ? true: false;
+      typeIsBuyer.value =
+          _profileModel.data.user.type == "buyer" ? true : false;
 
       firstNameController.text = _profileModel.data.user.firstname;
       lastNameController.text = _profileModel.data.user.lastname;
@@ -71,13 +74,12 @@ class UpdateProfileController extends GetxController with ProfileApiService{
       country.value = _profileModel.data.user.address.country;
 
       for (var element in _profileModel.data.countries) {
-        if(element.name == country.value){
+        if (element.name == country.value) {
           code.value = element.mobileCode;
         }
       }
 
-
-     update();
+      update();
     }).catchError((onError) {
       log.e(onError);
     });
@@ -87,7 +89,6 @@ class UpdateProfileController extends GetxController with ProfileApiService{
     return _profileModel;
   }
 
-
   profileSwitch(String userType) async {
     _isLoading.value = true;
     update();
@@ -95,6 +96,9 @@ class UpdateProfileController extends GetxController with ProfileApiService{
     try {
       await profileSwitchApi(userType).then((value) {
         // Handle value if needed
+        if (Get.isRegistered<MyEscrowController>()) {
+          Get.find<MyEscrowController>().escrowIndexFetch();
+        }
       });
     } catch (onError) {
       log.e(onError);
@@ -104,15 +108,11 @@ class UpdateProfileController extends GetxController with ProfileApiService{
     update();
   }
 
-
-
   late CommonSuccessModel _successModel;
   CommonSuccessModel get successModel => _successModel;
 
-
   final _isSubmitLoading = false.obs;
   bool get isSubmitLoading => _isSubmitLoading.value;
-
 
   Future<CommonSuccessModel> withoutImageProcess() async {
     _isSubmitLoading.value = true;
@@ -163,7 +163,8 @@ class UpdateProfileController extends GetxController with ProfileApiService{
       'phone_code': code.value,
     };
 
-    await updateProfileWithImageApi(body: inputBody, filepath: filePath).then((value) async {
+    await updateProfileWithImageApi(body: inputBody, filepath: filePath)
+        .then((value) async {
       _successModel = value!;
 
       Get.offAllNamed(Routes.dashboardScreen);

@@ -3,7 +3,7 @@ import 'package:peacepay/extensions/custom_extensions.dart';
 import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
 import 'package:peacepay/views/dashboard/delivery/delivery_screen.dart';
-import 'package:peacepay/widgets/others/custom_loading_widget.dart';
+import 'package:peacepay/widgets/others/skeleton_loading_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../backend/backend_utils/no_data_widget.dart';
@@ -13,65 +13,92 @@ import '../../../controller/dashboard/btm_navs_controller/home_controller.dart';
 import '../../../controller/dashboard/profiles/update_profile_controller.dart';
 import '../../../language/language_controller.dart';
 import '../../../routes/routes.dart';
-import '../../../widgets/buttons/circle_icon_button_widget.dart';
 import '../../../widgets/list_tile/transaction_tile_widget.dart';
 import '../../../widgets/text_labels/title_heading5_widget.dart';
+
 class HomeScreen extends GetView<HomeController> {
-    HomeScreen({super.key});
+  const HomeScreen({super.key});
 
-
-   @override
+  @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
     return ResponsiveLayout(
-      mobileScaffold: Get.find<UpdateProfileController>().selectedUserType.value=='delivery'?DeliveryAgentScreen():Scaffold(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          body: Obx(() => controller.isLoading
-              ? const CustomLoadingWidget()
-              : RefreshIndicator(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  color: CustomColor.whiteColor,
-                  onRefresh: onRefresh,
-                  child: ListView(
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(),
-                    children: [
-                      SizedBox(
-                        width: width,
-                        height:Get.find<UpdateProfileController>().selectedUserType.value!='seller'? height * .80:height * .66,
-                        child: Column(
-                          children: [
-                            _topWidget(context, height, width),
-                            verticalSpace(
-                                Dimensions.marginBetweenInputBox * .9),
-                            _bottomBodyWidget(context, height, width),
-                            Visibility(
-                                 visible:Get.find<DashboardController>().selectedIndex.value == 0
-                                 && Get.find<UpdateProfileController>().selectedUserType.value=='seller',
-                            child: Padding(
-                                padding:  EdgeInsets.symmetric(horizontal: 38.sp),
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color(0xFF072D8E),
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-                                      minimumSize:Size.fromHeight(60)
-                                  ),
-                                  onPressed: () {
-                                    Get.find<DashboardController>().addNewEscrowRoute();
-                                  },
-                                  child:  Text('Create PeaceLink',style: TextStyle(color: Colors.white,fontSize: 14.sp),),
+      mobileScaffold: Get.find<UpdateProfileController>()
+                  .selectedUserType
+                  .value ==
+              'delivery'
+          ? DeliveryAgentScreen()
+          : Scaffold(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              body: Obx(() => controller.isLoading
+                  ? const SkeletonLoadingWidget()
+                  : controller.homeModel == null
+                      ? const Center(child: NoDataWidget())
+                      : RefreshIndicator(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          color: CustomColor.whiteColor,
+                          onRefresh: onRefresh,
+                          child: ListView(
+                            shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
+                            children: [
+                              SizedBox(
+                                width: width,
+                                height: Get.find<UpdateProfileController>()
+                                            .selectedUserType
+                                            .value !=
+                                        'seller'
+                                    ? height * .80
+                                    : height * .66,
+                                child: Column(
+                                  children: [
+                                    _topWidget(context, height, width),
+                                    verticalSpace(
+                                        Dimensions.marginBetweenInputBox * .9),
+                                    _bottomBodyWidget(context, height, width),
+                                    Visibility(
+                                      visible: Get.find<DashboardController>()
+                                                  .selectedIndex
+                                                  .value ==
+                                              0 &&
+                                          Get.find<UpdateProfileController>()
+                                                  .selectedUserType
+                                                  .value ==
+                                              'seller',
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 38.sp),
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Color(0xFF072D8E),
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.r)),
+                                              minimumSize: Size.fromHeight(60)),
+                                          onPressed: () {
+                                            Get.find<DashboardController>()
+                                                .addNewEscrowRoute();
+                                          },
+                                          child: Text(
+                                            'Create PeaceLink',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14.sp),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ))),
+                            ],
+                          ),
+                        ))),
     );
   }
 
@@ -94,7 +121,7 @@ class HomeScreen extends GetView<HomeController> {
           Column(
             children: [
               TitleHeading1Widget(
-                text: controller.homeModel.data.totalEscrow.toString(),
+                text: controller.homeModel!.data.totalEscrow.toString(),
                 fontSize: Dimensions.headingTextSize1 * 1.3,
               ),
               const TitleHeading4Widget(
@@ -110,13 +137,13 @@ class HomeScreen extends GetView<HomeController> {
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _miniEscrowWidget(Strings.completedEscrow,
-                  controller.homeModel.data.completedEscrow.toString()),
+                  controller.homeModel!.data.completedEscrow.toString()),
               horizontalSpace(Dimensions.widthSize * .5),
               _miniEscrowWidget(Strings.pendingEscrow,
-                  controller.homeModel.data.pendingEscrow.toString()),
+                  controller.homeModel!.data.pendingEscrow.toString()),
               horizontalSpace(Dimensions.widthSize * .5),
               _miniEscrowWidget(Strings.disputedEscrow,
-                  controller.homeModel.data.disputeEscrow.toString()),
+                  controller.homeModel!.data.disputeEscrow.toString()),
             ],
           )
         ],
@@ -157,9 +184,11 @@ class HomeScreen extends GetView<HomeController> {
             _currentBalanceWidget(context),
             verticalSpace(Dimensions.marginSizeVertical * .85),
             Visibility(
-              visible: Get.find<UpdateProfileController>().selectedUserType.value!='seller',
+                visible: Get.find<UpdateProfileController>()
+                        .selectedUserType
+                        .value !=
+                    'seller',
                 child: _transactionLogsWidget())
-
           ],
         ),
       ),
@@ -185,7 +214,7 @@ class HomeScreen extends GetView<HomeController> {
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
-                    var data = controller.homeModel.data.userWallet[index];
+                    var data = controller.homeModel!.data.userWallet[index];
                     return Container(
                       height: Dimensions.buttonHeight * 1.2,
                       // width: Dimensions.widthSize * 22,
@@ -193,18 +222,19 @@ class HomeScreen extends GetView<HomeController> {
                           horizontal: Dimensions.paddingSizeHorizontal * .8,
                           vertical: Dimensions.paddingSizeVertical * .6),
                       decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(Dimensions.radius)),
+                          color:
+                              Theme.of(context).primaryColor.withOpacity(0.2),
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.radius)),
                       child: InkWell(
-                        onTap: (){
-
+                        onTap: () {
                           // Navigator.push(
                           //     context,
                           //     MaterialPageRoute(
                           //         builder: (context) => MyWalletScreen()));
 
-                            Get.toNamed(Routes.currentBalanceScreen, arguments: data);
-
+                          Get.toNamed(Routes.currentBalanceScreen,
+                              arguments: data);
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -216,8 +246,8 @@ class HomeScreen extends GetView<HomeController> {
                                 height: double.infinity,
                                 width: Dimensions.widthSize * 6,
                                 decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(Dimensions.radius * 1),
+                                    borderRadius: BorderRadius.circular(
+                                        Dimensions.radius * 1),
                                     image: DecorationImage(
                                         image: NetworkImage(
                                           "${ApiEndpoint.mainDomain}/${data.imagePath}/${data.flag}",
@@ -225,11 +255,13 @@ class HomeScreen extends GetView<HomeController> {
                                         fit: BoxFit.fill)),
                               ),
                             ),
-                            horizontalSpace(Dimensions.marginSizeHorizontal * .5),
+                            horizontalSpace(
+                                Dimensions.marginSizeHorizontal * .5),
                             FittedBox(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   TitleHeading2Widget(
                                     text:
@@ -256,7 +288,7 @@ class HomeScreen extends GetView<HomeController> {
                   },
                   separatorBuilder: (context, i) =>
                       horizontalSpace(Dimensions.marginSizeHorizontal * .3),
-                  itemCount: controller.homeModel.data.userWallet.length),
+                  itemCount: controller.homeModel!.data.userWallet.length),
             ),
             verticalSpace(Dimensions.marginSizeVertical * 1),
           ],
@@ -302,7 +334,7 @@ class HomeScreen extends GetView<HomeController> {
           fontSize: Dimensions.headingTextSize2 * .85,
         ),
         verticalSpace(Dimensions.marginSizeVertical * .5),
-        controller.homeModel.data.transactions.isEmpty
+        controller.homeModel!.data.transactions.isEmpty
             ? Padding(
                 padding: EdgeInsets.only(
                   right: Dimensions.paddingSizeHorizontal *
@@ -346,9 +378,8 @@ class HomeScreen extends GetView<HomeController> {
                 scrollDirection: Axis.vertical,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  var data = controller.homeModel.data.transactions[index];
+                  var data = controller.homeModel!.data.transactions[index];
                   return Obx(() => TransactionTileWidget(
-
                       transaction: data,
                       onTap: () {
                         if (controller.openTileIndex.value != index) {
@@ -361,7 +392,7 @@ class HomeScreen extends GetView<HomeController> {
                 },
                 separatorBuilder: (context, i) =>
                     verticalSpace(Dimensions.marginSizeVertical * .3),
-                itemCount: controller.homeModel.data.transactions.length),
+                itemCount: controller.homeModel!.data.transactions.length),
         verticalSpace(Dimensions.marginSizeVertical),
       ],
     );
@@ -389,6 +420,4 @@ class HomeScreen extends GetView<HomeController> {
       ),
     );
   }
-
-
 }

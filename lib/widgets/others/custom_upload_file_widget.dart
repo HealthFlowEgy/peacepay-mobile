@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dotted_decoration/dotted_decoration.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
@@ -36,7 +35,8 @@ class _CustomUploadFileWidgetState extends State<CustomUploadFileWidget> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickFromCamera() async {
-    final XFile? shot = await _picker.pickImage(source: ImageSource.camera, imageQuality: 92);
+    final XFile? shot =
+        await _picker.pickImage(source: ImageSource.camera, imageQuality: 92);
     if (shot == null) return;
     final f = File(shot.path);
     setState(() => file = f);
@@ -44,7 +44,8 @@ class _CustomUploadFileWidgetState extends State<CustomUploadFileWidget> {
   }
 
   Future<void> _pickFromGallery() async {
-    final XFile? img = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 92);
+    final XFile? img =
+        await _picker.pickImage(source: ImageSource.gallery, imageQuality: 92);
     if (img == null) return;
     final f = File(img.path);
     setState(() => file = f);
@@ -61,15 +62,27 @@ class _CustomUploadFileWidgetState extends State<CustomUploadFileWidget> {
 
   void _showPickerSheet() {
     final actions = <_PickerAction>[
-      if (widget.allowCamera) _PickerAction(icon: Icons.photo_camera_outlined, label: 'Take photo', onTap: _pickFromCamera),
-      if (widget.allowGallery) _PickerAction(icon: Icons.photo_library_outlined, label: 'Choose image', onTap: _pickFromGallery),
-      if (widget.allowFiles) _PickerAction(icon: Icons.attach_file, label: 'Upload file', onTap: _pickAnyFile),
-      if (file != null) _PickerAction(icon: Icons.delete_outline, label: 'Remove',
-          onTap: ()async {
-            setState(() => file = null);
-            Navigator.of(context).pop();
-          }
-      ),
+      if (widget.allowCamera)
+        _PickerAction(
+            icon: Icons.photo_camera_outlined,
+            label: 'Take photo',
+            onTap: _pickFromCamera),
+      if (widget.allowGallery)
+        _PickerAction(
+            icon: Icons.photo_library_outlined,
+            label: 'Choose image',
+            onTap: _pickFromGallery),
+      if (widget.allowFiles)
+        _PickerAction(
+            icon: Icons.attach_file, label: 'Upload file', onTap: _pickAnyFile),
+      if (file != null)
+        _PickerAction(
+            icon: Icons.delete_outline,
+            label: 'Remove',
+            onTap: () async {
+              setState(() => file = null);
+              Navigator.of(context).pop();
+            }),
     ];
 
     showModalBottomSheet(
@@ -80,13 +93,13 @@ class _CustomUploadFileWidgetState extends State<CustomUploadFileWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ...actions.map((a) => ListTile(
-              leading: Icon(a.icon),
-              title: Text(a.label),
-              onTap: () async {
-                Navigator.of(ctx).pop();
-                await a.onTap();
-              },
-            )),
+                  leading: Icon(a.icon),
+                  title: Text(a.label),
+                  onTap: () async {
+                    Navigator.of(ctx).pop();
+                    await a.onTap();
+                  },
+                )),
             const SizedBox(height: 8),
           ],
         ),
@@ -101,28 +114,26 @@ class _CustomUploadFileWidgetState extends State<CustomUploadFileWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(
+        Row(
+          children: [
+            Expanded(
+              child: TitleHeading4Widget(
+                text: widget.labelText.tr,
+                fontWeight: FontWeight.w600,
+                maxLines: 1,
+              ),
+            ),
+            if (widget.optional.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
                 child: TitleHeading4Widget(
-                  text: widget.labelText.tr,
+                  text: widget.optional.tr,
+                  opacity: .4,
                   fontWeight: FontWeight.w600,
                   maxLines: 1,
                 ),
               ),
-              if (widget.optional.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: TitleHeading4Widget(
-                    text: widget.optional.tr,
-                    opacity: .4,
-                    fontWeight: FontWeight.w600,
-                    maxLines: 1,
-                  ),
-                ),
-            ],
-          ),
+          ],
         ),
 
         verticalSpace(Dimensions.marginBetweenInputTitleAndBox * 1),
@@ -144,36 +155,43 @@ class _CustomUploadFileWidgetState extends State<CustomUploadFileWidget> {
               ),
               child: file == null
                   ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.backup_outlined, size: 30, color: Theme.of(context).primaryColor.withOpacity(.25)),
-                  verticalSpace(6),
-                  TitleHeading3Widget(
-                    text: Strings.upload, // e.g., "Upload / Take Photo"
-                    color: Theme.of(context).primaryColor.withOpacity(.25),
-                  ),
-                  verticalSpace(2),
-                  TitleHeading4Widget(
-                    text: 'Tap to choose (camera, gallery, file)'.tr,
-                    opacity: .4,
-                    fontWeight: FontWeight.w500,
-                    fontSize: Dimensions.headingTextSize4 * .8,
-                    maxLines: 1,
-                  ),
-                ],
-              )
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.backup_outlined,
+                            size: 30,
+                            color: Theme.of(context)
+                                .primaryColor
+                                .withOpacity(.25)),
+                        verticalSpace(6),
+                        TitleHeading3Widget(
+                          text: Strings.upload, // e.g., "Upload / Take Photo"
+                          color:
+                              Theme.of(context).primaryColor.withOpacity(.25),
+                        ),
+                        verticalSpace(2),
+                        TitleHeading4Widget(
+                          text: 'Tap to choose (camera, gallery, file)'.tr,
+                          opacity: .4,
+                          fontWeight: FontWeight.w500,
+                          fontSize: Dimensions.headingTextSize4 * .8,
+                          maxLines: 1,
+                        ),
+                      ],
+                    )
                   : isImage(file!)
-                  ? Image.file(file!, fit: BoxFit.cover, width: double.infinity)
-                  : Padding(
-                padding: const EdgeInsets.all(10),
-                child: Text(
-                  getFileNameFromPath(file!),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Theme.of(context).primaryColor),
-                ),
-              ),
+                      ? Image.file(file!,
+                          fit: BoxFit.cover, width: double.infinity)
+                      : Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            getFileNameFromPath(file!),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor),
+                          ),
+                        ),
             ),
           ),
         ),

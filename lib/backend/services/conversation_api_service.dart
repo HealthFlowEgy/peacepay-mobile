@@ -89,7 +89,7 @@ mixin ConversationApiService {
     Map<String, dynamic>? mapResponse;
     try {
       mapResponse = await ApiMethod(isBasic: false).post(
-        "${ApiEndpoint.disputeURL}?lang=${languageSettingsController.selectedLanguage.value}",
+        "${ApiEndpoint.cancelPaymentURL}?lang=${languageSettingsController.selectedLanguage.value}",
         body,
         code: 200,
         duration: 15,

@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:peacepay/controller/dashboard/profiles/update_profile_controller.dart';
 
 import '../../backend/download_file.dart';
 import '../../backend/models/escrow/escrow_index_model.dart';
@@ -8,6 +9,10 @@ import 'status_widget.dart';
 import 'text_descrption_form_widget.dart';
 import 'text_status_form_widget.dart';
 import 'text_value_form_widget.dart';
+
+import '../buttons/primary_button.dart';
+import '../../controller/dashboard/btm_navs_controller/my_escrow_controller.dart';
+import '../../widgets/dialog_helper.dart';
 
 class EscrowTileWidget extends StatefulWidget with DownloadFile {
   const EscrowTileWidget(
@@ -29,6 +34,14 @@ class EscrowTileWidget extends StatefulWidget with DownloadFile {
 }
 
 class _EscrowTileWidgetState extends State<EscrowTileWidget> {
+  final deliveryController = TextEditingController();
+
+  @override
+  void dispose() {
+    deliveryController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -104,7 +117,6 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                     ],
                   ),
                 ),
-
                 widget.havePayment
                     ? PopupMenuButton<String>(
                         iconSize: Dimensions.iconSizeDefault * 1.5,
@@ -117,28 +129,35 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                             ),
                             const PopupMenuItem(
                               value: 'pay',
-                              child: TitleHeading5Widget(text: Strings.buyerPay,),
+                              child: TitleHeading5Widget(
+                                text: Strings.buyerPay,
+                              ),
                             ),
                           ];
                         },
                       )
-                    : PopupMenuButton<String>(
-                        iconSize: Dimensions.iconSizeDefault * 1.5,
-                        onSelected: widget.onSelected,
-                        itemBuilder: (BuildContext context) {
-                          return [
-                            const PopupMenuItem(
-                              value: 'message',
-                              child: TitleHeading5Widget(text: Strings.message),
-                            )
-                          ];
-                        },
-                      ),
+                    : Get.find<UpdateProfileController>()
+                                .selectedUserType
+                                .value !=
+                            'delivery'
+                        ? PopupMenuButton<String>(
+                            iconSize: Dimensions.iconSizeDefault * 1.5,
+                            onSelected: widget.onSelected,
+                            itemBuilder: (BuildContext context) {
+                              return [
+                                const PopupMenuItem(
+                                  value: 'message',
+                                  child: TitleHeading5Widget(
+                                      text: Strings.message),
+                                )
+                              ];
+                            },
+                          )
+                        : Container(),
               ],
             ),
           ),
         ),
-
         Visibility(
             visible: widget.expansion,
             child: Container(
@@ -165,6 +184,92 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                   ]),
               child: Column(
                 children: [
+                  Visibility(
+                    visible: Get.find<UpdateProfileController>()
+                                .selectedUserType
+                                .value ==
+                            'seller' &&
+                        widget.data.status == 1,
+                    child: Column(
+                      children: [
+                        _divider(),
+                        widget.data.delivery_number != null &&
+                                widget.data.delivery_number.toString() != "0" &&
+                                widget.data.delivery_number!.isNotEmpty
+                            ? Column(
+                                children: [
+                                  TextValueFormWidget(
+                                    text: "Delivery Number",
+                                    value: widget.data.delivery_number!,
+                                  ),
+                                  verticalSpace(
+                                      Dimensions.marginSizeVertical * .5),
+                                  PrimaryButton(
+                                    title: "Delete Delivery Number",
+                                    buttonColor: CustomColor.redColor,
+                                    onPressed: () {
+                                      Get.find<MyEscrowController>()
+                                          .cancelDeliveryNumber(
+                                              id: widget.data.id.toString());
+                                    },
+                                  )
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  PrimaryTextInputWidget(
+                                    controller: deliveryController,
+                                    labelText: "Delivery Number",
+                                  ),
+                                  verticalSpace(
+                                      Dimensions.marginSizeVertical * .5),
+                                  PrimaryButton(
+                                    title: "Update",
+                                    onPressed: () {
+                                      Get.find<MyEscrowController>()
+                                          .updateDeliveryNumber(
+                                              id: widget.data.id.toString(),
+                                              number: deliveryController.text);
+                                    },
+                                  )
+                                ],
+                              )
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                    visible: Get.find<UpdateProfileController>()
+                                .selectedUserType
+                                .value ==
+                            'buyer' &&
+                        widget.data.status == 1,
+                    child: Column(
+                      children: [
+                        _divider(),
+                        PrimaryButton(
+                          title: "Cancel Payment",
+                          buttonColor: Theme.of(context).primaryColor,
+                          onPressed: () {
+                            DialogHelper.showAlertDialog(
+                              context,
+                              title: Strings.cancelOrderPayment,
+                              content: Strings.cancelOrderPaymentMsg,
+                              btnText: Strings.confirm,
+                              onTap: () {
+                                Get.back();
+                                Get.find<MyEscrowController>().returnPayment(
+                                    id: widget.data.id.toString());
+                              },
+                            );
+                          },
+                        ),
+                        verticalSpace(Dimensions.marginSizeVertical * .5),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15.h,
+                  ),
                   TextValueFormWidget(
                     text: Strings.escrowId,
                     value: widget.data.escrowId,
@@ -176,7 +281,6 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                     currency: widget.data.pin_code,
                   ),
                   _divider(),
-
                   TextValueFormWidget(
                     text: Strings.title,
                     value: widget.data.title,

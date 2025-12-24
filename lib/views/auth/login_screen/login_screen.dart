@@ -1,15 +1,11 @@
 import 'package:peacepay/utils/basic_screen_imports.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
-import 'package:peacepay/widgets/inputs/password_input_widget.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../../../backend/local_storage/local_storage.dart';
 import '../../../controller/auth/login_controller.dart';
-import '../../../widgets/buttons/secondary_button.dart';
 import '../../../widgets/others/app_icon_widget.dart';
 import '../../../widgets/others/custom_loading_widget.dart';
 import '../../../widgets/others/rich_text_widget.dart';
-import '../../../widgets/text_labels/title_heading5_widget.dart';
 import '../../../widgets/text_labels/title_sub_title_widget.dart';
 
 class LoginScreen extends GetView<LoginController> {
@@ -28,7 +24,6 @@ class LoginScreen extends GetView<LoginController> {
           // ),
           body: Column(
             children: [
-
               verticalSpace(Dimensions.heightSize * 2.5),
               const AppIconWidget(),
               verticalSpace(Dimensions.heightSize * 1),
@@ -68,10 +63,12 @@ class LoginScreen extends GetView<LoginController> {
             Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: Dimensions.paddingSizeHorizontal * .5),
-              child: Obx(() => controller.isLoading ? const CustomLoadingWidget(): PrimaryButton(
-                title: Strings.login,
-                onPressed: controller.onLoginProcess,
-              )),
+              child: Obx(() => controller.isLoading
+                  ? const CustomLoadingWidget()
+                  : PrimaryButton(
+                      title: Strings.login,
+                      onPressed: controller.onLoginProcess,
+                    )),
             ),
 
             verticalSpace(Dimensions.paddingSizeVertical * 1.2),
@@ -115,7 +112,6 @@ class LoginScreen extends GetView<LoginController> {
         key: controller.formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-
           children: [
             verticalSpace(Dimensions.marginBetweenInputBox * .9),
             PrimaryTextInputWidget(
@@ -131,17 +127,14 @@ class LoginScreen extends GetView<LoginController> {
             // ),
 
             RichTextWidget(
-              onPressed: ()=> controller.onTermsAndConditionWebView(context),
-              onPressedEnd: ()=> controller.privacyPolicyWebView(context),
+              onPressed: () => controller.onTermsAndConditionWebView(context),
+              onPressedEnd: () => controller.privacyPolicyWebView(context),
               preText: Strings.iHaveAgreed,
               postText: Strings.termsOfUse,
               endText: Strings.privacyPolicy,
               textAlign: TextAlign.start,
               opacity: .6,
             ),
-
-
-
           ],
         ),
       ),
@@ -190,10 +183,12 @@ class LoginScreen extends GetView<LoginController> {
                         keyboardType: TextInputType.phone,
                       ),
                       verticalSpace(Dimensions.marginSizeVertical * .5),
-                      Obx(() => controller.isForgotLoading ? const CustomLoadingWidget(): PrimaryButton(
-                        title: Strings.submit,
-                        onPressed: controller.onForgotPassProcess,
-                      )),
+                      Obx(() => controller.isForgotLoading
+                          ? const CustomLoadingWidget()
+                          : PrimaryButton(
+                              title: Strings.submit,
+                              onPressed: controller.onForgotPassProcess,
+                            )),
                       verticalSpace(Dimensions.paddingSizeVertical * .8)
                     ],
                   ),

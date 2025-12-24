@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'custom_color.dart';
 
@@ -31,8 +30,8 @@ class Themes {
     scaffoldBackgroundColor: CustomColor.primaryLightScaffoldBackgroundColor,
     brightness: Brightness.light,
     textTheme: ThemeData.light().textTheme.apply(
-      fontFamily: 'Cairo',
-    ),
+          fontFamily: 'Cairo',
+        ),
     // add more styling if needed
   );
 
@@ -43,8 +42,8 @@ class Themes {
     scaffoldBackgroundColor: CustomColor.primaryLightScaffoldBackgroundColor,
     brightness: Brightness.light,
     textTheme: ThemeData.light().textTheme.apply(
-      fontFamily: 'Cairo',
-    ),
+          fontFamily: 'Cairo',
+        ),
     // add more styling if needed
   );
 
@@ -55,8 +54,8 @@ class Themes {
     scaffoldBackgroundColor: Colors.orange.shade50,
     brightness: Brightness.light,
     textTheme: ThemeData.light().textTheme.apply(
-      fontFamily: 'Cairo',
-    ),
+          fontFamily: 'Cairo',
+        ),
     // customize as you want
   );
 }

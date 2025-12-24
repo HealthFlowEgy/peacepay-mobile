@@ -1,13 +1,12 @@
 import 'package:get/get.dart';
 
-import '../../backend/backend_utils/custom_snackbar.dart';
 import '../../backend/local_storage/local_storage.dart';
 import '../../backend/models/auth/checkPinModel.dart';
 import '../../backend/models/auth/forgot_send_otp_model.dart';
 import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
-import '../dashboard/my_wallets/add_money_controller.dart';
 import '../dashboard/profiles/update_profile_controller.dart';
+
 class CheckPinController extends GetxController {
   // --- State
   final RxString pin = ''.obs;
@@ -97,10 +96,8 @@ class CheckPinController extends GetxController {
     update();
 
     Map<String, dynamic> inputBody = {
-      'credentials': Get.find<UpdateProfileController>()
-          .profileModel
-          .data
-          .user.mobile,
+      'credentials':
+          Get.find<UpdateProfileController>().profileModel.data.user.mobile,
     };
 
     await ApiServices.forgotPinSendOTPApi(body: inputBody).then((value) {
@@ -108,49 +105,43 @@ class CheckPinController extends GetxController {
       token = _forgotModel!.data.token.obs;
       Get.toNamed(Routes.forgotOTPScreen);
       update();
-    }).catchError((onError) {
-    });
+    }).catchError((onError) {});
 
     _isForgotLoading.value = false;
     update();
     return _forgotModel;
   }
-  Future<ForgetSendOtpModel?> sendOTPProcessBeforePin() async {
 
+  Future<ForgetSendOtpModel?> sendOTPProcessBeforePin() async {
     _isForgotLoading.value = true;
     update();
 
     Map<String, dynamic> inputBody = {
-      'credentials': Get.find<UpdateProfileController>()
-          .profileModel
-          .data
-          .user.mobile,
+      'credentials':
+          Get.find<UpdateProfileController>().profileModel.data.user.mobile,
     };
 
     await ApiServices.forgotPinSendOTPApi(body: inputBody).then((value) {
       _forgotModel = value!;
       token = _forgotModel!.data.token.obs;
-      Get.toNamed(Routes.forgotOTPScreen,arguments: 'beforeLogin');
+      Get.toNamed(Routes.forgotOTPScreen, arguments: 'beforeLogin');
       update();
-    }).catchError((onError) {
-    });
+    }).catchError((onError) {});
 
     _isForgotLoading.value = false;
     update();
     return _forgotModel;
   }
-  void onForgotPassProcess() async{
+
+  void onForgotPassProcess() async {
     await sendOTPProcess().then((value) {
-      if(value != null) {
-      }
+      if (value != null) {}
     });
-
   }
-  void onForgotPassProcessBeforePin() async{
-    await sendOTPProcessBeforePin().then((value) {
-      if(value != null) {
-      }
-    });
 
+  void onForgotPassProcessBeforePin() async {
+    await sendOTPProcessBeforePin().then((value) {
+      if (value != null) {}
+    });
   }
 }

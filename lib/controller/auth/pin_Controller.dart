@@ -1,8 +1,4 @@
-import 'dart:math';
-
 import 'package:peacepay/utils/basic_screen_imports.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/snackbar/snackbar.dart';
 
 import '../../backend/local_storage/local_storage.dart';
 import '../../backend/models/auth/createPinModel.dart';
@@ -52,6 +48,7 @@ class PinController extends GetxController {
     // Get.snackbar("Success", "PIN set successfully!",
     //     snackPosition: SnackPosition.BOTTOM);
   }
+
   final pinCodeController = TextEditingController();
   final current_pin_codeController = TextEditingController();
   final pin_code_confirmationController = TextEditingController();
@@ -68,10 +65,10 @@ class PinController extends GetxController {
       'pin_code': pin.value,
       'pin_code_confirmation': confirmPin.value,
     };
-    await ApiServices.createPINApi(body: inputBody).then((value)async {
+    await ApiServices.createPINApi(body: inputBody).then((value) async {
       _createPinModel = value!;
       await LocalStorage.saveHasPin(hasPin: true);
-       Get.toNamed(Routes.dashboardScreen);
+      Get.toNamed(Routes.dashboardScreen);
       update();
     }).catchError((onError) {
       log.e(onError);

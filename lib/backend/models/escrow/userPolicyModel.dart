@@ -129,29 +129,49 @@ class PolicyData extends DropdownModel {
   @override
   int get modelId => mId;
 
-  @override String get currencyCode => '';
-  @override String get currencySymbol => '';
-  @override double get fCharge => 0.0;
-  @override String get img => '';
-  @override double get max => 0.0;
-  @override String get mcode => '';
-  @override double get min => 0.0;
-  @override double get pCharge => 0.0;
-  @override double get rate => 0.0;
-  @override String get type => '';
-  @override String get id => mId.toString();
+  @override
+  String get currencyCode => '';
+  @override
+  String get currencySymbol => '';
+  @override
+  double get fCharge => 0.0;
+  @override
+  String get img => '';
+  @override
+  double get max => 0.0;
+  @override
+  String get mcode => '';
+  @override
+  double get min => 0.0;
+  @override
+  double get pCharge => 0.0;
+  @override
+  double get rate => 0.0;
+  @override
+  String get type => '';
+  @override
+  String get id => mId.toString();
 }
 
 class Fields {
   final String? deliveryFeePayer;
   final String? hasAdvancedPayment;
+  final String? whoWillDeliver;
+  final String? createFor;
 
-  Fields({this.deliveryFeePayer, this.hasAdvancedPayment});
+  Fields({
+    this.deliveryFeePayer,
+    this.hasAdvancedPayment,
+    this.whoWillDeliver,
+    this.createFor,
+  });
 
   factory Fields.fromJson(Map<String, dynamic> json) {
     return Fields(
       deliveryFeePayer: json['delivery_fee_payer'],
       hasAdvancedPayment: json['has_advanced_payment'],
+      whoWillDeliver: json['who_will_deliver'],
+      createFor: json['create_for'],
     );
   }
 
@@ -159,6 +179,8 @@ class Fields {
     return {
       'delivery_fee_payer': deliveryFeePayer,
       'has_advanced_payment': hasAdvancedPayment,
+      'who_will_deliver': whoWillDeliver,
+      'create_for': createFor,
     };
   }
 }

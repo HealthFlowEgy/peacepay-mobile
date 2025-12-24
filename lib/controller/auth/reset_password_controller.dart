@@ -5,9 +5,7 @@ import '../../backend/services/api_services.dart';
 import '../../routes/routes.dart';
 import '../../utils/basic_widget_imports.dart';
 import '../../views/confirm_screen.dart';
-import '../dashboard/profiles/change_password_controller.dart';
 import 'forgot_otp_controller.dart';
-import 'login_controller.dart';
 
 final log = logger(ResetPasswordController);
 

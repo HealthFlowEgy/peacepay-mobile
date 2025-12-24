@@ -8,6 +8,7 @@ import '../backend/backend_utils/network_check/no_internet_screen.dart';
 import '../bindings/add_new_escrow_screen_binding.dart';
 import '../bindings/buyer_payment_screen_binding.dart';
 import '../bindings/conversation_binding.dart';
+import '../bindings/create_policy_binding.dart';
 import '../bindings/current_balance_screen_binding.dart';
 import '../bindings/dashboard_screen_binding.dart';
 import '../bindings/email_verify_screen_binding.dart';
@@ -35,6 +36,7 @@ import '../views/dashboard/my_escrow_screens/buyer_payment_manual_screen/buyer_p
 import '../views/dashboard/my_escrow_screens/buyer_payment_manual_screen/buyer_payment_tatum_screen.dart';
 import '../views/dashboard/my_escrow_screens/buyer_payment_screen/buyer_payment_screen.dart';
 import '../views/dashboard/my_escrow_screens/conversation_screen/conversation_screen.dart';
+import '../views/dashboard/my_escrow_screens/create_policy_screen/create_policy_screen.dart';
 import '../views/dashboard/my_escrow_screens/escrow_manual_screen/escrow_manual_screen.dart';
 import '../views/dashboard/my_escrow_screens/escrow_manual_screen/escrow_tatum_screen.dart';
 import '../views/dashboard/my_wallets_screens/add_money_screen/add_money_manual_screen.dart';
@@ -55,26 +57,22 @@ import '../views/dashboard/profiles_screens/fa_security_screen/fa_security_scree
 import '../views/dashboard/profiles_screens/support_ticket_screen.dart';
 import '../views/dashboard/profiles_screens/update_profile_screen/update_profile_screen.dart';
 
-
 class RoutePageList {
   static var list = [
     GetPage(
       name: Routes.noInternetScreen,
       page: () => const NoInternetScreen(),
     ),
-
     GetPage(
       name: Routes.splashScreen,
       page: () => const SplashScreen(),
       binding: SplashBinding(),
     ),
-
     GetPage(
       name: Routes.onboardScreen,
       page: () => const OnboardScreen(),
       binding: OnboardBinding(),
     ),
-
     GetPage(
       name: Routes.welcomeScreen,
       page: () => WelcomeScreen(),
@@ -85,7 +83,6 @@ class RoutePageList {
       page: () => SupportTicketScreen(),
       binding: SupportTicketBinding(),
     ),
-
     GetPage(
       name: Routes.loginScreen,
       page: () => const LoginScreen(),
@@ -96,33 +93,29 @@ class RoutePageList {
       page: () => const FAVerifyScreen(),
     ),
     GetPage(
-      name: Routes.forgotOTPScreen,
-      page: () =>  ForgotPasswordOTPScreen(currentPage: Get.arguments as String,),
-      binding: ForgotOTPBinding()
-    ),
+        name: Routes.forgotOTPScreen,
+        page: () => ForgotPasswordOTPScreen(
+              currentPage: Get.arguments as String,
+            ),
+        binding: ForgotOTPBinding()),
     GetPage(
       name: Routes.resetPassScreen,
       page: () => const ResetPassScreen(),
     ),
-
     GetPage(
       name: Routes.registerScreen,
       page: () => const RegisterScreen(),
       binding: RegisterBinding(),
     ),
     GetPage(
-      name: Routes.registerOTPScreen,
-      page: () => const RegisterOTPScreen(),
-      binding: EmailVerifyBinding()
-    ),
+        name: Routes.registerOTPScreen,
+        page: () => const RegisterOTPScreen(),
+        binding: EmailVerifyBinding()),
     GetPage(
       name: Routes.kycFormScreen,
       page: () => KYCFormScreen(),
       // binding: KYCBinding()
     ),
-
-
-
     GetPage(
       name: Routes.dashboardScreen,
       page: () => const DashboardScreen(),
@@ -130,33 +123,29 @@ class RoutePageList {
     ),
     GetPage(
       name: Routes.createPINScreen,
-      page: () =>  CreateAndConfirmPinScreen(),
+      page: () => CreateAndConfirmPinScreen(),
       // binding: DashboardBinding(),
     ),
     GetPage(
       name: Routes.checkPinScreen,
-      page: () =>  CheckPinScreen(index:  Get.arguments as int),
+      page: () => CheckPinScreen(index: Get.arguments as int),
       // binding: DashboardBinding(),
     ),
     GetPage(
       name: Routes.notificationScreen,
       page: () => const NotificationScreen(),
     ),
-
     GetPage(
-      name: Routes.conversationScreen,
-      page: () => ConversationScreen(),
-      binding: ConversationBinding()
-    ),
+        name: Routes.conversationScreen,
+        page: () => ConversationScreen(),
+        binding: ConversationBinding()),
     GetPage(
-      name: Routes.addNewEscrowScreen,
-      page: () => const AddNewEscrowScreen(),
-      binding: AddNewEscrowBinding()
-    ),
+        name: Routes.addNewEscrowScreen,
+        page: () => const AddNewEscrowScreen(),
+        binding: AddNewEscrowBinding()),
     GetPage(
       name: Routes.addNewEscrowPreviewScreen,
       page: () => const AddNewEscrowPreviewScreen(),
-
     ),
     GetPage(
       name: Routes.escrowManualScreen,
@@ -167,10 +156,13 @@ class RoutePageList {
       page: () => EscrowTatumScreen(),
     ),
     GetPage(
-      name: Routes.buyerPaymentScreen,
-      page: () => const BuyerPaymentScreen(),
-      binding: BuyerPaymentBinding()
-    ),
+        name: Routes.buyerPaymentScreen,
+        page: () => const BuyerPaymentScreen(),
+        binding: BuyerPaymentBinding()),
+    GetPage(
+        name: Routes.createPolicyScreen,
+        page: () => const CreatePolicyScreen(),
+        binding: CreatePolicyBinding()),
     GetPage(
       name: Routes.buyerPaymentManualScreen,
       page: () => BuyerPaymentManualScreen(),
@@ -179,8 +171,6 @@ class RoutePageList {
       name: Routes.buyerPaymentTatumScreen,
       page: () => BuyerPaymentTatumScreen(),
     ),
-
-
     GetPage(
       name: Routes.currentBalanceScreen,
       page: () => CurrentBalanceScreen(),
@@ -207,7 +197,6 @@ class RoutePageList {
       name: Routes.addMoneyScreenPreview,
       page: () => const AddMoneyPreviewScreen(),
     ),
-
     GetPage(
       name: Routes.moneyOutScreen,
       page: () => const MoneyOutScreen(),
@@ -220,7 +209,6 @@ class RoutePageList {
       name: Routes.moneyOutManualScreen,
       page: () => MoneyOutManualScreen(),
     ),
-
     GetPage(
       name: Routes.moneyExchangeScreen,
       page: () => const MoneyExchangeScreen(),
@@ -229,12 +217,10 @@ class RoutePageList {
       name: Routes.moneyExchangeScreenPreview,
       page: () => const MoneyExchangePreviewScreen(),
     ),
-
     GetPage(
       name: Routes.transactionsScreen,
       page: () => const TransactionsScreen(),
     ),
-
     GetPage(
       name: Routes.updateProfileScreen,
       page: () => const UpdateProfileScreen(),

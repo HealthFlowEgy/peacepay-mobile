@@ -8,19 +8,12 @@ import '../../../backend/models/dashboard/home_model.dart';
 import '../../../backend/models/tatum/cached_tatum_model.dart';
 import '../../../backend/services/api_services.dart';
 import '../../../backend/services/dashboard_api_service.dart';
-import '../../../bindings/current_balance_screen_binding.dart';
 import '../../../routes/routes.dart';
-import '../../../views/confirm_screen.dart';
 import '../my_escrows/add_new_escrow_controller.dart';
-import '../my_wallets/add_money_controller.dart';
-import '../my_wallets/current_balance_controller.dart';
-import '../my_wallets/money_exchange_controller.dart';
-import '../my_wallets/money_out_controller.dart';
-import 'my_wallet_controller.dart';
 
 final log = logger(HomeController);
 
-class HomeController extends GetxController with DashboardApiService{
+class HomeController extends GetxController with DashboardApiService {
   RxInt openTileIndex = (-1).obs;
 // final walletsController = Get.find<MyWalletController>();
   final formKey = GlobalKey<FormState>();
@@ -33,6 +26,7 @@ class HomeController extends GetxController with DashboardApiService{
 
     super.dispose();
   }
+
   @override
   void onInit() {
     super.onInit();
@@ -42,22 +36,21 @@ class HomeController extends GetxController with DashboardApiService{
     homeDataFetch();
   }
 
-
-
   final _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
 
-  late HomeModel _homeModel;
-  HomeModel get homeModel => _homeModel;
-  Future<HomeModel> homeDataFetch() async{
+  HomeModel? _homeModel;
+  HomeModel? get homeModel => _homeModel;
+  Future<HomeModel?> homeDataFetch() async {
     _isLoading.value = true;
     update();
 
     await ApiServices.dashboardAPi().then((value) {
-      _homeModel = value!;
-
-      LocalStorage.saveUserId(id: _homeModel.data.userId);
-      update();
+      if (value != null) {
+        _homeModel = value;
+        LocalStorage.saveUserId(id: _homeModel!.data.userId);
+        update();
+      }
     }).catchError((onError) {
       log.e(onError);
     });
@@ -70,12 +63,11 @@ class HomeController extends GetxController with DashboardApiService{
   ///--------------DELIVERY ------------
   late CommonSuccessModel? _successModel;
   CommonSuccessModel? get successModel => _successModel;
-  Future<CommonSuccessModel?> releasePaymentProcess({required String OTP}) async {
+  Future<CommonSuccessModel?> releasePaymentProcess(
+      {required String OTP}) async {
     _isLoading.value = true;
     update();
-    Map<String, dynamic> inputBody = {
-      'pin_code': otpController.text
-    };
+    Map<String, dynamic> inputBody = {'pin_code': otpController.text};
 
     await ApiServices.releasePaymentApi(body: inputBody).then((value) async {
       _successModel = value;
@@ -90,11 +82,11 @@ class HomeController extends GetxController with DashboardApiService{
     update();
     return _successModel;
   }
+
   /// transactions tatum
 // final formKey = GlobalKey<FormState>();
   List<TextEditingController> inputFieldControllers = [];
   RxList inputFields = [].obs;
-
 
   final _isFetchLoading = false.obs;
   bool get isFetchLoading => _isFetchLoading.value;
@@ -104,15 +96,15 @@ class HomeController extends GetxController with DashboardApiService{
   CachedTatumModel get tatumModel => _tatumModel;
 
   // NOTE: this is dynamic method,,, I am passing apiUrl and id for manage dynamic ..... from 2 actions
-  Future<CachedTatumModel> cachedTatumProcess({required String id, required String apiUrl}) async {
+  Future<CachedTatumModel> cachedTatumProcess(
+      {required String id, required String apiUrl}) async {
     inputFields.clear();
     inputFieldControllers.clear();
 
     _isSubmitLoading.value = true;
     update();
 
-
-    await cachedTatumProcessApi(apiUrl: apiUrl,id: id).then((value) async {
+    await cachedTatumProcessApi(apiUrl: apiUrl, id: id).then((value) async {
       _tatumModel = value!;
 
       var data = _tatumModel.data.addressInfo.inputFields;
@@ -150,22 +142,20 @@ class HomeController extends GetxController with DashboardApiService{
     return _tatumModel;
   }
 
-
   void onTatumSubmit(BuildContext context) async {
     await tatumSubmitApiProcess().then((value) {
       Navigator.push(
           Get.context!,
           MaterialPageRoute(
               builder: (context) => AddMoneyConfirmScreen(
-                message: Strings.addMoneyConfirmationMSG,
-                onApproval: true,
-                onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
-              )));
+                    message: Strings.addMoneyConfirmationMSG,
+                    onApproval: true,
+                    onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
+                  )));
     });
   }
 
   ///* manual submit submit api process
-
 
   final _isSubmitLoading = false.obs;
   bool get isSubmitLoading => _isSubmitLoading.value;
@@ -184,7 +174,7 @@ class HomeController extends GetxController with DashboardApiService{
     }
 
     await cachedTatumSubmitProcessApi(
-        body: inputBody, url: tatumModel.data.addressInfo.submitUrl)
+            body: inputBody, url: tatumModel.data.addressInfo.submitUrl)
         .then((value) {
       _tatumSuccessModel = value!;
 
@@ -200,5 +190,4 @@ class HomeController extends GetxController with DashboardApiService{
     update();
     return _tatumSuccessModel;
   }
-
 }

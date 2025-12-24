@@ -41,7 +41,7 @@ class AddMoneyTatumScreen extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         children: [
           CryptoAddressInfoWidget(
-            address: controller.addMoneyTatumModel.data.addressInfo.address,
+            address: controller.addMoneyTatumModel!.data.addressInfo.address,
           ),
           verticalSpace(Dimensions.paddingSizeVertical * 0),
           _inputWidget(context),

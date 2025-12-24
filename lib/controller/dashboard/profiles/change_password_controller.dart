@@ -2,7 +2,6 @@ import 'package:peacepay/backend/models/common/common_success_model.dart';
 import 'package:peacepay/controller/dashboard/profiles/update_profile_controller.dart';
 
 import '../../../backend/backend_utils/logger.dart';
-import '../../../backend/local_storage/local_storage.dart';
 import '../../../backend/models/auth/createPinModel.dart';
 import '../../../backend/models/auth/forgot_send_otp_model.dart';
 import '../../../backend/services/api_services.dart';
@@ -38,7 +37,6 @@ class ChangePasswordController extends GetxController {
     }
   }
 
-
   late CreatePinModel _createPinModel;
   CreatePinModel get registrationModel => _createPinModel;
   Future<CreatePinModel> updatePinProcess() async {
@@ -49,7 +47,7 @@ class ChangePasswordController extends GetxController {
       'current_pin_code': oldPasswordController.text,
       'pin_code_confirmation': confirmPasswordController.text,
     };
-    await ApiServices.createPINApi(body: inputBody).then((value)async {
+    await ApiServices.createPINApi(body: inputBody).then((value) async {
       _createPinModel = value!;
       Get.offAllNamed(Routes.dashboardScreen);
       update();
@@ -61,6 +59,7 @@ class ChangePasswordController extends GetxController {
     update();
     return _createPinModel;
   }
+
   final _isForgotLoading = false.obs;
   bool get isForgotLoading => _isForgotLoading.value;
 
@@ -72,10 +71,8 @@ class ChangePasswordController extends GetxController {
     update();
 
     Map<String, dynamic> inputBody = {
-      'credentials': Get.find<UpdateProfileController>()
-          .profileModel
-          .data
-          .user.mobile,
+      'credentials':
+          Get.find<UpdateProfileController>().profileModel.data.user.mobile,
     };
 
     await ApiServices.forgotPinSendOTPApi(body: inputBody).then((value) {
@@ -91,11 +88,10 @@ class ChangePasswordController extends GetxController {
     update();
     return _forgotModel;
   }
-  void onForgotPassProcess() async{
-    await sendOTPProcess().then((value) {
-      if(value != null) {
-      }
-    });
 
+  void onForgotPassProcess() async {
+    await sendOTPProcess().then((value) {
+      if (value != null) {}
+    });
   }
 }

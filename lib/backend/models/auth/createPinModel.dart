@@ -1,19 +1,19 @@
 class CreatePinModel {
   Message? message;
-  Null? data;
+  Null data;
 
   CreatePinModel({this.message, this.data});
 
   CreatePinModel.fromJson(Map<String, dynamic> json) {
     message =
-    json['message'] != null ? new Message.fromJson(json['message']) : null;
+        json['message'] != null ? Message.fromJson(json['message']) : null;
     data = json['data'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.message != null) {
-      data['message'] = this.message!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (message != null) {
+      data['message'] = message!.toJson();
     }
     data['data'] = this.data;
     return data;
@@ -30,8 +30,8 @@ class Message {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
     return data;
   }
 }

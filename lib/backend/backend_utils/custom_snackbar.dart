@@ -7,7 +7,10 @@ import '../../utils/dimensions.dart';
 
 class CustomSnackBar {
   static success(String message) {
-    return Get.snackbar(Get.find<LanguageSettingController>().isLoading ? "": Get.find<LanguageSettingController>().getTranslation(Strings.successSnack), Get.find<LanguageSettingController>().isLoading ? "": Get.find<LanguageSettingController>().getTranslation(message),
+    return Get.snackbar(
+      Get.find<LanguageSettingController>()
+          .getTranslation(Strings.successSnack),
+      Get.find<LanguageSettingController>().getTranslation(message),
       margin: EdgeInsets.symmetric(
         horizontal: Dimensions.marginSizeHorizontal * 0.5,
         vertical: Dimensions.marginSizeVertical * 0.5,
@@ -24,7 +27,8 @@ class CustomSnackBar {
           onPressed: () {
             Get.back();
           },
-          child: Text(Get.find<LanguageSettingController>().isLoading ? "": Get.find<LanguageSettingController>().getTranslation(Strings.dismiss))),
+          child: Text(Get.find<LanguageSettingController>()
+              .getTranslation(Strings.dismiss))),
       // boxShadows: BoxShadow()
       icon: const Icon(
         Icons.check_circle_rounded,
@@ -34,7 +38,9 @@ class CustomSnackBar {
   }
 
   static error(String message) {
-    return Get.snackbar(Get.find<LanguageSettingController>().isLoading ? "": Get.find<LanguageSettingController>().getTranslation(Strings.alert), Get.find<LanguageSettingController>().isLoading ? "": Get.find<LanguageSettingController>().getTranslation(message),
+    return Get.snackbar(
+        Get.find<LanguageSettingController>().getTranslation(Strings.alert),
+        Get.find<LanguageSettingController>().getTranslation(message),
         margin: EdgeInsets.symmetric(
             horizontal: Dimensions.marginSizeHorizontal * 0.5,
             vertical: Dimensions.marginSizeVertical * 0.5),
@@ -50,7 +56,8 @@ class CustomSnackBar {
             onPressed: () {
               Get.back();
             },
-            child: Text(Get.find<LanguageSettingController>().isLoading ? "": Get.find<LanguageSettingController>().getTranslation(Strings.dismiss))),
+            child: Text(Get.find<LanguageSettingController>()
+                .getTranslation(Strings.dismiss))),
         // boxShadows: BoxShadow()
         icon: const Icon(
           Icons.warning,

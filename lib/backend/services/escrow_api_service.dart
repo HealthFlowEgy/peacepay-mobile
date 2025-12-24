@@ -19,7 +19,6 @@ import 'api_endpoint.dart';
 final log = logger(EscrowApiService);
 
 mixin EscrowApiService {
-
   // escrow fetch
   Future<EscrowIndexModel?> escrowIndexAPi() async {
     Map<String, dynamic>? mapResponse;
@@ -102,7 +101,7 @@ mixin EscrowApiService {
       );
       if (mapResponse != null) {
         EscrowSubmitModel escrowSubmitModel =
-        EscrowSubmitModel.fromJson(mapResponse);
+            EscrowSubmitModel.fromJson(mapResponse);
 
         return escrowSubmitModel;
       }
@@ -128,7 +127,7 @@ mixin EscrowApiService {
       );
       if (mapResponse != null) {
         EscrowSubmitModel escrowSubmitModel =
-        EscrowSubmitModel.fromJson(mapResponse);
+            EscrowSubmitModel.fromJson(mapResponse);
 
         return escrowSubmitModel;
       }
@@ -139,6 +138,7 @@ mixin EscrowApiService {
     }
     return null;
   }
+
   //User Policy
   Future<UserPolicy?> userPolicyApi() async {
     try {
@@ -158,7 +158,6 @@ mixin EscrowApiService {
     return null;
   }
 
-
   // escrow confirm for seller and from wallet
   Future<CommonSuccessModel?> escrowConfirmApi(
       {required Map<String, dynamic> body}) async {
@@ -173,7 +172,7 @@ mixin EscrowApiService {
       );
       if (mapResponse != null) {
         CommonSuccessModel escrowSubmitModel =
-        CommonSuccessModel.fromJson(mapResponse);
+            CommonSuccessModel.fromJson(mapResponse);
 
         return escrowSubmitModel;
       }
@@ -184,7 +183,6 @@ mixin EscrowApiService {
     }
     return null;
   }
-
 
   // escrow confirm for paypal
   Future<EscrowPaypalPaymentModel?> escrowPaypalApi(
@@ -200,7 +198,7 @@ mixin EscrowApiService {
       );
       if (mapResponse != null) {
         EscrowPaypalPaymentModel escrowSubmitModel =
-        EscrowPaypalPaymentModel.fromJson(mapResponse);
+            EscrowPaypalPaymentModel.fromJson(mapResponse);
 
         return escrowSubmitModel;
       }
@@ -211,7 +209,6 @@ mixin EscrowApiService {
     }
     return null;
   }
-
 
   // escrow confirm for automatic
   Future<EscrowAutomaticPaymentModel?> escrowAutomaticApi(
@@ -227,7 +224,7 @@ mixin EscrowApiService {
       );
       if (mapResponse != null) {
         EscrowAutomaticPaymentModel escrowSubmitModel =
-        EscrowAutomaticPaymentModel.fromJson(mapResponse);
+            EscrowAutomaticPaymentModel.fromJson(mapResponse);
 
         return escrowSubmitModel;
       }
@@ -252,8 +249,7 @@ mixin EscrowApiService {
         showResult: true,
       );
       if (mapResponse != null) {
-        TatumModel modelData =
-        TatumModel.fromJson(mapResponse);
+        TatumModel modelData = TatumModel.fromJson(mapResponse);
         return modelData;
       }
     } catch (e) {
@@ -269,20 +265,19 @@ mixin EscrowApiService {
     required Map<String, String> body,
     required String url,
   }) async {
-
     Map<String, dynamic>? mapResponse;
     try {
       mapResponse = await ApiMethod(isBasic: false).post(
           "$url?lang=${languageSettingsController.selectedLanguage.value}~",
           body,
-          code: 200
-      );
+          code: 200);
       if (mapResponse != null) {
         CommonSuccessModel result = CommonSuccessModel.fromJson(mapResponse);
         return result;
       }
     } catch (e) {
-      log.e('🐞🐞🐞 err from add money tatum confirm api service ==> $e 🐞🐞🐞');
+      log.e(
+          '🐞🐞🐞 err from add money tatum confirm api service ==> $e 🐞🐞🐞');
       CustomSnackBar.error('Something went Wrong!');
       return null;
     }
@@ -303,7 +298,7 @@ mixin EscrowApiService {
       );
       if (mapResponse != null) {
         EscrowManualPaymentModel modelData =
-        EscrowManualPaymentModel.fromJson(mapResponse);
+            EscrowManualPaymentModel.fromJson(mapResponse);
 
         return modelData;
       }
@@ -315,14 +310,12 @@ mixin EscrowApiService {
     return null;
   }
 
-
   ///* escrow manual submit process api
   Future<CommonSuccessModel?> escrowManualSubmitApi({
     required Map<String, String> body,
     required List<String> pathList,
     required List<String> fieldList,
   }) async {
-
     Map<String, dynamic>? mapResponse;
     try {
       mapResponse = await ApiMethod(isBasic: false).multipartMultiFile(
@@ -338,7 +331,100 @@ mixin EscrowApiService {
         return result;
       }
     } catch (e) {
-      log.e('🐞🐞🐞 err from escrow manual submit process api service ==> $e 🐞🐞🐞');
+      log.e(
+          '🐞🐞🐞 err from escrow manual submit process api service ==> $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong!');
+      return null;
+    }
+    return null;
+  }
+
+  // Create policy
+  Future<bool> createPolicyApi({
+    required Map<String, dynamic> body,
+  }) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).post(
+        "${ApiEndpoint.userPolicy}?lang=${languageSettingsController.selectedLanguage.value}",
+        body,
+        code: 200,
+        showResult: true,
+      );
+      if (mapResponse != null && mapResponse['success'] == true) {
+        return true;
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from create policy api service => $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong!');
+      return false;
+    }
+    return false;
+  }
+
+  // update delivery number
+  Future<CommonSuccessModel?> escrowDeliveryUpdateApi({
+    required Map<String, dynamic> body,
+    required String url,
+  }) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).post(
+        "$url?lang=${languageSettingsController.selectedLanguage.value}",
+        body,
+        code: 200,
+        showResult: true,
+      );
+      if (mapResponse != null) {
+        return CommonSuccessModel.fromJson(mapResponse);
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from update delivery api service => $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong!');
+      return null;
+    }
+    return null;
+  }
+
+  // cancel delivery number
+  Future<CommonSuccessModel?> escrowDeliveryCancelApi({
+    required String url,
+  }) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).get(
+        "$url?lang=${languageSettingsController.selectedLanguage.value}",
+        code: 200,
+        showResult: true,
+      );
+      if (mapResponse != null) {
+        return CommonSuccessModel.fromJson(mapResponse);
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from cancel delivery api service => $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong!');
+      return null;
+    }
+    return null;
+  }
+
+  // return payment
+  Future<CommonSuccessModel?> escrowReturnPaymentApi({
+    required Map<String, dynamic> body,
+  }) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).post(
+        "${ApiEndpoint.returnPaymentURL}?lang=${languageSettingsController.selectedLanguage.value}",
+        body,
+        code: 200,
+        showResult: true,
+      );
+      if (mapResponse != null) {
+        return CommonSuccessModel.fromJson(mapResponse);
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from return payment api service => $e 🐞🐞🐞');
       CustomSnackBar.error('Something went Wrong!');
       return null;
     }

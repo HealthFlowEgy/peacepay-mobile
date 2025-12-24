@@ -1,13 +1,9 @@
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:peacepay/controller/dashboard/btm_navs_controller/home_controller.dart';
-import 'package:peacepay/controller/dashboard/btm_navs_controller/profile_controller.dart';
-import 'package:peacepay/controller/dashboard/delivery/delivery_controller.dart';
-import 'package:peacepay/controller/dashboard/profiles/update_profile_controller.dart';
 import 'package:peacepay/utils/responsive_layout.dart';
 
 import '../../../backend/backend_utils/no_data_widget.dart';
 import '../../../backend/services/api_endpoint.dart';
-import '../../../controller/dashboard/dashboard_controller.dart';
 import '../../../extensions/custom_extensions.dart';
 import '../../../language/language_controller.dart';
 import '../../../routes/routes.dart';
@@ -24,94 +20,108 @@ class DeliveryAgentScreen extends GetView<HomeController> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return ResponsiveLayout(
-      mobileScaffold: Scaffold(
-
-      backgroundColor: Colors.white,
-        body: Obx(() => controller.isLoading
-        ? const CustomLoadingWidget()
-        :Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // const Text(
-                    //   'Delivery Agent',
-                    //   style: TextStyle(
-                    //     fontSize: 22,
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 20),
-                    _topWidget(context, height, width),
-                    verticalSpace(
-                        Dimensions.marginBetweenInputBox * .5),
-                    _currentBalanceWidget(context),
-                
-                    // OTP Section
-                    Container(
-                      decoration: BoxDecoration(
-                        // color: Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Enter OTP',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text(
-                            'Enter OTP release payment',
-                            style: TextStyle(fontSize: 13, color: Colors.black54),
-                          ),
-                          const SizedBox(height: 20),
-                          TextField(
-                            controller: controller.otpController,
-                            decoration: InputDecoration(
-                              hintText: 'Enter OTP',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
+        mobileScaffold: Scaffold(
+            backgroundColor: Colors.white,
+            body: Obx(
+              () => controller.isLoading
+                  ? const CustomLoadingWidget()
+                  : controller.homeModel == null
+                      ? const Center(child: NoDataWidget())
+                      : Center(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 15.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // const Text(
+                                    //   'Delivery Agent',
+                                    //   style: TextStyle(
+                                    //     fontSize: 22,
+                                    //     fontWeight: FontWeight.bold,
+                                    //   ),
+                                    // ),
+                                    // const SizedBox(height: 20),
+                                    _topWidget(context, height, width),
+                                    verticalSpace(
+                                        Dimensions.marginBetweenInputBox * .5),
+                                    _currentBalanceWidget(context),
+
+                                    // OTP Section
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        // color: Colors.orange.shade50,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          const Text(
+                                            'Enter OTP',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          const Text(
+                                            'Enter OTP release payment',
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black54),
+                                          ),
+                                          const SizedBox(height: 20),
+                                          TextField(
+                                            controller:
+                                                controller.otpController,
+                                            decoration: InputDecoration(
+                                              hintText: 'Enter OTP',
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 20),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Colors.deepOrange,
+                                              minimumSize:
+                                                  const Size.fromHeight(45),
+                                            ),
+                                            onPressed: () {
+                                              controller.releasePaymentProcess(
+                                                  OTP: controller
+                                                      .otpController.text);
+                                            },
+                                            child: const Text(
+                                              'Submit',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 20.h),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepOrange,
-                              minimumSize: const Size.fromHeight(45),
-                            ),
-                            onPressed: () {
-                              controller.releasePaymentProcess(OTP: controller.otpController.text);
-                            },
-                            child: const Text('Submit',style: TextStyle(color: Colors.white),),
-                          ),
-                        ],
-                      ),
-                    ),
-                
-                     SizedBox(height: 20.h),
-                
-                
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      )
-    ));
+                        ),
+            )));
   }
 
   _topWidget(BuildContext context, height, width) {
@@ -123,7 +133,7 @@ class DeliveryAgentScreen extends GetView<HomeController> {
           horizontal: Dimensions.paddingSizeHorizontal,
           vertical: Dimensions.paddingSizeVertical),
       decoration: BoxDecoration(
-          color: Colors.deepOrange,
+        color: Colors.deepOrange,
         borderRadius: BorderRadius.circular(Dimensions.radius * 1.5),
       ),
       child: Column(
@@ -133,7 +143,7 @@ class DeliveryAgentScreen extends GetView<HomeController> {
           Column(
             children: [
               TitleHeading1Widget(
-                text: controller.homeModel.data.totalEscrow.toString(),
+                text: controller.homeModel!.data.totalEscrow.toString(),
                 fontSize: Dimensions.headingTextSize1 * 1.3,
               ),
               const TitleHeading4Widget(
@@ -149,19 +159,20 @@ class DeliveryAgentScreen extends GetView<HomeController> {
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _miniEscrowWidget(Strings.completedEscrow,
-                  controller.homeModel.data.completedEscrow.toString()),
+                  controller.homeModel!.data.completedEscrow.toString()),
               horizontalSpace(Dimensions.widthSize * .5),
               _miniEscrowWidget(Strings.pendingEscrow,
-                  controller.homeModel.data.pendingEscrow.toString()),
+                  controller.homeModel!.data.pendingEscrow.toString()),
               horizontalSpace(Dimensions.widthSize * .5),
               _miniEscrowWidget(Strings.disputedEscrow,
-                  controller.homeModel.data.disputeEscrow.toString()),
+                  controller.homeModel!.data.disputeEscrow.toString()),
             ],
           )
         ],
       ),
     );
   }
+
   _miniEscrowWidget(String title, String value) {
     return Expanded(
       child: Column(
@@ -184,6 +195,7 @@ class DeliveryAgentScreen extends GetView<HomeController> {
       ),
     );
   }
+
   _transactionLogsWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,69 +206,70 @@ class DeliveryAgentScreen extends GetView<HomeController> {
           fontSize: Dimensions.headingTextSize2 * .85,
         ),
         verticalSpace(Dimensions.marginSizeVertical * .5),
-        controller.homeModel.data.transactions.isEmpty
+        controller.homeModel!.data.transactions.isEmpty
             ? Padding(
-          padding: EdgeInsets.only(
-            right: Dimensions.paddingSizeHorizontal *
-                (Get.find<LanguageSettingController>()
-                    .selectedLanguage
-                    .value
-                    .contains("ar")
-                    ? 0
-                    : .85),
-            left: Dimensions.paddingSizeHorizontal *
-                (Get.find<LanguageSettingController>()
-                    .selectedLanguage
-                    .value
-                    .contains("ar")
-                    ? 0.85
-                    : 0),
-          ),
-          child: const NoDataWidget(
-            isScaffold: true,
-          ),
-        )
+                padding: EdgeInsets.only(
+                  right: Dimensions.paddingSizeHorizontal *
+                      (Get.find<LanguageSettingController>()
+                              .selectedLanguage
+                              .value
+                              .contains("ar")
+                          ? 0
+                          : .85),
+                  left: Dimensions.paddingSizeHorizontal *
+                      (Get.find<LanguageSettingController>()
+                              .selectedLanguage
+                              .value
+                              .contains("ar")
+                          ? 0.85
+                          : 0),
+                ),
+                child: const NoDataWidget(
+                  isScaffold: true,
+                ),
+              )
             : ListView.separated(
-            shrinkWrap: true,
-            padding: EdgeInsets.only(
-              right: Dimensions.paddingSizeHorizontal *
-                  (Get.find<LanguageSettingController>()
-                      .selectedLanguage
-                      .value
-                      .contains("ar")
-                      ? 0
-                      : .85),
-              left: Dimensions.paddingSizeHorizontal *
-                  (Get.find<LanguageSettingController>()
-                      .selectedLanguage
-                      .value
-                      .contains("ar")
-                      ? 0.85
-                      : 0),
-              bottom: Dimensions.paddingSizeVertical * .85,
-            ),
-            scrollDirection: Axis.vertical,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              var data = controller.homeModel.data.transactions[index];
-              return Obx(() => TransactionTileWidget(
-                  transaction: data,
-                  onTap: () {
-                    if (controller.openTileIndex.value != index) {
-                      controller.openTileIndex.value = index;
-                    } else {
-                      controller.openTileIndex.value = -1;
-                    }
-                  },
-                  expansion: controller.openTileIndex.value == index));
-            },
-            separatorBuilder: (context, i) =>
-                verticalSpace(Dimensions.marginSizeVertical * .3),
-            itemCount: controller.homeModel.data.transactions.length),
+                shrinkWrap: true,
+                padding: EdgeInsets.only(
+                  right: Dimensions.paddingSizeHorizontal *
+                      (Get.find<LanguageSettingController>()
+                              .selectedLanguage
+                              .value
+                              .contains("ar")
+                          ? 0
+                          : .85),
+                  left: Dimensions.paddingSizeHorizontal *
+                      (Get.find<LanguageSettingController>()
+                              .selectedLanguage
+                              .value
+                              .contains("ar")
+                          ? 0.85
+                          : 0),
+                  bottom: Dimensions.paddingSizeVertical * .85,
+                ),
+                scrollDirection: Axis.vertical,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  var data = controller.homeModel!.data.transactions[index];
+                  return Obx(() => TransactionTileWidget(
+                      transaction: data,
+                      onTap: () {
+                        if (controller.openTileIndex.value != index) {
+                          controller.openTileIndex.value = index;
+                        } else {
+                          controller.openTileIndex.value = -1;
+                        }
+                      },
+                      expansion: controller.openTileIndex.value == index));
+                },
+                separatorBuilder: (context, i) =>
+                    verticalSpace(Dimensions.marginSizeVertical * .3),
+                itemCount: controller.homeModel!.data.transactions.length),
         verticalSpace(Dimensions.marginSizeVertical),
       ],
     );
   }
+
   _currentBalanceWidget(BuildContext context) {
     return Row(
       children: [
@@ -276,7 +289,7 @@ class DeliveryAgentScreen extends GetView<HomeController> {
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
-                    var data = controller.homeModel.data.userWallet[index];
+                    var data = controller.homeModel!.data.userWallet[index];
                     return Container(
                       height: Dimensions.buttonHeight * 1.2,
                       // width: Dimensions.widthSize * 22,
@@ -289,10 +302,12 @@ class DeliveryAgentScreen extends GetView<HomeController> {
                           //   width: 1,
                           // ),
                           color: Theme.of(context).scaffoldBackgroundColor,
-                          borderRadius: BorderRadius.circular(Dimensions.radius)),
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.radius)),
                       child: InkWell(
-                        onTap: (){
-                          Get.toNamed(Routes.currentBalanceScreen, arguments: data);
+                        onTap: () {
+                          Get.toNamed(Routes.currentBalanceScreen,
+                              arguments: data);
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -304,8 +319,8 @@ class DeliveryAgentScreen extends GetView<HomeController> {
                                 height: double.infinity,
                                 width: Dimensions.widthSize * 6,
                                 decoration: BoxDecoration(
-                                    borderRadius:
-                                    BorderRadius.circular(Dimensions.radius * 1),
+                                    borderRadius: BorderRadius.circular(
+                                        Dimensions.radius * 1),
                                     image: DecorationImage(
                                         image: NetworkImage(
                                           "${ApiEndpoint.mainDomain}/${data.imagePath}/${data.flag}",
@@ -313,15 +328,17 @@ class DeliveryAgentScreen extends GetView<HomeController> {
                                         fit: BoxFit.fill)),
                               ),
                             ),
-                            horizontalSpace(Dimensions.marginSizeHorizontal * .5),
+                            horizontalSpace(
+                                Dimensions.marginSizeHorizontal * .5),
                             FittedBox(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   TitleHeading2Widget(
                                     text:
-                                    "${data.currencySymbol} ${makeBalance(data.balance.toString(), data.currencyType == "FIAT" ? 2 : 6)}",
+                                        "${data.currencySymbol} ${makeBalance(data.balance.toString(), data.currencyType == "FIAT" ? 2 : 6)}",
                                     fontSize: Dimensions.headingTextSize2 * .85,
                                   ),
                                   Row(
@@ -344,7 +361,7 @@ class DeliveryAgentScreen extends GetView<HomeController> {
                   },
                   separatorBuilder: (context, i) =>
                       horizontalSpace(Dimensions.marginSizeHorizontal * .3),
-                  itemCount: controller.homeModel.data.userWallet.length),
+                  itemCount: controller.homeModel!.data.userWallet.length),
             ),
             verticalSpace(Dimensions.marginSizeVertical * 1),
           ],

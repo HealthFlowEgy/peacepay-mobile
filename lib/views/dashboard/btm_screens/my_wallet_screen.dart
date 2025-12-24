@@ -8,6 +8,7 @@ import '../../../bindings/on_refresh.dart';
 import '../../../controller/dashboard/btm_navs_controller/my_wallet_controller.dart';
 import '../../../extensions/custom_extensions.dart';
 import '../../../widgets/others/custom_loading_widget.dart';
+import '../../../backend/backend_utils/no_data_widget.dart';
 
 class MyWalletScreen extends GetView<MyWalletController> {
   const MyWalletScreen({super.key});
@@ -22,66 +23,73 @@ class MyWalletScreen extends GetView<MyWalletController> {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: Obx(() => controller.walletsController.isLoading
               ? const CustomLoadingWidget()
-              : RefreshIndicator(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  color: CustomColor.whiteColor,
-                  onRefresh: onRefresh,
-                  child: ListView(
-                    physics: const BouncingScrollPhysics(),
-                    children: [
-                      Container(
-                        height: height * .85,
-                        width: width,
-                        padding: EdgeInsets.only(
-                          top: Dimensions.paddingSizeVertical * .8,
-                          left: Dimensions.paddingSizeHorizontal * .8,
-                          right: Dimensions.paddingSizeHorizontal * .8,
-                        ),
-                        decoration: BoxDecoration(
-                            color: CustomColor.whiteColor,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(Dimensions.radius * 3),
-                              topRight: Radius.circular(Dimensions.radius * 3),
-                            )),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TitleHeading2Widget(
-                              text: Strings.availableWallet,
-                              fontWeight: FontWeight.w600,
-                              fontSize: Dimensions.headingTextSize2 * .85,
+              : controller.walletsController.homeModel == null
+                  ? const Center(child: NoDataWidget())
+                  : RefreshIndicator(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      color: CustomColor.whiteColor,
+                      onRefresh: onRefresh,
+                      child: ListView(
+                        physics: const BouncingScrollPhysics(),
+                        children: [
+                          Container(
+                            height: height * .85,
+                            width: width,
+                            padding: EdgeInsets.only(
+                              top: Dimensions.paddingSizeVertical * .8,
+                              left: Dimensions.paddingSizeHorizontal * .8,
+                              right: Dimensions.paddingSizeHorizontal * .8,
                             ),
-                            verticalSpace(Dimensions.marginSizeVertical * .5),
-                            Expanded(
-                                child: GridView.count(
-                              crossAxisSpacing:
-                                  Dimensions.paddingSizeHorizontal * .2,
-                              mainAxisSpacing:
-                                  Dimensions.paddingSizeVertical * .2,
-                              physics: const BouncingScrollPhysics(),
-                              padding: EdgeInsets.only(
-                                bottom: Dimensions.paddingSizeVertical * .8,
-                              ),
-                              crossAxisCount: 2,
-                              childAspectRatio: 2.65,
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              children: List.generate(
-                                  controller.walletsController.homeModel.data
-                                      .userWallet.length,
-                                  (index) => _gridViewWidget(context, index)),
-                            ))
-                          ],
-                        ),
+                            decoration: BoxDecoration(
+                                color: CustomColor.whiteColor,
+                                borderRadius: BorderRadius.only(
+                                  topLeft:
+                                      Radius.circular(Dimensions.radius * 3),
+                                  topRight:
+                                      Radius.circular(Dimensions.radius * 3),
+                                )),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TitleHeading2Widget(
+                                  text: Strings.availableWallet,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: Dimensions.headingTextSize2 * .85,
+                                ),
+                                verticalSpace(
+                                    Dimensions.marginSizeVertical * .5),
+                                Expanded(
+                                    child: GridView.count(
+                                  crossAxisSpacing:
+                                      Dimensions.paddingSizeHorizontal * .2,
+                                  mainAxisSpacing:
+                                      Dimensions.paddingSizeVertical * .2,
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: EdgeInsets.only(
+                                    bottom: Dimensions.paddingSizeVertical * .8,
+                                  ),
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 2.65,
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  children: List.generate(
+                                      controller.walletsController.homeModel!
+                                          .data.userWallet.length,
+                                      (index) =>
+                                          _gridViewWidget(context, index)),
+                                ))
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ))),
+                    ))),
     );
   }
 
   _gridViewWidget(BuildContext context, int index) {
-    UserWallet data = controller.walletsController.homeModel.data.userWallet[index];
+    UserWallet data =
+        controller.walletsController.homeModel!.data.userWallet[index];
     return InkWell(
       onTap: () {
         controller.routeCurrentBalanceScreen(index, data);
@@ -121,8 +129,8 @@ class MyWalletScreen extends GetView<MyWalletController> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   TitleHeading2Widget(
-                    text: makeBalance(
-                        data.balance.toString(), data.currencyType == "FIAT" ? 2 : 6),
+                    text: makeBalance(data.balance.toString(),
+                        data.currencyType == "FIAT" ? 2 : 6),
                     fontSize: Dimensions.headingTextSize2 * .7,
                   ),
                   SingleChildScrollView(

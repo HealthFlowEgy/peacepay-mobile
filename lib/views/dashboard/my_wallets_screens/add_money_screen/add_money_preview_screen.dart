@@ -106,11 +106,14 @@ class AddMoneyPreviewScreen extends GetView<AddMoneyController> {
               prefix: Strings.addMoney,
               title: Strings.confirmPay,
               suffix:
-                  " ${controller.addMoneyPaypalModel.paymentInformations.payableAmount}",
+                  " ${controller.addMoneyPaypalModel!.paymentInformations.payableAmount}",
               onPressed: () => controller.onConfirmProcess(context),
             ),
             verticalSpace(Dimensions.paddingSizeVertical * 0.3),
-            TitleHeading5Widget(color: Colors.grey,text: 'You will be redirected to our secure payment partner to complete your top-up'),
+            TitleHeading5Widget(
+                color: Colors.grey,
+                text:
+                    'You will be redirected to our secure payment partner to complete your top-up'),
             verticalSpace(Dimensions.paddingSizeVertical * 0.75),
           ],
         ),
@@ -132,39 +135,41 @@ class AddMoneyPreviewScreen extends GetView<AddMoneyController> {
         children: [
           // TextValueFormWidget(
           //   text: Strings.trxID,
-          //   value: controller.addMoneyPaypalModel.trx.toString(),
+          //   value: controller.addMoneyPaypalModel!.trx.toString(),
           // ),
           // _divider(),
           TextValueFormWidget(
             text: Strings.requestAmount,
-            value: controller.addMoneyPaypalModel.paymentInformations.requestAmount,
+            value: controller
+                .addMoneyPaypalModel!.paymentInformations.requestAmount,
           ),
           _divider(),
           TextValueFormWidget(
             text: Strings.totalCharge,
-            value: controller.addMoneyPaypalModel.paymentInformations.totalCharge,
+            value:
+                controller.addMoneyPaypalModel!.paymentInformations.totalCharge,
           ),
           // _divider(),
           //
           // TextValueFormWidget(
           //   text: Strings.willGet,
-          //   value: controller.addMoneyPaypalModel.paymentInformations.willGet
+          //   value: controller.addMoneyPaypalModel!.paymentInformations.willGet
           // ),
           // _divider(),
           // TextValueFormWidget(
           //   text: Strings.exchangeRate,
-          //   currency: controller.addMoneyPaypalModel.paymentInformations.exchangeRate
+          //   currency: controller.addMoneyPaypalModel!.paymentInformations.exchangeRate
           // ),
           // _divider(),
           // TextValueFormWidget(
           //     text: Strings.payWith,
-          //     value: controller.addMoneyPaypalModel.paymentInformations.gatewayCurrencyName
+          //     value: controller.addMoneyPaypalModel!.paymentInformations.gatewayCurrencyName
           // ),
           _divider(),
           TextValueFormWidget(
-            text: Strings.totalPayable,
-            value: controller.addMoneyPaypalModel.paymentInformations.payableAmount
-          )
+              text: Strings.totalPayable,
+              value: controller
+                  .addMoneyPaypalModel!.paymentInformations.payableAmount)
         ],
       ),
     );
