@@ -362,6 +362,27 @@ mixin EscrowApiService {
     return false;
   }
 
+  // Delete Policy
+  Future<bool> deletePolicyApi({required int id}) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).post(
+        "${ApiEndpoint.deletePolicyURL}?lang=${languageSettingsController.selectedLanguage.value}",
+        {'id': id},
+        code: 200,
+        showResult: true,
+      );
+      if (mapResponse != null && mapResponse['success'] == true) {
+        return true;
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from delete policy api service => $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong!');
+      return false;
+    }
+    return false;
+  }
+
   // update delivery number
   Future<CommonSuccessModel?> escrowDeliveryUpdateApi({
     required Map<String, dynamic> body,

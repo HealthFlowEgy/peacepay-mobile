@@ -117,6 +117,22 @@ class ProfileScreen extends GetView<ProfileController> {
                     text: Strings.changePassword,
                     icon: Icons.lock_outline,
                   ),
+                  Obx(() {
+                    // Only show Policies for merchant users
+                    final isMerchant =
+                        Get.find<UpdateProfileController>().userType.value ==
+                            "seller";
+                    return Visibility(
+                      visible: isMerchant,
+                      child: DrawerTileButtonWidget(
+                        onTap: () {
+                          Get.toNamed(Routes.policiesScreen);
+                        },
+                        text: 'My Policies',
+                        icon: Icons.policy_outlined,
+                      ),
+                    );
+                  }),
                   // DrawerTileButtonWidget(
                   //   onTap: () {
                   //     Navigator.push(

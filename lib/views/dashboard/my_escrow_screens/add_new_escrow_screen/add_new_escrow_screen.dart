@@ -118,11 +118,7 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
               controller: controller.titleController,
               labelText: Strings.title,
             ),
-            verticalSpace(Dimensions.marginBetweenInputBox * .8),
-
-            // ✅ FIXED widget return here
-            _userPolicyDropDown(context),
-            verticalSpace(Dimensions.paddingSizeVertical * 0.8),
+            verticalSpace(Dimensions.paddingSizeVertical * 0),
             Obx(() {
               final policy = controller.selectedPolicy.value;
               if (policy != null && policy.fields?.hasAdvancedPayment == "1") {
@@ -207,7 +203,10 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
                 child: _currencyDropDown(context),
               ),
             ),
+            verticalSpace(Dimensions.marginBetweenInputBox * .8),
 
+            // FIXED widget return here
+            _userPolicyDropDown(context),
             verticalSpace(Dimensions.marginBetweenInputBox * .8),
             PrimaryTextInputWidget(
               controller: controller.remarksController,
@@ -235,7 +234,7 @@ class AddNewEscrowScreen extends GetView<AddNewEscrowController> {
     );
   }
 
-  /// ✅ FIXED: always returns a Widget now
+  /// FIXED: always returns a Widget now
   Widget _userPolicyDropDown(BuildContext context) {
     return Obx(() {
       final policies = [CreatePolicyItem(), ...controller.userPolicy];

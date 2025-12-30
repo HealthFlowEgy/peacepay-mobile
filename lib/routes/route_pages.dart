@@ -56,6 +56,8 @@ import '../views/dashboard/profiles_screens/change_pass_screen/change_pass_scree
 import '../views/dashboard/profiles_screens/fa_security_screen/fa_security_screen.dart';
 import '../views/dashboard/profiles_screens/support_ticket_screen.dart';
 import '../views/dashboard/profiles_screens/update_profile_screen/update_profile_screen.dart';
+import '../views/dashboard/my_escrow_screens/policies_screen/policies_screen.dart';
+import '../bindings/policies_binding.dart';
 
 class RoutePageList {
   static var list = [
@@ -240,6 +242,11 @@ class RoutePageList {
     GetPage(
       name: Routes.transactionsTatumScreen,
       page: () => TransactionTatumScreen(),
+    ),
+    GetPage(
+      name: Routes.policiesScreen,
+      page: () => const PoliciesScreen(),
+      binding: PoliciesBinding(),
     ),
   ];
 }

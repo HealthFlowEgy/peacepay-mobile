@@ -72,6 +72,7 @@ class ApiEndpoint {
   static String escrowSubmitURL = '/user/my-escrow/submit'.addBaseURl();
 // User Policy
   static String userPolicy = '/user/policies'.addBaseURl();
+  static String deletePolicyURL = '/user/policies/delete'.addBaseURl();
   static String escrowConfirmURL =
       '/user/my-escrow/confirm-escrow'.addBaseURl();
   static String escrowManualSubmitURL =

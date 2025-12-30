@@ -19,6 +19,7 @@ import '../../../views/web_view/web_view_screen.dart';
 import '../../../widgets/custom_dropdown_widget/custom_dropdown_widget.dart';
 import '../../../widgets/others/custom_upload_file_widget.dart';
 import '../../auth/kyc_form_controller.dart';
+import '../btm_navs_controller/home_controller.dart';
 
 final log = logger(AddNewEscrowController);
 
@@ -311,26 +312,36 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
     if (selectedMyRole.value == "Buyer") {
       // Note selectedPaymentMethod.value.isEmpty when wallet is selected
       if (selectedPaymentMethod.value.isEmpty) {
-        escrowConfirm().then((value) => Navigator.push(
-            Get.context!,
-            MaterialPageRoute(
-                builder: (context) => ConfirmScreen(
-                      message: value.message!.success!.first,
-                      onApproval: true,
-                      onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
-                    ))));
+        escrowConfirm().then((value) {
+          if (value != null) {
+            Navigator.push(
+                Get.context!,
+                MaterialPageRoute(
+                    builder: (context) => ConfirmScreen(
+                          message: value.message!.success!.first,
+                          onApproval: true,
+                          onOkayTap: () =>
+                              Get.offAllNamed(Routes.dashboardScreen),
+                        )));
+          }
+        });
       } else {
         _onPayment(context);
       }
     } else {
-      escrowConfirm().then((value) => Navigator.push(
-          Get.context!,
-          MaterialPageRoute(
-              builder: (context) => ConfirmScreen(
-                    message: value.message!.success!.first,
-                    onApproval: true,
-                    onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
-                  ))));
+      escrowConfirm().then((value) {
+        if (value != null) {
+          Navigator.push(
+              Get.context!,
+              MaterialPageRoute(
+                  builder: (context) => ConfirmScreen(
+                        message: value.message!.success!.first,
+                        onApproval: true,
+                        onOkayTap: () =>
+                            Get.offAllNamed(Routes.dashboardScreen),
+                      )));
+        }
+      });
     }
   }
 
@@ -388,8 +399,8 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
                 )));
   }
 
-  late CommonSuccessModel _commonSuccessModel;
-  CommonSuccessModel get commonSuccessModel => _commonSuccessModel;
+  CommonSuccessModel? _commonSuccessModel;
+  CommonSuccessModel? get commonSuccessModel => _commonSuccessModel;
 
   late EscrowPaypalPaymentModel _escrowPaypalPaymentModel;
   EscrowPaypalPaymentModel get escrowPaypalPaymentModel =>
@@ -406,7 +417,7 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
   late tatum.TatumModel _escrowTatumPaymentModel;
   tatum.TatumModel get escrowTatumPaymentModel => _escrowTatumPaymentModel;
 
-  Future<CommonSuccessModel> escrowConfirm() async {
+  Future<CommonSuccessModel?> escrowConfirm() async {
     _isSubmitLoading.value = true;
     update();
 
@@ -420,11 +431,42 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
       update();
     }).catchError((onError) {
       log.e(onError);
+      _isSubmitLoading.value = false;
+      update();
+
+      // Check balance and redirect if insufficient
+      if (onError.toString().contains("Insuficiant Balance") ||
+          onError.toString().contains("Insufficient Balance")) {
+        final escrowInfo = escrowSubmitModel.data.escrowInformation;
+        final currentBalance =
+            double.tryParse(selectedCurrencyBalance.value) ?? 0.0;
+        final requiredAmount =
+            double.tryParse(escrowInfo.buyerAmount.toString()) ??
+                0.0; // Buyer pays buyerAmount
+
+        final deficiency = requiredAmount - currentBalance;
+
+        try {
+          final homeController = Get.find<HomeController>();
+          if (homeController.homeModel != null) {
+            final fullWallet = homeController.homeModel!.data.userWallet
+                .firstWhere((w) => w.currencyCode == selectedCurrency.value,
+                    orElse: () =>
+                        homeController.homeModel!.data.userWallet.first);
+
+            Get.toNamed(Routes.addMoneyScreen, arguments: {
+              'wallet': fullWallet,
+              'amount': deficiency.toStringAsFixed(2)
+            });
+          }
+        } catch (e) {
+          log.e("Error redirecting to add money: $e");
+        }
+      }
+      return null;
     });
 
-    _isSubmitLoading.value = false;
-    update();
-    return _commonSuccessModel;
+    return _isSubmitLoading.value ? null : _commonSuccessModel;
   }
 
   Future<EscrowPaypalPaymentModel?> escrowPaypal(BuildContext context) async {
@@ -664,7 +706,8 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
   }
 
   ///* manual submit submit api process
-  Future<CommonSuccessModel> manualSubmitApiProcess() async {
+  ///* manual submit submit api process
+  Future<CommonSuccessModel?> manualSubmitApiProcess() async {
     _isLoading.value = true;
     Map<String, String> inputBody = {
       "trx": escrowSubmitModel.data.escrowInformation.trx,
@@ -701,20 +744,23 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
   onManualSubmit(BuildContext context) {
     if (formManualKey.currentState!.validate()) {
       manualSubmitApiProcess().then((value) {
-        Navigator.push(
-            Get.context!,
-            MaterialPageRoute(
-                builder: (context) => ConfirmScreen(
-                      message: value.message!.success!.first,
-                      onApproval: true,
-                      onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
-                    )));
+        if (value != null) {
+          Navigator.push(
+              Get.context!,
+              MaterialPageRoute(
+                  builder: (context) => ConfirmScreen(
+                        message: value.message!.success!.first,
+                        onApproval: true,
+                        onOkayTap: () =>
+                            Get.offAllNamed(Routes.dashboardScreen),
+                      )));
+        }
       });
     }
   }
 
   ///* manual submit submit api process
-  Future<CommonSuccessModel> tatumSubmitApiProcess() async {
+  Future<CommonSuccessModel?> tatumSubmitApiProcess() async {
     _isLoading.value = true;
     Map<String, String> inputBody = {};
 
@@ -746,14 +792,17 @@ class AddNewEscrowController extends GetxController with EscrowApiService {
   onTatumSubmit(BuildContext context) {
     if (formManualKey.currentState!.validate()) {
       tatumSubmitApiProcess().then((value) {
-        Navigator.push(
-            Get.context!,
-            MaterialPageRoute(
-                builder: (context) => ConfirmScreen(
-                      message: value.message!.success!.first,
-                      onApproval: true,
-                      onOkayTap: () => Get.offAllNamed(Routes.dashboardScreen),
-                    )));
+        if (value != null) {
+          Navigator.push(
+              Get.context!,
+              MaterialPageRoute(
+                  builder: (context) => ConfirmScreen(
+                        message: value.message!.success!.first,
+                        onApproval: true,
+                        onOkayTap: () =>
+                            Get.offAllNamed(Routes.dashboardScreen),
+                      )));
+        }
       });
     }
   }

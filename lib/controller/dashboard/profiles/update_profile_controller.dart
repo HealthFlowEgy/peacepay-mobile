@@ -25,6 +25,9 @@ class UpdateProfileController extends GetxController with ProfileApiService {
   var selectedUserType = 'buyer'.obs;
   final _storage = GetStorage();
 
+  // Observable for current user type (buyer or merchant)
+  final userType = 'buyer'.obs;
+
   final code = "".obs;
   final country = "".obs;
 
@@ -64,6 +67,9 @@ class UpdateProfileController extends GetxController with ProfileApiService {
       typeIsBuyer.value =
           _profileModel.data.user.type == "buyer" ? true : false;
 
+      // Update the observable userType for reactive UI
+      userType.value = _profileModel.data.user.type ?? 'buyer';
+
       firstNameController.text = _profileModel.data.user.firstname;
       lastNameController.text = _profileModel.data.user.lastname;
       numberController.text = _profileModel.data.user.mobile;
@@ -94,7 +100,10 @@ class UpdateProfileController extends GetxController with ProfileApiService {
     update();
 
     try {
-      await profileSwitchApi(userType).then((value) {
+      await profileSwitchApi(userType).then((value) async {
+        // Refresh profile data to update user type
+        await profileDataFetch();
+
         // Handle value if needed
         if (Get.isRegistered<MyEscrowController>()) {
           Get.find<MyEscrowController>().escrowIndexFetch();

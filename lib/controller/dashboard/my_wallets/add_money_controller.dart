@@ -60,10 +60,20 @@ class AddMoneyController extends GetxController with AddMoneyApiService {
     super.dispose();
   }
 
-  final home.UserWallet data = Get.arguments;
+  late home.UserWallet data;
 
   @override
   void onInit() {
+    final arguments = Get.arguments;
+    if (arguments is Map) {
+      data = arguments['wallet'];
+      if (arguments['amount'] != null) {
+        amountController.text = arguments['amount'].toString();
+      }
+    } else {
+      data = arguments;
+    }
+
     debugPrint(data.name);
     debugPrint(data.currencyCode);
     debugPrint(data.balance.toStringAsFixed(2));

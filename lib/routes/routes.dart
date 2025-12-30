@@ -58,4 +58,5 @@ class Routes {
   static const String updateProfileScreen = '/updateProfileScreen';
   static const String faSecurityScreen = '/faSecurityScreen';
   static const String changePasswordScreen = '/changePasswordScreen';
+  static const String policiesScreen = '/policiesScreen';
 }
