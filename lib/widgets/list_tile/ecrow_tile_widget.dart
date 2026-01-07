@@ -3,6 +3,7 @@ import 'package:peacepay/controller/dashboard/profiles/update_profile_controller
 
 import '../../backend/download_file.dart';
 import '../../backend/models/escrow/escrow_index_model.dart';
+import '../../backend/constants/peacelink_constants.dart';
 import '../../utils/basic_widget_imports.dart';
 import '../text_labels/title_heading5_widget.dart';
 import 'status_widget.dart';
@@ -14,6 +15,12 @@ import '../buttons/primary_button.dart';
 import '../../controller/dashboard/btm_navs_controller/my_escrow_controller.dart';
 import '../../widgets/dialog_helper.dart';
 
+/// EscrowTileWidget - Updated based on Re-Engineering Specification v2.0
+/// Bug fixes:
+/// - OTP only visible after DSP assigned
+/// - Correct button labels ("Cancel Order" not "Return Item")
+/// - Cancel button visible for merchants after DSP assignment
+/// - DSP cancel delivery button
 class EscrowTileWidget extends StatefulWidget with DownloadFile {
   const EscrowTileWidget(
       {super.key,
@@ -40,6 +47,49 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
   void dispose() {
     deliveryController.dispose();
     super.dispose();
+  }
+
+  /// Get current user role
+  String get _userRole {
+    return Get.find<UpdateProfileController>().selectedUserType.value;
+  }
+
+  /// Check if OTP should be visible
+  /// BUG FIX: OTP only visible after DSP is assigned
+  bool get _isOtpVisible {
+    return PeaceLinkConstants.isOtpVisibleToBuyer(widget.data.status) &&
+           widget.data.pin_code != null &&
+           widget.data.pin_code.toString().isNotEmpty;
+  }
+
+  /// Check if buyer can cancel
+  bool get _canBuyerCancel {
+    return _userRole == 'buyer' && 
+           PeaceLinkConstants.canBuyerCancel(widget.data.status);
+  }
+
+  /// Check if merchant can cancel
+  /// BUG FIX: Merchant CAN cancel after DSP assignment
+  bool get _canMerchantCancel {
+    return _userRole == 'seller' && 
+           PeaceLinkConstants.canMerchantCancel(widget.data.status);
+  }
+
+  /// Check if DSP can cancel delivery
+  bool get _canDspCancel {
+    return _userRole == 'delivery' && 
+           PeaceLinkConstants.canDspCancel(widget.data.status);
+  }
+
+  /// Check if merchant can assign DSP
+  bool get _canAssignDsp {
+    return _userRole == 'seller' && 
+           PeaceLinkConstants.canAssignDsp(widget.data.status);
+  }
+
+  /// Check if DSP is assigned
+  bool get _isDspAssigned {
+    return PeaceLinkConstants.isDspAssigned(widget.data.status);
   }
 
   @override
@@ -184,12 +234,9 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                   ]),
               child: Column(
                 children: [
+                  // ============ MERCHANT: DSP Assignment Section ============
                   Visibility(
-                    visible: Get.find<UpdateProfileController>()
-                                .selectedUserType
-                                .value ==
-                            'seller' &&
-                        widget.data.status == 1,
+                    visible: _userRole == 'seller' && widget.data.status == 1,
                     child: Column(
                       children: [
                         _divider(),
@@ -204,9 +251,10 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                                   ),
                                   verticalSpace(
                                       Dimensions.marginSizeVertical * .5),
+                                  // BUG FIX: "Change Delivery" button for merchant
                                   PrimaryButton(
-                                    title: "Delete Delivery Number",
-                                    buttonColor: CustomColor.redColor,
+                                    title: "Change Delivery",
+                                    buttonColor: CustomColor.orangeColor,
                                     onPressed: () {
                                       Get.find<MyEscrowController>()
                                           .cancelDeliveryNumber(
@@ -224,7 +272,7 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                                   verticalSpace(
                                       Dimensions.marginSizeVertical * .5),
                                   PrimaryButton(
-                                    title: "Update",
+                                    title: "Assign Delivery",
                                     onPressed: () {
                                       Get.find<MyEscrowController>()
                                           .updateDeliveryNumber(
@@ -237,23 +285,29 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                       ],
                     ),
                   ),
+                  
+                  // ============ BUYER: Cancel Order Button ============
+                  // BUG FIX: Changed label from "Cancel Payment" to "Cancel Order"
                   Visibility(
-                    visible: Get.find<UpdateProfileController>()
-                                .selectedUserType
-                                .value ==
-                            'buyer' &&
-                        widget.data.status == 1,
+                    visible: _canBuyerCancel,
                     child: Column(
                       children: [
                         _divider(),
                         PrimaryButton(
-                          title: "Cancel Payment",
-                          buttonColor: Theme.of(context).primaryColor,
+                          // BUG FIX: Correct label - "Cancel Order" not "Return Item"
+                          title: PeaceLinkConstants.getCancelButtonLabel(
+                            PeaceLinkConstants.ROLE_BUYER,
+                          ),
+                          buttonColor: CustomColor.redColor,
                           onPressed: () {
+                            String warningMessage = _isDspAssigned
+                                ? "Canceling after delivery assignment will forfeit the delivery fee."
+                                : "Are you sure you want to cancel this order?";
+                            
                             DialogHelper.showAlertDialog(
                               context,
-                              title: Strings.cancelOrderPayment,
-                              content: Strings.cancelOrderPaymentMsg,
+                              title: "Cancel Order",
+                              content: warningMessage,
                               btnText: Strings.confirm,
                               onTap: () {
                                 Get.back();
@@ -267,6 +321,74 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                       ],
                     ),
                   ),
+                  
+                  // ============ MERCHANT: Cancel PeaceLink Button ============
+                  // BUG FIX: Show cancel button for merchant even after DSP assignment
+                  Visibility(
+                    visible: _canMerchantCancel,
+                    child: Column(
+                      children: [
+                        _divider(),
+                        PrimaryButton(
+                          title: PeaceLinkConstants.getCancelButtonLabel(
+                            PeaceLinkConstants.ROLE_MERCHANT,
+                          ),
+                          buttonColor: CustomColor.redColor,
+                          onPressed: () {
+                            String warningMessage = _isDspAssigned
+                                ? "Canceling after delivery assignment means you will pay the DSP fee."
+                                : "Are you sure you want to cancel this PeaceLink?";
+                            
+                            DialogHelper.showAlertDialog(
+                              context,
+                              title: "Cancel PeaceLink",
+                              content: warningMessage,
+                              btnText: Strings.confirm,
+                              onTap: () {
+                                Get.back();
+                                Get.find<MyEscrowController>().cancelPayment(
+                                    id: widget.data.id.toString());
+                              },
+                            );
+                          },
+                        ),
+                        verticalSpace(Dimensions.marginSizeVertical * .5),
+                      ],
+                    ),
+                  ),
+                  
+                  // ============ DSP: Cancel Delivery Button ============
+                  // BUG FIX: Add cancel delivery button for DSP
+                  Visibility(
+                    visible: _canDspCancel,
+                    child: Column(
+                      children: [
+                        _divider(),
+                        PrimaryButton(
+                          title: PeaceLinkConstants.getCancelButtonLabel(
+                            PeaceLinkConstants.ROLE_DSP,
+                          ),
+                          buttonColor: CustomColor.orangeColor,
+                          onPressed: () {
+                            DialogHelper.showAlertDialog(
+                              context,
+                              title: "Cancel Delivery",
+                              content: "Are you sure you want to cancel this delivery? The order will be reassigned to another delivery partner.",
+                              btnText: Strings.confirm,
+                              onTap: () {
+                                Get.back();
+                                Get.find<MyEscrowController>()
+                                    .cancelDeliveryNumber(
+                                        id: widget.data.id.toString());
+                              },
+                            );
+                          },
+                        ),
+                        verticalSpace(Dimensions.marginSizeVertical * .5),
+                      ],
+                    ),
+                  ),
+                  
                   SizedBox(
                     height: 15.h,
                   ),
@@ -274,12 +396,38 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                     text: Strings.escrowId,
                     value: widget.data.escrowId,
                   ),
-                  _divider(),
-                  TextValueFormWidget(
-                    text: "OTP",
-                    // value: "3.00",
-                    currency: widget.data.pin_code,
+                  
+                  // ============ OTP Section ============
+                  // BUG FIX: OTP only visible AFTER DSP is assigned
+                  Visibility(
+                    visible: _isOtpVisible,
+                    child: Column(
+                      children: [
+                        _divider(),
+                        TextValueFormWidget(
+                          text: "OTP",
+                          currency: widget.data.pin_code,
+                        ),
+                      ],
+                    ),
                   ),
+                  
+                  // Show "Waiting for DSP" message when OTP not yet visible
+                  Visibility(
+                    visible: !_isOtpVisible && 
+                             widget.data.status == PeaceLinkConstants.SPH_ACTIVE &&
+                             _userRole == 'buyer',
+                    child: Column(
+                      children: [
+                        _divider(),
+                        TextValueFormWidget(
+                          text: "OTP",
+                          value: "Will be shown after delivery is assigned",
+                        ),
+                      ],
+                    ),
+                  ),
+                  
                   _divider(),
                   TextValueFormWidget(
                     text: Strings.title,
@@ -295,7 +443,6 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                   _divider(),
                   TextValueFormWidget(
                     text: Strings.amount,
-                    // value: "100.00",
                     currency: widget.data.amount,
                   ),
                   _divider(),
@@ -306,7 +453,6 @@ class _EscrowTileWidgetState extends State<EscrowTileWidget> {
                   _divider(),
                   TextValueFormWidget(
                     text: Strings.charge,
-                    // value: "3.00",
                     currency: widget.data.totalCharge,
                   ),
                   _divider(),

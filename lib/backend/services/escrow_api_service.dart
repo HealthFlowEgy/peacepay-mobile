@@ -429,7 +429,7 @@ mixin EscrowApiService {
     return null;
   }
 
-  // return payment
+  // return payment (buyer cancels order)
   Future<CommonSuccessModel?> escrowReturnPaymentApi({
     required Map<String, dynamic> body,
   }) async {
@@ -446,6 +446,30 @@ mixin EscrowApiService {
       }
     } catch (e) {
       log.e('🐞🐞🐞 err from return payment api service => $e 🐞🐞🐞');
+      CustomSnackBar.error('Something went Wrong!');
+      return null;
+    }
+    return null;
+  }
+
+  /// Cancel payment (merchant cancels PeaceLink)
+  /// BUG FIX: Added support for merchant cancellation after DSP assignment
+  Future<CommonSuccessModel?> escrowCancelPaymentApi({
+    required Map<String, dynamic> body,
+  }) async {
+    Map<String, dynamic>? mapResponse;
+    try {
+      mapResponse = await ApiMethod(isBasic: false).post(
+        "${ApiEndpoint.cancelPaymentURL}?lang=${languageSettingsController.selectedLanguage.value}",
+        body,
+        code: 200,
+        showResult: true,
+      );
+      if (mapResponse != null) {
+        return CommonSuccessModel.fromJson(mapResponse);
+      }
+    } catch (e) {
+      log.e('🐞🐞🐞 err from cancel payment api service => $e 🐞🐞🐞');
       CustomSnackBar.error('Something went Wrong!');
       return null;
     }

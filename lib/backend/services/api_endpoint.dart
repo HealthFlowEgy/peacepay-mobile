@@ -101,4 +101,13 @@ class ApiEndpoint {
   static String cancelDeliveryURL =
       '/user/api-escrow-action/cancel-delivery'.addBaseURl();
   static String allTransactionsURL = '/user/all-transactions'.addBaseURl();
+
+  // PeaceLink API Endpoints (Re-Engineering v2.0)
+  static String peacelinkBaseURL = '/user/peacelink'.addBaseURl();
+  static String peacelinkDetailsURL(int id) => '/user/peacelink/$id'.addBaseURl();
+  static String peacelinkAssignDspURL(int id) => '/user/peacelink/$id/assign-dsp'.addBaseURl();
+  static String peacelinkChangeDspURL(int id) => '/user/peacelink/$id/change-dsp'.addBaseURl();
+  static String peacelinkCancelURL(int id) => '/user/peacelink/$id/cancel'.addBaseURl();
+  static String peacelinkVerifyOtpURL(int id) => '/user/peacelink/$id/verify-otp'.addBaseURl();
+  static String peacelinkDisputeURL(int id) => '/user/peacelink/$id/dispute'.addBaseURl();
 }

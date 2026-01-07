@@ -2,6 +2,7 @@
 // ignore_for_file: constant_identifier_names
 
 import '../../language/language_controller.dart';
+import '../../backend/constants/peacelink_constants.dart';
 import '../../utils/basic_widget_imports.dart';
 
 class StatusWidget extends StatelessWidget {
@@ -45,53 +46,60 @@ class StatusWidget extends StatelessWidget {
 }
 
 
+/// StatusConstants - Updated based on Re-Engineering Specification v2.0
+/// Added new PeaceLink states while maintaining backward compatibility
 class StatusConstants {
   static String getStatusString(int statusCode) {
-    switch (statusCode) {
-      case ONGOING:
-        return Strings.ongoing;
-      case PAYMENT_PENDING:
-        return Strings.paymentPending;
-      case APPROVAL_PENDING:
-        return Strings.approvalPending;
-      case RELEASED:
-        return Strings.released;
-      case ACTIVE_DISPUTE:
-        return Strings.activeDispute;
-      case DISPUTED:
-        return Strings.disputed;
-      case CANCELED:
-        return Strings.canceled;
-      case REFUNDED:
-        return Strings.refunded;
-      case PAYMENT_WAITING:
-        return Strings.paymentWaiting;
-      default:
-        return "Unknown Status";
-    }
+    // Use new PeaceLinkConstants for status names
+    return PeaceLinkConstants.getStatusName(statusCode);
   }
 
   static Color getStatusColor(int statusCode) {
     switch (statusCode) {
-      case 1:
-      case 2:
-      case 3:
-      case 9:
-        return Colors.orange;
-      case 4:
-      case 8:
+      // Success states
+      case PeaceLinkConstants.DELIVERED:
+      case RELEASED:
+      case REFUNDED:
         return Colors.green;
-      case 5:
+      
+      // Active/In-progress states
+      case PeaceLinkConstants.SPH_ACTIVE:
+      case ONGOING:
         return Colors.blue;
-      case 6:
-      case 7:
+      
+      // Pending states
+      case PeaceLinkConstants.PENDING_APPROVAL:
+      case APPROVAL_PENDING:
+      case PAYMENT_PENDING:
+      case PAYMENT_WAITING:
+        return Colors.orange;
+      
+      // DSP states (new)
+      case PeaceLinkConstants.DSP_ASSIGNED:
+      case PeaceLinkConstants.OTP_GENERATED:
+      case PeaceLinkConstants.IN_TRANSIT:
+        return Colors.blueAccent;
+      
+      // Canceled/Error states
+      case PeaceLinkConstants.CANCELED:
+      case CANCELED:
+      case PeaceLinkConstants.EXPIRED:
         return Colors.red;
+      
+      // Dispute states
+      case PeaceLinkConstants.ACTIVE_DISPUTE:
+      case ACTIVE_DISPUTE:
+        return Colors.deepOrange;
+      case DISPUTED:
+      case PeaceLinkConstants.DISPUTE_RESOLVED:
+        return Colors.purple;
+      
       default:
-        return Colors.black; // Default color if status code doesn't match any condition
+        return Colors.black;
     }
   }
 
-
+  // Legacy constants (for backward compatibility)
   static const ONGOING = 1;
   static const PAYMENT_PENDING = 2;
   static const APPROVAL_PENDING = 3;
@@ -101,4 +109,11 @@ class StatusConstants {
   static const CANCELED = 7;
   static const REFUNDED = 8;
   static const PAYMENT_WAITING = 9;
+  
+  // New PeaceLink states
+  static const DSP_ASSIGNED = PeaceLinkConstants.DSP_ASSIGNED;
+  static const OTP_GENERATED = PeaceLinkConstants.OTP_GENERATED;
+  static const IN_TRANSIT = PeaceLinkConstants.IN_TRANSIT;
+  static const DELIVERED = PeaceLinkConstants.DELIVERED;
+  static const EXPIRED = PeaceLinkConstants.EXPIRED;
 }
