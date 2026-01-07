@@ -1,0 +1,602 @@
+{
+  "peacepay": {
+    "meta": {
+      "version": "2.0.0",
+      "name": "PeacePay Design System",
+      "description": "Design tokens for PeacePay/PeaceLink escrow platform",
+      "lastUpdated": "2026-01-07"
+    },
+    
+    "colors": {
+      "primary": {
+        "green": {
+          "value": "#2E7D32",
+          "type": "color",
+          "description": "Primary brand color - Trust and security"
+        },
+        "green-dark": {
+          "value": "#1B5E20",
+          "type": "color",
+          "description": "Dark primary for emphasis"
+        },
+        "green-light": {
+          "value": "#4CAF50",
+          "type": "color",
+          "description": "Light primary for backgrounds"
+        }
+      },
+      
+      "secondary": {
+        "blue": {
+          "value": "#1976D2",
+          "type": "color",
+          "description": "Secondary color for links and info"
+        },
+        "blue-light": {
+          "value": "#42A5F5",
+          "type": "color",
+          "description": "Light blue for accents"
+        }
+      },
+      
+      "semantic": {
+        "error": {
+          "value": "#D32F2F",
+          "type": "color",
+          "description": "Error states, cancellations"
+        },
+        "error-light": {
+          "value": "#FFEBEE",
+          "type": "color",
+          "description": "Error background"
+        },
+        "warning": {
+          "value": "#F57C00",
+          "type": "color",
+          "description": "Warning states, pending"
+        },
+        "warning-light": {
+          "value": "#FFF3E0",
+          "type": "color",
+          "description": "Warning background"
+        },
+        "success": {
+          "value": "#388E3C",
+          "type": "color",
+          "description": "Success states, delivered"
+        },
+        "success-light": {
+          "value": "#E8F5E9",
+          "type": "color",
+          "description": "Success background"
+        },
+        "info": {
+          "value": "#0288D1",
+          "type": "color",
+          "description": "Information states"
+        },
+        "info-light": {
+          "value": "#E1F5FE",
+          "type": "color",
+          "description": "Info background"
+        }
+      },
+      
+      "neutral": {
+        "background": {
+          "value": "#F5F5F5",
+          "type": "color",
+          "description": "Page background"
+        },
+        "surface": {
+          "value": "#FFFFFF",
+          "type": "color",
+          "description": "Card and modal surfaces"
+        },
+        "surface-variant": {
+          "value": "#FAFAFA",
+          "type": "color",
+          "description": "Secondary surfaces"
+        },
+        "divider": {
+          "value": "#E0E0E0",
+          "type": "color",
+          "description": "Dividers and borders"
+        }
+      },
+      
+      "text": {
+        "primary": {
+          "value": "#212121",
+          "type": "color",
+          "description": "Main text color"
+        },
+        "secondary": {
+          "value": "#757575",
+          "type": "color",
+          "description": "Supporting text"
+        },
+        "tertiary": {
+          "value": "#9E9E9E",
+          "type": "color",
+          "description": "Disabled and hint text"
+        },
+        "on-primary": {
+          "value": "#FFFFFF",
+          "type": "color",
+          "description": "Text on primary color"
+        },
+        "on-dark": {
+          "value": "#FFFFFF",
+          "type": "color",
+          "description": "Text on dark backgrounds"
+        }
+      },
+      
+      "status": {
+        "created": {
+          "value": "#9E9E9E",
+          "type": "color",
+          "description": "Created status badge"
+        },
+        "pending": {
+          "value": "#F57C00",
+          "type": "color",
+          "description": "Pending approval status"
+        },
+        "active": {
+          "value": "#1976D2",
+          "type": "color",
+          "description": "SPH active status"
+        },
+        "assigned": {
+          "value": "#7B1FA2",
+          "type": "color",
+          "description": "DSP assigned status"
+        },
+        "in-transit": {
+          "value": "#0288D1",
+          "type": "color",
+          "description": "In transit status"
+        },
+        "delivered": {
+          "value": "#388E3C",
+          "type": "color",
+          "description": "Delivered status"
+        },
+        "canceled": {
+          "value": "#D32F2F",
+          "type": "color",
+          "description": "Canceled status"
+        },
+        "disputed": {
+          "value": "#E64A19",
+          "type": "color",
+          "description": "Disputed status"
+        },
+        "resolved": {
+          "value": "#00796B",
+          "type": "color",
+          "description": "Resolved status"
+        },
+        "expired": {
+          "value": "#616161",
+          "type": "color",
+          "description": "Expired status"
+        }
+      },
+      
+      "gradient": {
+        "wallet": {
+          "value": "linear-gradient(135deg, #2E7D32 0%, #00796B 100%)",
+          "type": "gradient",
+          "description": "Wallet card gradient"
+        }
+      },
+      
+      "dark": {
+        "background": {
+          "value": "#121212",
+          "type": "color"
+        },
+        "surface": {
+          "value": "#1E1E1E",
+          "type": "color"
+        },
+        "surface-variant": {
+          "value": "#2C2C2C",
+          "type": "color"
+        }
+      }
+    },
+    
+    "typography": {
+      "font-family": {
+        "arabic": {
+          "value": "Cairo",
+          "type": "fontFamily",
+          "description": "Primary Arabic font"
+        },
+        "latin": {
+          "value": "Inter",
+          "type": "fontFamily",
+          "description": "Fallback Latin font"
+        }
+      },
+      
+      "font-weight": {
+        "regular": {
+          "value": "400",
+          "type": "fontWeight"
+        },
+        "medium": {
+          "value": "500",
+          "type": "fontWeight"
+        },
+        "semibold": {
+          "value": "600",
+          "type": "fontWeight"
+        },
+        "bold": {
+          "value": "700",
+          "type": "fontWeight"
+        }
+      },
+      
+      "display": {
+        "large": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "32px",
+          "font-weight": "{typography.font-weight.bold}",
+          "line-height": "1.25",
+          "type": "typography"
+        }
+      },
+      
+      "headline": {
+        "large": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "24px",
+          "font-weight": "{typography.font-weight.semibold}",
+          "line-height": "1.33",
+          "type": "typography"
+        },
+        "medium": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "20px",
+          "font-weight": "{typography.font-weight.semibold}",
+          "line-height": "1.4",
+          "type": "typography"
+        },
+        "small": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "18px",
+          "font-weight": "{typography.font-weight.medium}",
+          "line-height": "1.44",
+          "type": "typography"
+        }
+      },
+      
+      "body": {
+        "large": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "16px",
+          "font-weight": "{typography.font-weight.regular}",
+          "line-height": "1.5",
+          "type": "typography"
+        },
+        "medium": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "14px",
+          "font-weight": "{typography.font-weight.regular}",
+          "line-height": "1.43",
+          "type": "typography"
+        },
+        "small": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "12px",
+          "font-weight": "{typography.font-weight.regular}",
+          "line-height": "1.33",
+          "type": "typography"
+        }
+      },
+      
+      "label": {
+        "large": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "14px",
+          "font-weight": "{typography.font-weight.medium}",
+          "line-height": "1.43",
+          "letter-spacing": "0.1px",
+          "type": "typography"
+        },
+        "medium": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "12px",
+          "font-weight": "{typography.font-weight.medium}",
+          "line-height": "1.33",
+          "letter-spacing": "0.5px",
+          "type": "typography"
+        },
+        "small": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "11px",
+          "font-weight": "{typography.font-weight.medium}",
+          "line-height": "1.45",
+          "letter-spacing": "0.5px",
+          "type": "typography"
+        }
+      },
+      
+      "button": {
+        "font-family": "{typography.font-family.arabic}",
+        "font-size": "16px",
+        "font-weight": "{typography.font-weight.semibold}",
+        "line-height": "1.5",
+        "letter-spacing": "0.5px",
+        "type": "typography"
+      },
+      
+      "amount": {
+        "regular": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "24px",
+          "font-weight": "{typography.font-weight.bold}",
+          "line-height": "1.33",
+          "type": "typography"
+        },
+        "large": {
+          "font-family": "{typography.font-family.arabic}",
+          "font-size": "32px",
+          "font-weight": "{typography.font-weight.bold}",
+          "line-height": "1.25",
+          "type": "typography"
+        }
+      }
+    },
+    
+    "spacing": {
+      "xs": {
+        "value": "4px",
+        "type": "spacing"
+      },
+      "sm": {
+        "value": "8px",
+        "type": "spacing"
+      },
+      "md": {
+        "value": "16px",
+        "type": "spacing"
+      },
+      "lg": {
+        "value": "24px",
+        "type": "spacing"
+      },
+      "xl": {
+        "value": "32px",
+        "type": "spacing"
+      },
+      "xxl": {
+        "value": "48px",
+        "type": "spacing"
+      },
+      "screen-padding": {
+        "value": "16px",
+        "type": "spacing"
+      },
+      "card-padding": {
+        "value": "16px",
+        "type": "spacing"
+      },
+      "section-gap": {
+        "value": "24px",
+        "type": "spacing"
+      },
+      "item-gap": {
+        "value": "12px",
+        "type": "spacing"
+      }
+    },
+    
+    "borderRadius": {
+      "sm": {
+        "value": "4px",
+        "type": "borderRadius"
+      },
+      "md": {
+        "value": "8px",
+        "type": "borderRadius"
+      },
+      "lg": {
+        "value": "12px",
+        "type": "borderRadius"
+      },
+      "xl": {
+        "value": "16px",
+        "type": "borderRadius"
+      },
+      "full": {
+        "value": "100px",
+        "type": "borderRadius"
+      }
+    },
+    
+    "shadow": {
+      "sm": {
+        "value": "0 1px 2px rgba(0, 0, 0, 0.05)",
+        "type": "boxShadow"
+      },
+      "md": {
+        "value": "0 2px 8px rgba(0, 0, 0, 0.08)",
+        "type": "boxShadow"
+      },
+      "lg": {
+        "value": "0 4px 16px rgba(0, 0, 0, 0.12)",
+        "type": "boxShadow"
+      },
+      "wallet": {
+        "value": "0 4px 12px rgba(46, 125, 50, 0.3)",
+        "type": "boxShadow",
+        "description": "Wallet card shadow with brand color"
+      }
+    },
+    
+    "animation": {
+      "duration": {
+        "fast": {
+          "value": "150ms",
+          "type": "duration"
+        },
+        "normal": {
+          "value": "250ms",
+          "type": "duration"
+        },
+        "slow": {
+          "value": "300ms",
+          "type": "duration"
+        }
+      },
+      "easing": {
+        "ease-in": {
+          "value": "cubic-bezier(0.4, 0, 1, 1)",
+          "type": "cubicBezier"
+        },
+        "ease-out": {
+          "value": "cubic-bezier(0, 0, 0.2, 1)",
+          "type": "cubicBezier"
+        },
+        "ease-in-out": {
+          "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+          "type": "cubicBezier"
+        }
+      }
+    },
+    
+    "components": {
+      "button": {
+        "height": {
+          "value": "48px",
+          "type": "sizing"
+        },
+        "min-width": {
+          "value": "120px",
+          "type": "sizing"
+        },
+        "padding-horizontal": {
+          "value": "24px",
+          "type": "spacing"
+        },
+        "border-radius": {
+          "value": "{borderRadius.md}",
+          "type": "borderRadius"
+        }
+      },
+      
+      "input": {
+        "height": {
+          "value": "48px",
+          "type": "sizing"
+        },
+        "padding-horizontal": {
+          "value": "16px",
+          "type": "spacing"
+        },
+        "border-radius": {
+          "value": "{borderRadius.md}",
+          "type": "borderRadius"
+        },
+        "border-color-default": {
+          "value": "{colors.neutral.divider}",
+          "type": "color"
+        },
+        "border-color-focus": {
+          "value": "{colors.primary.green}",
+          "type": "color"
+        },
+        "border-color-error": {
+          "value": "{colors.semantic.error}",
+          "type": "color"
+        }
+      },
+      
+      "card": {
+        "padding": {
+          "value": "16px",
+          "type": "spacing"
+        },
+        "border-radius": {
+          "value": "{borderRadius.lg}",
+          "type": "borderRadius"
+        },
+        "shadow": {
+          "value": "{shadow.md}",
+          "type": "boxShadow"
+        },
+        "background": {
+          "value": "{colors.neutral.surface}",
+          "type": "color"
+        }
+      },
+      
+      "badge": {
+        "padding-horizontal": {
+          "value": "16px",
+          "type": "spacing"
+        },
+        "padding-vertical": {
+          "value": "4px",
+          "type": "spacing"
+        },
+        "border-radius": {
+          "value": "{borderRadius.full}",
+          "type": "borderRadius"
+        }
+      },
+      
+      "bottom-sheet": {
+        "border-radius-top": {
+          "value": "{borderRadius.xl}",
+          "type": "borderRadius"
+        },
+        "handle-width": {
+          "value": "40px",
+          "type": "sizing"
+        },
+        "handle-height": {
+          "value": "4px",
+          "type": "sizing"
+        }
+      },
+      
+      "otp-input": {
+        "box-size": {
+          "value": "48px",
+          "type": "sizing"
+        },
+        "box-height": {
+          "value": "56px",
+          "type": "sizing"
+        },
+        "gap": {
+          "value": "8px",
+          "type": "spacing"
+        }
+      }
+    },
+    
+    "icons": {
+      "status": {
+        "created": "plus-circle",
+        "pending": "clock",
+        "active": "lock",
+        "assigned": "truck",
+        "in-transit": "navigation",
+        "delivered": "check-circle",
+        "canceled": "x-circle",
+        "disputed": "alert-triangle",
+        "resolved": "shield-check",
+        "expired": "clock-x"
+      }
+    }
+  }
+}
