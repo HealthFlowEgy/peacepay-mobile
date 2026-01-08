@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "92790029782",
+    "project_id": "peacepay-7ad55",
+    "storage_bucket": "peacepay-7ad55.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:92790029782:android:bd897f25a1440a3f7c3877",
+        "android_client_info": {
+          "package_name": "com.peacepay.pay"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9dyLu-8Gxqy4Gt1yWbDx2r_1dNp0WbT4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
