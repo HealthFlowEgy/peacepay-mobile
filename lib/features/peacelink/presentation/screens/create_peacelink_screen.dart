@@ -32,6 +32,13 @@ class _CreatePeaceLinkScreenState extends ConsumerState<CreatePeaceLinkScreen> {
   final _deliveryAddressController = TextEditingController();
   final _deliveryFeeController = TextEditingController(text: '50');
   String _deliveryFeePayer = 'buyer';
+  
+  // Policy settings
+  bool _enableAdvancePayment = false;
+  double _advancePaymentPercentage = 50;
+
+  // REMOVED: DSP wallet field - should not be set before buyer approves
+  // Per bug report: "Merchant Can Add DSP Wallet Before Buyer Approves PoD Request"
 
   @override
   void dispose() {
@@ -47,7 +54,12 @@ class _CreatePeaceLinkScreenState extends ConsumerState<CreatePeaceLinkScreen> {
 
   double get _itemPrice => double.tryParse(_itemPriceController.text) ?? 0;
   double get _deliveryFee => double.tryParse(_deliveryFeeController.text) ?? 0;
+  double get _advanceAmount => _enableAdvancePayment ? (_itemPrice * _advancePaymentPercentage / 100) : 0;
   double get _total => _itemPrice + _deliveryFee;
+  
+  // Fee calculations for merchant preview
+  double get _merchantFee => (_itemPrice * 0.01) + 3; // 1% + 3 EGP
+  double get _merchantNetItem => _itemPrice - _merchantFee;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -63,6 +75,9 @@ class _CreatePeaceLinkScreenState extends ConsumerState<CreatePeaceLinkScreen> {
       'delivery_address': _deliveryAddressController.text,
       'delivery_fee': _deliveryFee,
       'delivery_fee_payer': _deliveryFeePayer,
+      'advance_payment_enabled': _enableAdvancePayment,
+      'advance_payment_percentage': _enableAdvancePayment ? _advancePaymentPercentage : 0,
+      // NOTE: DSP wallet is NOT included - will be assigned after buyer approves
     });
 
     setState(() => _isLoading = false);
@@ -207,6 +222,34 @@ class _CreatePeaceLinkScreenState extends ConsumerState<CreatePeaceLinkScreen> {
                       return null;
                     },
                   ),
+                  
+                  // Advance Payment Toggle
+                  const SizedBox(height: 16),
+                  SwitchListTile(
+                    title: const Text('تفعيل الدفع المقدم'),
+                    subtitle: const Text('استلام جزء من المبلغ قبل التوصيل'),
+                    value: _enableAdvancePayment,
+                    onChanged: (value) => setState(() => _enableAdvancePayment = value),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  
+                  if (_enableAdvancePayment) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Text('نسبة الدفع المقدم: '),
+                        Text('${_advancePaymentPercentage.toInt()}%', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    Slider(
+                      value: _advancePaymentPercentage,
+                      min: 10,
+                      max: 90,
+                      divisions: 8,
+                      label: '${_advancePaymentPercentage.toInt()}%',
+                      onChanged: (value) => setState(() => _advancePaymentPercentage = value),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -238,6 +281,12 @@ class _CreatePeaceLinkScreenState extends ConsumerState<CreatePeaceLinkScreen> {
                     textDirection: TextDirection.ltr,
                     prefixIcon: Icons.local_shipping,
                     onChanged: (_) => setState(() {}),
+                    validator: (value) {
+                      final fee = double.tryParse(value ?? '');
+                      if (fee == null || fee < 0) return 'رسوم التوصيل غير صحيحة';
+                      if (fee == 0) return 'رسوم التوصيل لا يمكن أن تكون صفر';
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
                   const Align(
@@ -264,9 +313,32 @@ class _CreatePeaceLinkScreenState extends ConsumerState<CreatePeaceLinkScreen> {
                       ),
                     ],
                   ),
+                  
+                  // INFO: DSP will be assigned after buyer approves
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.info.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.info_outline, color: AppColors.info, size: 20),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'سيتم تعيين مندوب التوصيل بعد موافقة المشتري على الطلب',
+                            style: TextStyle(color: AppColors.info, fontSize: 13),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
                   const SizedBox(height: 24),
 
-                  // Summary
+                  // Summary with separated fees for merchant
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -274,14 +346,36 @@ class _CreatePeaceLinkScreenState extends ConsumerState<CreatePeaceLinkScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const Text('ملخص الطلب', style: TextStyle(fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 12),
                         _SummaryRow(label: 'سعر المنتج', value: '${_itemPrice.toStringAsFixed(0)} ج.م'),
                         _SummaryRow(label: 'رسوم التوصيل', value: '${_deliveryFee.toStringAsFixed(0)} ج.م'),
+                        if (_enableAdvancePayment)
+                          _SummaryRow(
+                            label: 'الدفعة المقدمة (${_advancePaymentPercentage.toInt()}%)',
+                            value: '${_advanceAmount.toStringAsFixed(0)} ج.م',
+                            valueColor: AppColors.info,
+                          ),
                         const Divider(),
                         _SummaryRow(
-                          label: 'الإجمالي',
+                          label: 'إجمالي المشتري',
                           value: '${_total.toStringAsFixed(0)} ج.م',
                           isBold: true,
+                        ),
+                        const Divider(),
+                        // Show merchant fees separately
+                        _SummaryRow(
+                          label: 'رسوم المنصة (1% + 3)',
+                          value: '-${_merchantFee.toStringAsFixed(1)} ج.م',
+                          valueColor: AppColors.error,
+                        ),
+                        _SummaryRow(
+                          label: 'صافي المنتج لك',
+                          value: '${_merchantNetItem.toStringAsFixed(1)} ج.م',
+                          isBold: true,
+                          valueColor: AppColors.success,
                         ),
                       ],
                     ),
@@ -332,8 +426,9 @@ class _SummaryRow extends StatelessWidget {
   final String label;
   final String value;
   final bool isBold;
+  final Color? valueColor;
 
-  const _SummaryRow({required this.label, required this.value, this.isBold = false});
+  const _SummaryRow({required this.label, required this.value, this.isBold = false, this.valueColor});
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +438,7 @@ class _SummaryRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
-          Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.w500, color: isBold ? AppColors.primary : null)),
+          Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.w500, color: valueColor ?? (isBold ? AppColors.primary : null))),
         ],
       ),
     );

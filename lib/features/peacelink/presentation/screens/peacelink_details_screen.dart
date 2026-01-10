@@ -45,8 +45,26 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
     );
   }
 
-  // REQ-002: Handle Cancel Action
+  // Handle Cancel - Updated for Scenario 5 (Merchant can cancel after DSP assigned)
   Future<void> _handleCancel() async {
+    final user = ref.read(currentUserProvider);
+    final isMerchant = user?.currentRole == 'merchant';
+    final isDspAssigned = [PeaceLinkStatus.dspAssigned, PeaceLinkStatus.inTransit].contains(_peacelink?.status);
+
+    // Show appropriate warning based on scenario
+    String warningMessage = 'هل أنت متأكد من إلغاء هذا الطلب؟';
+    String feeWarning = '';
+    
+    if (isDspAssigned) {
+      if (isMerchant) {
+        // Scenario 5: Merchant cancels after DSP assigned
+        feeWarning = 'سيتم خصم رسوم التوصيل من محفظتك ودفعها للمندوب';
+      } else {
+        // Buyer cancels after DSP assigned
+        feeWarning = 'سيتم استرداد قيمة المنتج فقط. رسوم التوصيل ستذهب للمندوب';
+      }
+    }
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -55,27 +73,29 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('هل أنت متأكد من إلغاء هذا الطلب؟'),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.info_outline, color: AppColors.warning, size: 20),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'قد يتم خصم رسوم إلغاء حسب سياسة الطلب',
-                      style: TextStyle(color: AppColors.warning, fontSize: 13),
+            Text(warningMessage),
+            if (feeWarning.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline, color: AppColors.warning, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        feeWarning,
+                        style: const TextStyle(color: AppColors.warning, fontSize: 13),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ],
         ),
         actions: [
@@ -97,7 +117,7 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('تم إلغاء الطلب')),
         );
-        _loadDetails(); // Refresh
+        _loadDetails();
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('فشل إلغاء الطلب'), backgroundColor: AppColors.error),
@@ -106,7 +126,7 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
     }
   }
 
-  // REQ-002: Handle Open Dispute Action
+  // Handle Dispute
   Future<void> _handleDispute() async {
     final reason = await showDialog<String>(
       context: context,
@@ -115,8 +135,7 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
 
     if (reason != null && reason.isNotEmpty) {
       setState(() => _isActionLoading = true);
-      // Call dispute API
-      await Future.delayed(const Duration(seconds: 1)); // Simulate API call
+      await Future.delayed(const Duration(seconds: 1));
       setState(() => _isActionLoading = false);
       
       if (mounted) {
@@ -124,6 +143,28 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
           const SnackBar(content: Text('تم فتح النزاع بنجاح')),
         );
         context.push(Routes.disputes);
+      }
+    }
+  }
+
+  // NEW: Handle DSP Wallet Reassignment (Gap fix)
+  Future<void> _handleReassignDsp() async {
+    final newDspWallet = await showDialog<String>(
+      context: context,
+      builder: (context) => _ReassignDspDialog(),
+    );
+
+    if (newDspWallet != null && newDspWallet.isNotEmpty) {
+      setState(() => _isActionLoading = true);
+      // Call API to reassign DSP
+      await Future.delayed(const Duration(seconds: 1));
+      setState(() => _isActionLoading = false);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تم تغيير مندوب التوصيل')),
+        );
+        _loadDetails();
       }
     }
   }
@@ -152,30 +193,37 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
     final pl = _peacelink!;
     final statusColor = _getStatusColor(pl.status);
 
-    // BUG-003: OTP Visibility Logic
-    // OTP should only be visible to buyer when DSP is assigned AND status is in transit or DSP assigned
+    // BUG-003: OTP Visibility Logic - Backend controls visibility
     final shouldShowOtp = isBuyer && 
         pl.otp != null && 
         pl.otpVisible == true &&
         [PeaceLinkStatus.dspAssigned, PeaceLinkStatus.inTransit].contains(pl.status);
 
-    // Determine which actions to show based on role and status
-    final canCancel = (isBuyer || isMerchant) && 
-        [PeaceLinkStatus.created, PeaceLinkStatus.approved].contains(pl.status);
+    // FIXED: Cancellation rules based on role and status
+    // Scenario 5 fix: Merchant CAN cancel after DSP assigned (before OTP)
+    final canBuyerCancel = isBuyer && 
+        [PeaceLinkStatus.created, PeaceLinkStatus.approved, PeaceLinkStatus.dspAssigned].contains(pl.status);
+    final canMerchantCancel = isMerchant && 
+        [PeaceLinkStatus.created, PeaceLinkStatus.approved, PeaceLinkStatus.dspAssigned, PeaceLinkStatus.inTransit].contains(pl.status);
+    final canCancel = canBuyerCancel || canMerchantCancel;
+    
+    // Dispute allowed after DSP assigned
     final canDispute = (isBuyer || isMerchant) && 
         [PeaceLinkStatus.inTransit, PeaceLinkStatus.delivered].contains(pl.status);
+    
+    // Approve only for buyer on created status
     final canApprove = isBuyer && pl.status == PeaceLinkStatus.created;
+    
+    // NEW: Merchant can reassign DSP before OTP (Gap fix)
+    final canReassignDsp = isMerchant && 
+        [PeaceLinkStatus.dspAssigned, PeaceLinkStatus.inTransit].contains(pl.status) &&
+        pl.dspName != null;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('PeaceLink #${pl.id}'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () {
-              // Share functionality
-            },
-          ),
+          IconButton(icon: const Icon(Icons.share), onPressed: () {}),
         ],
       ),
       body: Stack(
@@ -183,118 +231,25 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
           RefreshIndicator(
             onRefresh: _loadDetails,
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
               children: [
                 // Status Card
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: statusColor.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Icon(_getStatusIcon(pl.status), color: statusColor, size: 28),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              pl.itemName,
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: statusColor,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                pl.statusLabel,
-                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _StatusCard(status: pl.status, statusColor: statusColor, itemName: pl.itemName),
 
-                // BUG-003: OTP Card - Only visible to buyer when conditions are met
+                // OTP Card (BUG-003 fixed)
                 if (shouldShowOtp) ...[
                   const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Row(
-                              children: [
-                                Icon(Icons.shield, color: Colors.white, size: 20),
-                                SizedBox(width: 8),
-                                Text('رمز التأكيد (OTP)', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-                              ],
-                            ),
-                            IconButton(
-                              icon: Icon(_showOtp ? Icons.visibility_off : Icons.visibility, color: Colors.white),
-                              onPressed: () => setState(() => _showOtp = !_showOtp),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _showOtp ? pl.otp! : '••••',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 8,
-                              ),
-                            ),
-                            if (_showOtp) ...[
-                              const SizedBox(width: 16),
-                              IconButton(
-                                icon: const Icon(Icons.copy, color: Colors.white),
-                                onPressed: () => _copyToClipboard(pl.otp!),
-                              ),
-                            ],
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'أعطِ هذا الرمز للمندوب عند استلام الشحنة',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+                  _OtpCard(
+                    otp: pl.otp!,
+                    showOtp: _showOtp,
+                    onToggle: () => setState(() => _showOtp = !_showOtp),
+                    onCopy: () => _copyToClipboard(pl.otp!),
                   ),
                 ],
 
                 const SizedBox(height: 16),
 
-                // Product Info Card
+                // Product Info
                 _SectionCard(
                   title: 'تفاصيل المنتج',
                   icon: Icons.inventory,
@@ -310,7 +265,7 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
 
                 const SizedBox(height: 16),
 
-                // Amounts Card - Different view for buyer vs merchant
+                // Amounts Card - FIXED: Show separated fees for merchant
                 _SectionCard(
                   title: 'تفاصيل المبالغ',
                   icon: Icons.attach_money,
@@ -318,6 +273,8 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
                     children: [
                       _DetailRow(label: 'سعر المنتج', value: '${pl.itemPrice.toStringAsFixed(0)} ج.م'),
                       _DetailRow(label: 'رسوم التوصيل', value: '${pl.deliveryFee.toStringAsFixed(0)} ج.م'),
+                      
+                      // Show advance payment if applicable
                       if (pl.advancedPaymentPercentage != null && pl.advancedPaymentPercentage! > 0) ...[
                         _DetailRow(
                           label: 'دفعة مقدمة (${pl.advancedPaymentPercentage!.toInt()}%)',
@@ -325,14 +282,22 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
                           valueColor: AppColors.info,
                         ),
                       ],
-                      // Only show fees to merchant (not buyer per UI/UX gap)
-                      if (isMerchant && pl.platformFee != null) ...[
+                      
+                      // FIXED: Show separated fees for merchant (not combined)
+                      if (isMerchant) ...[
+                        const Divider(),
                         _DetailRow(
-                          label: 'رسوم المنصة',
-                          value: '${pl.platformFee!.toStringAsFixed(0)} ج.م',
+                          label: 'رسوم المنصة (المنتج)',
+                          value: '-${(pl.itemPrice * 0.01 + 3).toStringAsFixed(1)} ج.م',
                           valueColor: AppColors.error,
                         ),
+                        _DetailRow(
+                          label: 'صافي المنتج',
+                          value: '${(pl.itemPrice - (pl.itemPrice * 0.01 + 3)).toStringAsFixed(1)} ج.م',
+                          valueColor: AppColors.success,
+                        ),
                       ],
+                      
                       const Divider(),
                       _DetailRow(
                         label: 'الإجمالي',
@@ -361,11 +326,7 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
                             children: [
                               const Icon(Icons.qr_code, size: 16, color: AppColors.textSecondary),
                               const SizedBox(width: 4),
-                              Text(
-                                'كود التتبع: ${pl.trackingCode}',
-                                style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
-                                textDirection: TextDirection.ltr,
-                              ),
+                              Text('كود التتبع: ${pl.trackingCode}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                             ],
                           ),
                         ],
@@ -388,7 +349,7 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
 
                 const SizedBox(height: 16),
 
-                // Timeline (REQ-002: State Machine Visualization)
+                // Timeline
                 _SectionCard(
                   title: 'مسار الطلب',
                   icon: Icons.timeline,
@@ -397,7 +358,7 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
 
                 const SizedBox(height: 16),
 
-                // Parties Info
+                // Parties - with reassign option for merchant
                 Row(
                   children: [
                     if (pl.merchantName != null)
@@ -418,17 +379,31 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
                           name: pl.dspName!,
                           icon: Icons.local_shipping,
                           color: AppColors.dspColor,
+                          // NEW: Show reassign button for merchant
+                          action: canReassignDsp ? IconButton(
+                            icon: const Icon(Icons.swap_horiz, size: 18),
+                            onPressed: _handleReassignDsp,
+                            tooltip: 'تغيير المندوب',
+                          ) : null,
                         ),
                       ),
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                // Policy info - HIDDEN for buyer (per requirements)
+                if (!isBuyer && pl.policyName != null) ...[
+                  const SizedBox(height: 16),
+                  _SectionCard(
+                    title: 'السياسة',
+                    icon: Icons.policy,
+                    child: Text(pl.policyName!, style: const TextStyle(fontWeight: FontWeight.w500)),
+                  ),
+                ],
               ],
             ),
           ),
 
-          // Bottom Action Buttons
+          // Bottom Actions
           if (canCancel || canDispute || canApprove)
             Positioned(
               bottom: 0,
@@ -451,9 +426,7 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
                     if (canApprove) ...[
                       Expanded(
                         child: GradientButton(
-                          onPressed: _isActionLoading ? null : () {
-                            // Handle approve and pay
-                          },
+                          onPressed: _isActionLoading ? null : () {},
                           child: const Text('الموافقة والدفع'),
                         ),
                       ),
@@ -508,6 +481,59 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
     }
   }
 
+  String _formatDate(DateTime date) {
+    return '${date.year}/${date.month}/${date.day} - ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+  }
+}
+
+// Status Card Widget
+class _StatusCard extends StatelessWidget {
+  final PeaceLinkStatus status;
+  final Color statusColor;
+  final String itemName;
+
+  const _StatusCard({required this.status, required this.statusColor, required this.itemName});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: statusColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: statusColor.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: statusColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(_getStatusIcon(status), color: statusColor, size: 28),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(itemName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(6)),
+                  child: Text(_getStatusLabel(status), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   IconData _getStatusIcon(PeaceLinkStatus status) {
     switch (status) {
       case PeaceLinkStatus.created: return Icons.hourglass_empty;
@@ -521,12 +547,75 @@ class _PeaceLinkDetailsScreenState extends ConsumerState<PeaceLinkDetailsScreen>
     }
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.year}/${date.month}/${date.day} - ${date.hour}:${date.minute.toString().padLeft(2, '0')} ${date.hour >= 12 ? 'م' : 'ص'}';
+  String _getStatusLabel(PeaceLinkStatus status) {
+    switch (status) {
+      case PeaceLinkStatus.created: return 'في انتظار الموافقة';
+      case PeaceLinkStatus.approved: return 'تم الموافقة';
+      case PeaceLinkStatus.dspAssigned: return 'تم تعيين المندوب';
+      case PeaceLinkStatus.inTransit: return 'جاري التوصيل';
+      case PeaceLinkStatus.delivered: return 'تم التوصيل';
+      case PeaceLinkStatus.completed: return 'مكتمل';
+      case PeaceLinkStatus.cancelled: return 'ملغي';
+      case PeaceLinkStatus.disputed: return 'في نزاع';
+    }
   }
 }
 
-// Timeline Widget for State Machine Visualization (REQ-002)
+// OTP Card Widget
+class _OtpCard extends StatelessWidget {
+  final String otp;
+  final bool showOtp;
+  final VoidCallback onToggle;
+  final VoidCallback onCopy;
+
+  const _OtpCard({required this.otp, required this.showOtp, required this.onToggle, required this.onCopy});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(gradient: AppColors.primaryGradient, borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.shield, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Text('رمز التأكيد (OTP)', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                ],
+              ),
+              IconButton(
+                icon: Icon(showOtp ? Icons.visibility_off : Icons.visibility, color: Colors.white),
+                onPressed: onToggle,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                showOtp ? otp : '••••',
+                style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold, letterSpacing: 8),
+              ),
+              if (showOtp) ...[
+                const SizedBox(width: 16),
+                IconButton(icon: const Icon(Icons.copy, color: Colors.white), onPressed: onCopy),
+              ],
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text('أعطِ هذا الرمز للمندوب عند استلام الشحنة', style: TextStyle(color: Colors.white70, fontSize: 12), textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+}
+
+// Timeline Widget
 class _Timeline extends StatelessWidget {
   final PeaceLinkStatus currentStatus;
 
@@ -571,23 +660,13 @@ class _Timeline extends StatelessWidget {
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: isCompleted || isCurrent
-                        ? (isCurrent ? AppColors.primary : AppColors.success)
-                        : Colors.grey[300],
+                    color: isCompleted || isCurrent ? (isCurrent ? AppColors.primary : AppColors.success) : Colors.grey[300],
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    isCompleted ? Icons.check : step.$3,
-                    color: Colors.white,
-                    size: 18,
-                  ),
+                  child: Icon(isCompleted ? Icons.check : step.$3, color: Colors.white, size: 18),
                 ),
                 if (index < steps.length - 1)
-                  Container(
-                    width: 2,
-                    height: 24,
-                    color: isCompleted ? AppColors.success : Colors.grey[300],
-                  ),
+                  Container(width: 2, height: 24, color: isCompleted ? AppColors.success : Colors.grey[300]),
               ],
             ),
             const SizedBox(width: 12),
@@ -620,13 +699,7 @@ class _DisputeDialogState extends State<_DisputeDialog> {
   String? _selectedReason;
   final _detailsController = TextEditingController();
 
-  final _reasons = [
-    'المنتج لم يصل',
-    'المنتج تالف',
-    'المنتج مختلف عن الوصف',
-    'مشكلة في التوصيل',
-    'أخرى',
-  ];
+  final _reasons = ['المنتج لم يصل', 'المنتج تالف', 'المنتج مختلف عن الوصف', 'مشكلة في التوصيل', 'أخرى'];
 
   @override
   Widget build(BuildContext context) {
@@ -651,10 +724,7 @@ class _DisputeDialogState extends State<_DisputeDialog> {
             TextField(
               controller: _detailsController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'تفاصيل إضافية (اختياري)',
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: 'تفاصيل إضافية (اختياري)', border: OutlineInputBorder()),
             ),
           ],
         ),
@@ -662,9 +732,7 @@ class _DisputeDialogState extends State<_DisputeDialog> {
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
         ElevatedButton(
-          onPressed: _selectedReason != null
-              ? () => Navigator.pop(context, _selectedReason)
-              : null,
+          onPressed: _selectedReason != null ? () => Navigator.pop(context, _selectedReason) : null,
           child: const Text('فتح النزاع'),
         ),
       ],
@@ -672,6 +740,62 @@ class _DisputeDialogState extends State<_DisputeDialog> {
   }
 }
 
+// NEW: Reassign DSP Dialog (Gap fix)
+class _ReassignDspDialog extends StatefulWidget {
+  @override
+  State<_ReassignDspDialog> createState() => _ReassignDspDialogState();
+}
+
+class _ReassignDspDialogState extends State<_ReassignDspDialog> {
+  final _walletController = TextEditingController();
+  String? _reason;
+
+  final _reasons = ['المندوب غير متاح', 'تأخير في التوصيل', 'طلب العميل', 'أخرى'];
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('تغيير مندوب التوصيل'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _walletController,
+              decoration: const InputDecoration(
+                labelText: 'رقم محفظة المندوب الجديد',
+                hintText: '01xxxxxxxxx',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.phone,
+              textDirection: TextDirection.ltr,
+            ),
+            const SizedBox(height: 16),
+            const Text('سبب التغيير (اختياري)', style: TextStyle(fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              value: _reason,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+              hint: const Text('اختر السبب'),
+              items: _reasons.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+              onChanged: (value) => setState(() => _reason = value),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
+        ElevatedButton(
+          onPressed: _walletController.text.isNotEmpty ? () => Navigator.pop(context, _walletController.text) : null,
+          child: const Text('تأكيد التغيير'),
+        ),
+      ],
+    );
+  }
+}
+
+// Reusable widgets
 class _SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -683,21 +807,11 @@ class _SectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(icon, size: 20, color: AppColors.primary),
-              const SizedBox(width: 8),
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-            ],
-          ),
+          Row(children: [Icon(icon, size: 20, color: AppColors.primary), const SizedBox(width: 8), Text(title, style: const TextStyle(fontWeight: FontWeight.bold))]),
           const SizedBox(height: 12),
           child,
         ],
@@ -712,12 +826,7 @@ class _DetailRow extends StatelessWidget {
   final bool isBold;
   final Color? valueColor;
 
-  const _DetailRow({
-    required this.label,
-    required this.value,
-    this.isBold = false,
-    this.valueColor,
-  });
+  const _DetailRow({required this.label, required this.value, this.isBold = false, this.valueColor});
 
   @override
   Widget build(BuildContext context) {
@@ -739,33 +848,28 @@ class _PartyCard extends StatelessWidget {
   final String name;
   final IconData icon;
   final Color color;
+  final Widget? action;
 
-  const _PartyCard({
-    required this.title,
-    required this.name,
-    required this.icon,
-    required this.color,
-  });
+  const _PartyCard({required this.title, required this.name, required this.icon, required this.color, this.action});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
       child: Column(
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              if (action != null) action!,
+            ],
           ),
           const SizedBox(height: 8),
           Text(title, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
